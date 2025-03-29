@@ -315,7 +315,7 @@ def pagina_equipa(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT ?name ?acronym ?logo ?city ?statename ?conference ?divison ?arena WHERE {{
+        SELECT ?name ?acronym ?logo ?city ?statename ?conference ?conferencename ?divison ?divisionname ?arena ?arenaname WHERE {{
             ?team a nba:Team ;
                   nba:name ?name .
             OPTIONAL {{ ?team nba:acronym ?acronym . }}
@@ -324,8 +324,11 @@ def pagina_equipa(request, id):
             OPTIONAL {{ ?team nba:state ?state . }}
             OPTIONAL {{ ?state nba:name ?statename . }}
             OPTIONAL {{ ?team nba:conference ?conference . }}
+            OPTIONAL {{ ?conference nba:name ?conferencename . }}
             OPTIONAL {{ ?team nba:division ?division . }}
+            OPTIONAL {{ ?division nba:name ?divisionname . }}
             OPTIONAL {{ ?team nba:arena ?arena . }}
+            OPTIONAL {{ ?arena nba:name ?arenaname . }}
             FILTER(STR(?team) = "{team_uri}")
         }}
     """)
@@ -349,9 +352,10 @@ def pagina_equipa(request, id):
         states.add(row.get("statename", {}).get("value", state))
 
         city = row.get("city", {}).get("value", city)
-        conference = row.get("conference", {}).get("value", conference)
-        division = row.get("division", {}).get("value", division)
+        conference = row.get("conferencename", {}).get("value", conference)
+        division = row.get("divisionname", {}).get("value", division)
         arena = row.get("arena", {}).get("value", arena)
+        arenaname = row.get("arenaname", {}).get("value", arenaname)
 
     def clean(s): return sorted(v for v in s if v)
 
@@ -371,7 +375,8 @@ def pagina_equipa(request, id):
         "state": state,
         "conference": conference,
         "division": division,
-        "arena": arena
+        "arena": arena,
+        "arenaName": arenaname
     }
 
     # 2. Jogadores por temporada (agrupado)
