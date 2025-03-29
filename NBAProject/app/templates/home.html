@@ -107,6 +107,10 @@
   background-color: #17408B; /* azul NBA */
 }
 
+.new-summary {
+  color: #cfcfcf;
+}
+
 </style>
 {% endblock %}
 
@@ -126,7 +130,7 @@
           <div class="p-4">
             <h5 class="fw-bold">{{ news.title }}</h5>
             {% if news.summary %}
-              <p class="text-muted">{{ news.summary }}</p>
+              <p class="new-summary">{{ news.summary }}</p>
             {% endif %}
             <a href="{{ news.link }}" class="btn btn-sm btn-primary" target="_blank">See More</a>
           </div>

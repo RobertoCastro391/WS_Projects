@@ -27,19 +27,19 @@
     {% endif %}
     <div class="col-md-6">
       <ul class="list-group">
-        <li class="list-group-item"><strong>📍 Localização:</strong> {{ arena.location }}</li>
+        <li class="list-group-item"><strong>📍 Located at:</strong> {{ arena.location }}</li>
         {% if arena.opened %}
-        <li class="list-group-item"><strong>📆 Inauguração:</strong> {{ arena.opened }}</li>
+        <li class="list-group-item"><strong>📆 Inauguration date:</strong> {{ arena.opened }}</li>
         {% endif %}
         {% if arena.capacity %}
-        <li class="list-group-item"><strong>👥 Capacidade:</strong> {{ arena.capacity }}</li>
+        <li class="list-group-item"><strong>👥 Capacity:</strong> {{ arena.capacity }}</li>
         {% endif %}
         {% if arena.latitude and arena.longitude %}
-        <li class="list-group-item"><strong>🌐 Coordenadas:</strong> {{ arena.latitude }}, {{ arena.longitude }}</li>
+        <li class="list-group-item"><strong>🌐 Geo Coordinates:</strong> {{ arena.latitude }}, {{ arena.longitude }}</li>
         {% endif %}
         {% if arena.homeTeam %}
         <li class="list-group-item">
-          <strong>🏠 Equipa Residente:</strong>
+          <strong>🏠 Home Team:</strong>
           <a href="/equipa/{{ arena.homeTeam|cut:'http://example.org/nba/team_' }}">
             {{ arena.homeTeamName }}
           </a>
@@ -52,7 +52,7 @@
   {% if arena.latitude and arena.longitude %}
     <div class="card shadow mb-5">
       <div class="card-body">
-        <h5 class="card-title">🗺️ Localização no Mapa</h5>
+        <h5 class="card-title">🗺️ Map Localization</h5>
         <iframe
           width="100%"
           height="300"

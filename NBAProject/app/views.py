@@ -134,10 +134,10 @@ def list_equipas(request):
     results = sparql.query().convert()
 
     teams_dict = defaultdict(lambda: {
-        "id": None,
-        "names": set(),
-        "acronyms": set(),
-        "logos": set()
+        "id": "",
+        "names": [],
+        "acronyms": [],
+        "logos": []
     })
 
     for result in results["results"]["bindings"]:
@@ -145,21 +145,30 @@ def list_equipas(request):
         team = teams_dict[team_id]
         team["id"] = team_id
 
-        for field, key in [("name", "names"), ("acronym", "acronyms"), ("logo", "logos")]:
-            value = result.get(field, {}).get("value")
-            if value:
-                team[key].add(value)
+        name = result.get("name", {}).get("value")
+        acronym = result.get("acronym", {}).get("value")
+        logo = result.get("logo", {}).get("value")
 
-    # Montar lista final convertendo os sets para listas ordenadas
-    equipas = [{
-        "id": team["id"],
-        "names": sorted(team["names"]),
-        "acronyms": sorted(team["acronyms"]),
-        "logos": sorted(team["logos"]),
-    } for team in teams_dict.values()]
+        if name and name not in team["names"]:
+            team["names"].append(name)
+        if acronym and acronym not in team["acronyms"]:
+            team["acronyms"].append(acronym)
+        if logo and logo not in team["logos"]:
+            team["logos"].append(logo)
+
+    equipas = []
+    for team in teams_dict.values():
+        equipas.append({
+            "id": team["id"],
+            "name": team["names"][0] if team["names"] else "",
+            "acronym": team["acronyms"][0] if team["acronyms"] else "",
+            "logo": team["logos"][0] if team["logos"] else "",
+            "other_names": team["names"][1:] if len(team["names"]) > 1 else [],
+            "other_acronyms": team["acronyms"][1:] if len(team["acronyms"]) > 1 else [],
+            "other_logos": team["logos"][1:] if len(team["logos"]) > 1 else []
+        })
 
     return render(request, "teams.html", {"equipas": equipas})
-    #return JsonResponse({"equipas": equipas})
 
 
 def list_temporadas(request):
@@ -306,13 +315,14 @@ def pagina_equipa(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT ?name ?acronym ?logo ?city ?state ?conference ?division ?arena WHERE {{
+        SELECT ?name ?acronym ?logo ?city ?statename ?conference ?divison ?arena WHERE {{
             ?team a nba:Team ;
                   nba:name ?name .
             OPTIONAL {{ ?team nba:acronym ?acronym . }}
             OPTIONAL {{ ?team nba:logo ?logo . }}
             OPTIONAL {{ ?team nba:city ?city . }}
             OPTIONAL {{ ?team nba:state ?state . }}
+            OPTIONAL {{ ?state nba:name ?statename . }}
             OPTIONAL {{ ?team nba:conference ?conference . }}
             OPTIONAL {{ ?team nba:division ?division . }}
             OPTIONAL {{ ?team nba:arena ?arena . }}
@@ -325,17 +335,43 @@ def pagina_equipa(request, id):
     if not result:
         return JsonResponse({"error": "Team not found"}, status=404)
 
-    team_data = result[0]
+    names = set()
+    acronyms = set()
+    logos = set()
+    states = set()
+
+    city = state = conference = division = arenaname = arena = ""
+
+    for row in result:
+        names.add(row.get("name", {}).get("value", ""))
+        acronyms.add(row.get("acronym", {}).get("value", ""))
+        logos.add(row.get("logo", {}).get("value", ""))
+        states.add(row.get("statename", {}).get("value", state))
+
+        city = row.get("city", {}).get("value", city)
+        conference = row.get("conference", {}).get("value", conference)
+        division = row.get("division", {}).get("value", division)
+        arena = row.get("arena", {}).get("value", arena)
+
+    def clean(s): return sorted(v for v in s if v)
+
+    names_list = clean(names)
+    acronyms_list = clean(acronyms)
+    logos_list = clean(logos)
+
     team_info = {
         "id": team_uri,
-        "name": team_data["name"]["value"],
-        "acronym": team_data.get("acronym", {}).get("value", ""),
-        "logo": team_data.get("logo", {}).get("value", ""),
-        "city": team_data.get("city", {}).get("value", ""),
-        "state": team_data.get("state", {}).get("value", ""),
-        "conference": team_data.get("conference", {}).get("value", ""),
-        "division": team_data.get("division", {}).get("value", ""),
-        "arena": team_data.get("arena", {}).get("value", "")
+        "name": names_list[0] if names_list else "",
+        "acronym": acronyms_list[0] if acronyms_list else "",
+        "logo": logos_list[0] if logos_list else "",
+        "other_names": names_list[1:] if len(names_list) > 1 else [],
+        "other_acronyms": acronyms_list[1:] if len(acronyms_list) > 1 else [],
+        "other_logos": logos_list[1:] if len(logos_list) > 1 else [],
+        "city": city,
+        "state": state,
+        "conference": conference,
+        "division": division,
+        "arena": arena
     }
 
     # 2. Jogadores por temporada (agrupado)
@@ -374,7 +410,7 @@ def pagina_equipa(request, id):
 
     team_info["seasons"] = seasons
 
-    # return JsonResponse(team_info)
+    #return JsonResponse(team_info)
     return render(request, "team.html", {"team": team_info})
 
 
