@@ -49,12 +49,12 @@ urlpatterns = [
     path('jogador/<str:id>/companheiros/', views.companheiros_jogador),  # Companheiros na mesma época
     # path('participacoes/filtradas/', views.filtrar_participacoes),  # Participações filtradas por jogador e temporada
 
-    # #Funcionalidades Avançadas
+    #Funcionalidades Avançadas
     path('comparar/', views.comparar_jogadores),  # Comparação entre dois jogadores
-    # path('rede/jogadores/', views.rede_jogadores),  # Rede de conexões entre jogadores
-    # path('stats/participacoes-por-temporada/', views.stats_por_temporada),  # Gráfico de participações por temporada
-
-    # #Funcionalidades Extras
+    path('rede/jogadores/', views.rede_jogadores),  # Rede de conexões entre jogadores
+    path('stats/', views.stats),
+    
+    #Funcionalidades Extras
     # path('sparql/', views.executar_sparql),  # Playground SPARQL
     # path('exportar/participacoes/', views.exportar_participacoes),  # Exportar participações em CSV/JSON
 ]

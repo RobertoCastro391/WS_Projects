@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+{% block title %}NBA | Teams{% endblock %}
+
+{% block extra_head %}
+<style>
+  .team-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    color: #141414;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+  }
+
+  .team-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .team-logo {
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+  }
+
+  .team-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .team-acronym {
+    font-size: 0.95rem;
+    color: #666;
+  }
+
+  .logo-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .logo-group img {
+    height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #f1f1f1;
+    padding: 4px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">NBA Teams</h2>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+  {% for team in equipas %}
+  <div class="col" data-aos="fade-up">
+    <a href="/equipa/{{ team.id|cut:'http://example.org/nba/team_' }}"" class="text-decoration-none">
+        <div class="team-card h-100">
+          {% if team.logos %}
+            <div class="logo-group mb-3">
+              {% for logo in team.logos %}
+                <img src="{{ logo }}" alt="Team Logo">
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="team-logo bg-light d-flex align-items-center justify-content-center" style="height: 80px;">
+              <span class="text-muted">No Logo</span>
+            </div>
+          {% endif %}
+      
+          <div class="team-name">
+            {% for name in team.names %}
+              <div>{{ name }}</div>
+            {% endfor %}
+          </div>
+      
+          {% if team.acronyms %}
+            <div class="team-acronym mt-2">
+              {% for acronym in team.acronyms %}
+                <span class="badge bg-secondary me-1">{{ acronym }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </a>
+      
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
