@@ -49,6 +49,18 @@
     background: #f1f1f1;
     padding: 4px;
   }
+
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+  }
+
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
 </style>
 {% endblock %}
 
@@ -60,7 +72,7 @@
 </div>
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
   {% for team in equipas %}
-  <div class="col">
+  <div class="col team-card-container animate-on-scroll" data-name="{{ team.name }}">
     <a href="/equipa/{{ team.id|cut:'http://example.org/nba/team_' }}" class="text-decoration-none">
       <div class="team-card h-100">
         {% if team.logo %}
@@ -94,6 +106,8 @@
   </div>
 {% endfor %}
 </div>
+{% endblock %}
+
 
 {% block extra_script %}
 <script>
@@ -111,8 +125,19 @@
     });
   }
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target); // Animate only once
+        }
+      });
+    });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+  });
+</script>
+
 {% endblock %}
-
-
-{% endblock %}
-

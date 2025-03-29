@@ -252,18 +252,20 @@ def pagina_jogador(request, id):
 
         SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo WHERE {{
             ?player a nba:Player ;
-                    nba:name ?name ;
-                    nba:birthdate ?birthdate ;
-                    nba:bornIn ?bornIn ;
-                    nba:draftYear ?draftYear ;
-                    nba:position ?position ;
-                    nba:height ?height ;
-                    nba:weight ?weight ;
-                    nba:school ?school ;
-                    nba:photo ?photo .
+                    nba:name ?name .
             FILTER(STR(?player) = "{jogador_uri}")
+
+            OPTIONAL {{ ?player nba:birthdate ?birthdate. }}
+            OPTIONAL {{ ?player nba:bornIn ?bornIn. }}
+            OPTIONAL {{ ?player nba:draftYear ?draftYear. }}
+            OPTIONAL {{ ?player nba:position ?position. }}
+            OPTIONAL {{ ?player nba:height ?height. }}
+            OPTIONAL {{ ?player nba:weight ?weight. }}
+            OPTIONAL {{ ?player nba:school ?school. }}
+            OPTIONAL {{ ?player nba:photo ?photo. }}
         }}
     """)
+
     sparql.setReturnFormat(JSON)
     profile_data = sparql.query().convert()["results"]["bindings"]
 
@@ -383,7 +385,7 @@ def pagina_equipa(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?player ?playerName ?season ?seasonType WHERE {{
+        SELECT DISTINCT ?player ?playerName ?playerPhoto ?season ?seasonType WHERE {{
             ?p nba:team ?team ;
                nba:player ?player ;
                nba:season ?season ;
@@ -402,6 +404,7 @@ def pagina_equipa(request, id):
         season = p["season"]["value"]
         if season not in seasons:
             seasons[season] = {
+                "seasonName": season.split("_")[-1],  # ex: season_2001 → 2001
                 "seasonType": p["seasonType"]["value"],
                 "players": []
             }
