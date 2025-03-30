@@ -460,18 +460,20 @@ def pagina_jogador(request, id):
 
         SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo WHERE {{
             ?player a nba:Player ;
-                    nba:name ?name ;
-                    nba:birthdate ?birthdate ;
-                    nba:bornIn ?bornIn ;
-                    nba:draftYear ?draftYear ;
-                    nba:position ?position ;
-                    nba:height ?height ;
-                    nba:weight ?weight ;
-                    nba:school ?school ;
-                    nba:photo ?photo .
+                    nba:name ?name .
             FILTER(STR(?player) = "{jogador_uri}")
+
+            OPTIONAL {{ ?player nba:birthdate ?birthdate. }}
+            OPTIONAL {{ ?player nba:bornIn ?bornIn. }}
+            OPTIONAL {{ ?player nba:draftYear ?draftYear. }}
+            OPTIONAL {{ ?player nba:position ?position. }}
+            OPTIONAL {{ ?player nba:height ?height. }}
+            OPTIONAL {{ ?player nba:weight ?weight. }}
+            OPTIONAL {{ ?player nba:school ?school. }}
+            OPTIONAL {{ ?player nba:photo ?photo. }}
         }}
     """)
+
     sparql.setReturnFormat(JSON)
     profile_data = sparql.query().convert()["results"]["bindings"]
 
@@ -591,7 +593,7 @@ def pagina_equipa(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?player ?playerName ?season ?seasonType WHERE {{
+        SELECT DISTINCT ?player ?playerName ?playerPhoto ?season ?seasonType WHERE {{
             ?p nba:team ?team ;
                nba:player ?player ;
                nba:season ?season ;
@@ -610,6 +612,7 @@ def pagina_equipa(request, id):
         season = p["season"]["value"]
         if season not in seasons:
             seasons[season] = {
+                "seasonName": season.split("_")[-1],  # ex: season_2001 → 2001
                 "seasonType": p["seasonType"]["value"],
                 "players": []
             }
@@ -987,7 +990,7 @@ def comparar_jogadores(request):
         # Dados do jogador
         sparql.setQuery(f"""
             PREFIX nba: <http://example.org/nba/>
-            SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo WHERE {{
+            SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?positionName ?height ?weight ?school ?photo WHERE {{
                 ?player a nba:Player ;
                         nba:name ?name ;
                         nba:birthdate ?birthdate ;
@@ -998,6 +1001,7 @@ def comparar_jogadores(request):
                         nba:weight ?weight ;
                         nba:school ?school ;
                         nba:photo ?photo .
+                ?position nba:name ?positionName .
                 FILTER(STR(?player) = "{jogador_uri}")
             }}
         """)
@@ -1035,10 +1039,15 @@ def comparar_jogadores(request):
                 "seasonType": p["seasonType"]["value"]
             })
 
+        num_teams = len(set(p["team"]["value"] for p in participacoes_data))
+        num_seasons = len(set(p["season"]["value"] for p in participacoes_data))
+
         return {
             "jogador": jogador_uri,
             **dados,
-            "participacoes": participacoes
+            "participacoes": participacoes,
+            "totalTeams": num_teams,
+            "totalSeasons": num_seasons
         }
 
     jogador1 = get_player_data(player1_id)
@@ -1051,6 +1060,32 @@ def comparar_jogadores(request):
         "player1": jogador1,
         "player2": jogador2
     })
+
+def comparar_jogadores_template(request):
+
+    sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    sparql.setQuery("""
+        PREFIX nba: <http://example.org/nba/>
+        PREFIX schema: <http://www.w3.org/2000/01/rdf-schema#>
+
+        SELECT DISTINCT ?player ?playerName WHERE {
+            ?p nba:player ?player .
+            ?player nba:name ?playerName .
+        }
+        ORDER BY ?playerName
+    """)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
+    jogadores = [
+        {
+            "id": result["player"]["value"],
+            "nome": result["playerName"]["value"]
+        }
+        for result in results["results"]["bindings"]
+    ]
+
+    return render(request, "compare.html", {"jogadores": jogadores})
 
 def rede_jogadores(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
