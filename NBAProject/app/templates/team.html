@@ -95,7 +95,9 @@
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     padding: 1rem;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     transition: transform 0.2s ease;
     margin-bottom: 1rem;
   }
@@ -182,10 +184,7 @@
       <div class="col-md-3 col-sm-6 mb-3 player-wrapper" data-season="{{ season }}" {% if not forloop.parentloop.first %}style="display: none;"{% endif %}>
         <a href="/jogador/{{ player.player|cut:'http://example.org/nba/player_' }}/" class="text-decoration-none">
           <div class="player-card h-100">
-            {% if player.playerPhoto %}
-              <img src="{{ player.playerPhoto }}" alt="{{ player.playerName }}" class="img-fluid mb-2" style="max-height: 150px;">
-            {% endif %}
-            <h5 class="text-dark">{{ player.playerName }}</h5>
+            <h5 class="text-dark" style="text-align: center">{{ player.playerName }}</h5>
           </div>
         </a>
       </div>

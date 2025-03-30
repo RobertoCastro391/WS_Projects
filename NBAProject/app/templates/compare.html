@@ -1,0 +1,228 @@
+{% extends "layout.html" %}
+{% block title %}Compare Players{% endblock %}
+{% block extra_head %}
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+  .search-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .search-container input {
+    width: 40%;
+    margin: 0 1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease-in-out;
+  }
+
+  .comparison {
+    margin-top: 2.7rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .player-card {
+    background: linear-gradient(135deg, #ffffff, #f2f2f2);
+    border-radius: 20px;
+    padding: 2rem;
+    color: #141414;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 500px;
+    margin: 1rem;
+  }
+
+  .player-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .card-photo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card-photo img {
+    border-radius: 12px;
+    max-height: 180px;
+    object-fit: cover;
+    margin-bottom: 0.8rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .card-photo h4 {
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-player-info p {
+    font-size: 1rem;
+    margin: 0.4rem 0;
+    color: #333;
+  }
+
+  .card-player-info strong {
+    color: #17408A;
+  }
+
+  .comparison {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+</style>
+
+
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center my-4" style="margin-top: 0 !important">Compare Two Players</h2>
+<div class="container">
+
+
+  <form id="compare-form" class="text-center mb-4 search-container">
+    <input type="text" id="player1" list="player-options" class="form-control" placeholder="Search Player 1">
+    <input type="text" id="player2" list="player-options" class="form-control" placeholder="Search Player 2">
+    <datalist id="player-options">
+      {% for jogador in jogadores %}
+      <option value="{{ jogador.nome }}" data-id="{{ jogador.id|cut:'http://example.org/nba/player_' }}"></option>
+      {% endfor %}
+    </datalist>
+    <button type="submit" class="btn btn-primary">Compare</button>
+  </form>
+
+  <div id="comparison-result" class="comparison"></div>
+</div>
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  const nameToId = {
+    {% for jogador in jogadores %}
+  "{{ jogador.nome }}": "{{ jogador.id|cut:'http://example.org/nba/player_' }}",
+    {% endfor %}
+  };
+
+  document.getElementById("compare-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const name1 = document.getElementById("player1").value.trim();
+    const name2 = document.getElementById("player2").value.trim();
+
+    const p1 = nameToId[name1];
+    const p2 = nameToId[name2];
+
+    if (!p1 || !p2) {
+      document.getElementById("comparison-result").innerHTML = `
+        <p class="text-danger text-center">Please select valid player names.</p>`;
+      return;
+    }
+
+    fetch(`/comparar/?player1=${p1}&player2=${p2}`)
+      .then(res => res.json())
+      .then(data => {
+        const result = document.getElementById("comparison-result");
+        if (data.error) {
+          result.innerHTML = `<p class="text-danger text-center">${data.error}</p>`;
+        } else {
+          result.innerHTML = `
+            
+            <div class="col-md-6 text-center player-card">  
+              <div class="card-photo">
+                <img src="${data.player1.photo || 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Stony_Brook_Seawolf_basketball_player_Joe_Octave.jpg'}"
+                    class="img-fluid mb-2" style="max-width: 200px;">
+                <h4>${data.player1.name}</h4>
+              </div>
+              <div class="card-player-info">
+                <p><strong><i class="fas fa-cake-candles me-1"></i> Age: </strong>${calculateAge(data.player1.birthdate) || 'N/A'} - ${data.player1.birthdate || 'N/A'}</p>
+                <p><strong><i class="fas fa-map-marker-alt me-1"></i> Born in: </strong>${data.player1.bornIn || 'N/A'}</p>
+                <p><strong><i class="fas fa-calendar-alt me-1"></i>Draft Year:</strong> ${data.player1.draftYear || 'N/A'}</p>
+                <p><strong><i class="fas fa-graduation-cap me-1"></i> School: </strong>${data.player1.school || 'N/A'}</p>
+                <p><strong><i class="fas fa-ruler-vertical me-1"></i> Height: </strong>${data.player1.height || 'N/A'}</p>
+                <p><strong><i class="fas fa-weight me-1"></i> Weight: </strong>${data.player1.weight || 'N/A'}</p>
+                <p><strong><i class="fas fa-shield-halved me-1"></i> Position: </strong>${data.player1.positionName || 'N/A'}</p>
+                <p><strong><i class="fas fa-people-arrows me-1"></i> Teams: </strong>${new Set(data.player1.participacoes.map(p => p.team)).size}</p>
+                <p><strong>Seasons Played: </strong> ${new Set(data.player1.participacoes.map(p => p.season)).size}</p>
+                <ul class="list-unstyled">
+                  ${groupBySeason(data.player1.participacoes)}
+                </ul>
+              </div> 
+            </div>
+
+            <div class="col-md-6 text-center player-card">  
+              <div class="card-photo">
+                <img src="${data.player2.photo || 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Stony_Brook_Seawolf_basketball_player_Joe_Octave.jpg'}"
+                    class="img-fluid mb-2" style="max-width: 200px;">
+                <h4>${data.player2.name}</h4>
+              </div>
+              <div class="card-player-info">              
+                <p><strong><i class="fas fa-cake-candles me-1"></i> Age: </strong>${calculateAge(data.player2.birthdate) || 'N/A'} - ${data.player2.birthdate || 'N/A'}</p>
+                <p><strong><i class="fas fa-map-marker-alt me-1"></i> Born in: </strong>${data.player2.bornIn || 'N/A'}</p>
+                <p><strong><i class="fas fa-calendar-alt me-1"></i>Draft Year: </strong> ${data.player2.draftYear || 'N/A'}</p>
+                <p><strong><i class="fas fa-graduation-cap me-1"></i> School: </strong>${data.player2.school || 'N/A'}</p>
+                <p><strong><i class="fas fa-ruler-vertical me-1"></i> Height: </strong>${data.player2.height || 'N/A'}</p>
+                <p><strong><i class="fas fa-weight me-1"></i> Weight: </strong>${data.player2.weight || 'N/A'}</p>
+                <p><strong><i class="fas fa-shield-halved me-1"></i> Position: </strong>${data.player2.positionName || 'N/A'}</p>
+                <p><strong><i class="fas fa-people-arrows me-1"></i> Teams: </strong>${new Set(data.player2.participacoes.map(p => p.team)).size}</p>
+                <p><strong>Seasons Played: </strong> ${new Set(data.player2.participacoes.map(p => p.season)).size}</p>
+                <ul class="list-unstyled">
+                  ${groupBySeason(data.player2.participacoes)}
+                </ul>
+              </div> 
+            </div>
+          `;
+        }
+      })
+      .catch(() => {
+        document.getElementById("comparison-result").innerHTML =
+          `<p class="text-danger text-center">An error occurred.</p>`;
+      });
+  });
+
+  function calculateAge(birthdate) {
+    const birth = new Date(birthdate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
+  }
+  function groupBySeason(participations) {
+    const seasonMap = {};
+
+    participations.forEach(p => {
+      const season = p.season.split("_").pop(); // extract just the year
+      if (!seasonMap[season]) {
+        seasonMap[season] = new Set();
+      }
+      seasonMap[season].add(p.teamName);
+    });
+
+    const list = Object.entries(seasonMap).sort((a, b) => b[0] - a[0]).map(([season, teams]) => {
+      return `<li><strong>${season}:</strong> ${Array.from(teams).join(", ")}</li>`;
+    });
+
+    return list.join("");
+  }
+</script>
+{% endblock %}
