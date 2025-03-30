@@ -28,7 +28,7 @@ urlpatterns = [
     path('jogadores/', views.list_jogadores),  # Lista todos os jogadores únicos
     path('equipas/', views.equipas_page),  # Render da página de equipas
     path('equipas/filter/', views.list_equipas),  # Lista todas as equipas
-    path('temporadas/', views.list_temporadas),  # Lista todas as temporadas
+    path('temporadas/', views.list_temporadas, name='seasons'),  # Lista todas as temporadas
     path('participacoes/', views.list_participacoes),  # Lista todas as participações
     path('stats/geral/', views.stats_geral),  # Contagem global de jogadores, equipas, temporadas
 
