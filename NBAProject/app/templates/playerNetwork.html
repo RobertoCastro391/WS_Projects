@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+{% block title %}Player Connections Network{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  #network {
+    width: 100%;
+    height: 80vh;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+
+  #network:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  #controls {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  #season {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+
+  .title {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="title">Player Connections Network</h1>
+
+<div id="controls">
+  <form method="get">
+    <label for="season">Select Season:</label>
+    <select name="season" id="season" onchange="this.form.submit()">
+      {% for season in season_range %}
+        <option value="{{ season }}" {% if season|stringformat:"s" == selected_season %}selected{% endif %}>
+          {{ season }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+<div id="network"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script>
+  const nodesData = JSON.parse(`{{ nodes_json|escapejs }}`);
+  const edgesData = JSON.parse(`{{ edges_json|escapejs }}`);
+
+  const container = document.getElementById("network");
+
+  const nodes = new vis.DataSet(nodesData);
+  const edges = new vis.DataSet(edgesData);
+
+  const network = new vis.Network(container, { nodes, edges }, {
+    nodes: {
+      shape: "dot",
+      size: 12,
+      font: { size: 14 },
+      color: {
+        background: "#007bff",
+        border: "#0056b3",
+        highlight: {
+          background: "#17a2b8",
+          border: "#117a8b"
+        }
+      }
+    },
+    edges: {
+      color: "#aaa",
+      smooth: true
+    },
+    physics: {
+      stabilization: false,
+      barnesHut: {
+        gravitationalConstant: -8000,
+        centralGravity: 0.3,
+        springLength: 150
+      }
+    },
+    interaction: {
+      tooltipDelay: 200,
+      hover: true
+    }
+  });
+
+  network.on("click", function (params) {
+    if (params.nodes.length === 1) {
+      const playerId = params.nodes[0];
+      fetch(`/rede/jogadores/expand/${encodeURIComponent(playerId)}/`)
+        .then(response => response.json())
+        .then(data => {
+          const newNodes = data.nodes;
+          const newEdges = data.edges;
+
+          newNodes.forEach(node => {
+            if (!nodes.get(node.id)) {
+              nodes.add(node);
+            }
+          });
+
+          newEdges.forEach(edge => {
+            const exists = edges.get({
+              filter: e => e.from === edge.from && e.to === edge.to
+            });
+            if (exists.length === 0) {
+              edges.add(edge);
+            }
+          });
+        });
+    }
+  });
+</script>
+{% endblock %}

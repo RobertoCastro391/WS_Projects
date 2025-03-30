@@ -1,5 +1,5 @@
 from collections import defaultdict
-
+from django.views.decorators.cache import cache_page
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -846,19 +846,37 @@ def comparar_jogadores(request):
         "player2": jogador2
     })
 
-def rede_jogadores(request):
+def get_all_seasons():
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
-
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
+        SELECT DISTINCT ?season WHERE {
+            ?p nba:season ?season .
+        }
+        ORDER BY ?season
+    """)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()["results"]["bindings"]
+    seasons = [r["season"]["value"].split("_")[-1] for r in results]
+    return sorted(seasons)
 
-        SELECT DISTINCT ?player ?playerName ?team ?season WHERE {
+@cache_page(60 * 60)
+def rede_jogadores(request):
+    season = request.GET.get("season", "2022")
+    full_season_uri = f"http://example.org/nba/season_{season}"
+
+    sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    sparql.setQuery(f"""
+        PREFIX nba: <http://example.org/nba/>
+        SELECT DISTINCT ?player ?playerName ?team ?season WHERE {{
             ?p a nba:Participation ;
                nba:player ?player ;
                nba:team ?team ;
                nba:season ?season .
             ?player nba:name ?playerName .
-        }
+            FILTER(?season = <{full_season_uri}>)
+        }}
+        LIMIT 50
     """)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()["results"]["bindings"]
@@ -871,14 +889,10 @@ def rede_jogadores(request):
         player = r["player"]["value"]
         name = r["playerName"]["value"]
         team = r["team"]["value"]
-        season = r["season"]["value"]
-        key = f"{team}_{season}"
-
+        season_val = r["season"]["value"]
+        key = f"{team}_{season_val}"
         nodes[player] = {"id": player, "label": name}
-
-        if key not in participations:
-            participations[key] = []
-        participations[key].append(player)
+        participations.setdefault(key, []).append(player)
 
     for players in participations.values():
         for i in range(len(players)):
@@ -888,12 +902,60 @@ def rede_jogadores(request):
 
     edges = [{"from": a, "to": b} for (a, b) in edges_set]
 
-    return JsonResponse({
-        "nodes": list(nodes.values()),
-        "edges": edges
-    })
+    context = {
+        "nodes_json": json.dumps(list(nodes.values())),
+        "edges_json": json.dumps(edges),
+        "selected_season": season,
+        "season_range": list(range(2000, 2024))  # Podes ajustar aqui as seasons disponíveis
+    }
+
+    return render(request, "playerNetwork.html", context)
 
 
+@cache_page(60 * 60)
+def expandir_jogador(request, player_id):
+    sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    sparql.setQuery(f"""
+        PREFIX nba: <http://example.org/nba/>
+        SELECT DISTINCT ?player ?playerName ?team ?season WHERE {{
+            ?p a nba:Participation ;
+               nba:player ?player ;
+               nba:team ?team ;
+               nba:season ?season .
+            ?player nba:name ?playerName .
+            FILTER EXISTS {{
+                ?p2 nba:player <{player_id}> ;
+                     nba:team ?team ;
+                     nba:season ?season .
+            }}
+        }}
+    """)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()["results"]["bindings"]
+
+    participations = {}
+    nodes = {}
+    edges_set = set()
+
+    for r in results:
+        p_uri = r["player"]["value"]
+        name = r["playerName"]["value"]
+        team = r["team"]["value"]
+        season = r["season"]["value"]
+        key = f"{team}_{season}"
+
+        nodes[p_uri] = {"id": p_uri, "label": name}
+        participations.setdefault(key, []).append(p_uri)
+
+    for players in participations.values():
+        for i in range(len(players)):
+            for j in range(i + 1, len(players)):
+                a, b = sorted([players[i], players[j]])
+                edges_set.add((a, b))
+
+    edges = [{"from": a, "to": b} for (a, b) in edges_set]
+
+    return JsonResponse({"nodes": list(nodes.values()), "edges": edges})
 
 def extract_id(uri):
     return uri.split("_")[-1] if "_" in uri else uri
