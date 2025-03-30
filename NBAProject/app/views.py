@@ -1,3 +1,5 @@
+import json
+import re
 from collections import defaultdict
 
 import requests
@@ -5,9 +7,6 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from SPARQLWrapper import JSON, SPARQLWrapper
-import requests
-import json
-import re
 
 
 def home_page(request):
@@ -120,14 +119,15 @@ def list_jogadores(request):
     
     return JsonResponse({"jogadores": jogadores})
 
-def list_equipas(request):
+def get_all_teams():
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?team ?name ?acronym ?logo WHERE {
+        SELECT DISTINCT ?team ?actualName ?name ?acronym ?logo WHERE {
             ?team a nba:Team ;
                   nba:name ?name .
+            OPTIONAL { ?team nba:actualName ?actualName . }
             OPTIONAL { ?team nba:acronym ?acronym . }
             OPTIONAL { ?team nba:logo ?logo . }
         }
@@ -138,6 +138,7 @@ def list_equipas(request):
 
     teams_dict = defaultdict(lambda: {
         "id": "",
+        "actualName": "",
         "names": [],
         "acronyms": [],
         "logos": []
@@ -147,6 +148,9 @@ def list_equipas(request):
         team_id = result["team"]["value"]
         team = teams_dict[team_id]
         team["id"] = team_id
+
+        if "actualName" in result:
+            team["actualName"] = result["actualName"]["value"]
 
         name = result.get("name", {}).get("value")
         acronym = result.get("acronym", {}).get("value")
@@ -163,14 +167,23 @@ def list_equipas(request):
     for team in teams_dict.values():
         equipas.append({
             "id": team["id"],
-            "name": team["names"][0] if team["names"] else "",
+            "name": team["actualName"] if team["actualName"] else team["names"][0],
             "acronym": team["acronyms"][0] if team["acronyms"] else "",
             "logo": team["logos"][0] if team["logos"] else "",
-            "other_names": team["names"][1:] if len(team["names"]) > 1 else [],
+            "other_names": team["names"] if len(team["names"]) > 1 else [],
             "other_acronyms": team["acronyms"][1:] if len(team["acronyms"]) > 1 else [],
             "other_logos": team["logos"][1:] if len(team["logos"]) > 1 else []
         })
 
+    return equipas
+
+def list_equipas(request):
+    equipas = get_all_teams()
+    return JsonResponse({"equipas": equipas})
+
+def equipas_page(request):
+    """Render the teams page with all teams"""
+    equipas = get_all_teams()
     return render(request, "teams.html", {"equipas": equipas})
 
 
@@ -366,7 +379,7 @@ def filter_players(request):
                               nba:team ?teamId .
                 ?teamId nba:actualName ?teamName .
             """
-        filters.append(f'FILTER(STR(?team) = "{team_filter}")')
+        filters.append(f'FILTER(STR(?teamId) = "{team_filter}")')
 
     # Nationality filter
     if nationality_filter:
@@ -447,6 +460,8 @@ def filter_players(request):
             "teamName": result.get("teamName", {}).get("value", "")
         }
         jogadores.append(jogador)
+        
+    print("Filtered players:", len(jogadores))
     
     return JsonResponse({"jogadores": jogadores})
 

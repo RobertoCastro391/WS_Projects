@@ -474,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Load teams for filter dropdown
   function loadTeams() {
-    fetch('/equipas/')
+    fetch('/equipas/filter/')
       .then(response => response.json())
       .then(data => {
         const teams = data.equipas;
@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!addedTeamIds.has(team.id)) {
                 const option = document.createElement('option');
                 option.value = team.id;
-                option.textContent = team.nome;
+                option.textContent = team.name;
                 teamFilter.appendChild(option);
 
                 addedTeamIds.add(team.id);
