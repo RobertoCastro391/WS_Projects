@@ -1,12 +1,12 @@
+import json
+import re
 from collections import defaultdict
 from django.views.decorators.cache import cache_page
+import requests
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from SPARQLWrapper import JSON, SPARQLWrapper
-import requests
-import json
-import re
 
 
 def home_page(request):
@@ -119,14 +119,15 @@ def list_jogadores(request):
     
     return JsonResponse({"jogadores": jogadores})
 
-def list_equipas(request):
+def get_all_teams():
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?team ?name ?acronym ?logo WHERE {
+        SELECT DISTINCT ?team ?actualName ?name ?acronym ?logo WHERE {
             ?team a nba:Team ;
                   nba:name ?name .
+            OPTIONAL { ?team nba:actualName ?actualName . }
             OPTIONAL { ?team nba:acronym ?acronym . }
             OPTIONAL { ?team nba:logo ?logo . }
         }
@@ -137,6 +138,7 @@ def list_equipas(request):
 
     teams_dict = defaultdict(lambda: {
         "id": "",
+        "actualName": "",
         "names": [],
         "acronyms": [],
         "logos": []
@@ -146,6 +148,9 @@ def list_equipas(request):
         team_id = result["team"]["value"]
         team = teams_dict[team_id]
         team["id"] = team_id
+
+        if "actualName" in result:
+            team["actualName"] = result["actualName"]["value"]
 
         name = result.get("name", {}).get("value")
         acronym = result.get("acronym", {}).get("value")
@@ -162,14 +167,23 @@ def list_equipas(request):
     for team in teams_dict.values():
         equipas.append({
             "id": team["id"],
-            "name": team["names"][0] if team["names"] else "",
+            "name": team["actualName"] if team["actualName"] else team["names"][0],
             "acronym": team["acronyms"][0] if team["acronyms"] else "",
             "logo": team["logos"][0] if team["logos"] else "",
-            "other_names": team["names"][1:] if len(team["names"]) > 1 else [],
+            "other_names": team["names"] if len(team["names"]) > 1 else [],
             "other_acronyms": team["acronyms"][1:] if len(team["acronyms"]) > 1 else [],
             "other_logos": team["logos"][1:] if len(team["logos"]) > 1 else []
         })
 
+    return equipas
+
+def list_equipas(request):
+    equipas = get_all_teams()
+    return JsonResponse({"equipas": equipas})
+
+def equipas_page(request):
+    """Render the teams page with all teams"""
+    equipas = get_all_teams()
     return render(request, "teams.html", {"equipas": equipas})
 
 
@@ -188,7 +202,8 @@ def list_temporadas(request):
 
     temporadas = [result["season"]["value"] for result in results["results"]["bindings"]]
 
-    return JsonResponse({"temporadas": temporadas})
+    return render(request, "temporadas.html", {"temporadas": temporadas})
+    #return JsonResponse({"temporadas": temporadas})
 
 def list_participacoes(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -244,6 +259,213 @@ def stats_geral(request):
 
     return JsonResponse(stats)
 
+def players_page(request):
+    """
+    Render the players listing page with filters
+    """
+    return render(request, 'players.html')
+
+def get_player_countries(request):
+    """Get all available player countries for the filter dropdown"""
+    sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    sparql.setQuery("""
+        PREFIX nba: <http://example.org/nba/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        
+        SELECT DISTINCT ?bornIn WHERE {
+            ?player rdf:type nba:Player ;
+                    nba:bornIn ?bornIn .
+            FILTER(?bornIn != "")
+        }
+        ORDER BY ?bornIn
+    """)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
+    countries = []
+    for result in results["results"]["bindings"]:
+        country_name = result["bornIn"]["value"]
+        if country_name:  # Only add non-empty countries
+            countries.append({"name": country_name})
+    
+    return JsonResponse({"countries": countries})
+
+def get_player_schools(request):
+    """Get all available player schools for the filter dropdown"""
+    sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    sparql.setQuery("""
+        PREFIX nba: <http://example.org/nba/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        
+        SELECT DISTINCT ?school WHERE {
+            ?player rdf:type nba:Player ;
+                    nba:school ?school .
+            FILTER(?school != "")
+        }
+        ORDER BY ?school
+    """)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
+    schools = []
+    for result in results["results"]["bindings"]:
+        school_name = result["school"]["value"]
+        if school_name:  # Only add non-empty schools
+            schools.append({"name": school_name})
+    
+    return JsonResponse({"schools": schools})
+
+def filter_players(request):
+    """
+    API endpoint to filter players based on search criteria
+    """
+    # Get filter parameters from request
+    name_filter = request.GET.get('name', '')
+    position_filter = request.GET.get('position', '')
+    team_filter = request.GET.get('team', '')
+    nationality_filter = request.GET.get('nationality', '')
+    school_filter = request.GET.get('school', '')
+    draft_year_min = request.GET.get('draftYearMin', '')
+    draft_year_max = request.GET.get('draftYearMax', '')
+    height_min = request.GET.get('heightMin', '')
+    height_max = request.GET.get('heightMax', '')
+    
+    # Initialize SPARQL wrapper
+    sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    
+    # Build query with filters
+    query = """
+        PREFIX nba: <http://example.org/nba/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        
+        SELECT DISTINCT ?id ?nome ?position ?height ?weight ?draftYear ?birthdate ?bornIn ?school ?photo ?teamId ?teamName
+        WHERE {
+            ?id rdf:type nba:Player ;
+                nba:name ?nome ;
+                nba:position ?posObj .
+            ?posObj nba:name ?position .
+            
+            OPTIONAL { ?id nba:height ?height . }
+            OPTIONAL { ?id nba:weight ?weight . }
+            OPTIONAL { ?id nba:draftYear ?draftYear . }
+            OPTIONAL { ?id nba:birthdate ?birthdate . }
+            OPTIONAL { ?id nba:bornIn ?bornIn . }
+            OPTIONAL { ?id nba:school ?school . }
+            OPTIONAL { ?id nba:photo ?photo . }
+
+            OPTIONAL {
+                ?participation nba:player ?id ;
+                              nba:team ?teamId ;
+                              nba:season nba:season_2022 .
+                ?teamId nba:actualName ?teamName .
+            }
+    """
+    
+    # Add filters
+    filters = []
+    
+    # Name filter (case insensitive)
+    if name_filter:
+        filters.append(f'FILTER(REGEX(?nome, "{name_filter}", "i"))')
+    
+    # Position filter
+    if position_filter:
+        filters.append(f'FILTER(?position = "{position_filter}")')
+    
+    # Team filter
+    if team_filter:
+        if "?participation nba:player ?id" not in query:
+            query += """
+                ?participation nba:player ?id ;
+                              nba:team ?teamId .
+                ?teamId nba:actualName ?teamName .
+            """
+        filters.append(f'FILTER(STR(?teamId) = "{team_filter}")')
+
+    # Nationality filter
+    if nationality_filter:
+        filters.append(f'FILTER(?bornIn = "{nationality_filter}")')
+    
+    # School filter
+    if school_filter:
+        filters.append(f'FILTER(?school = "{school_filter}")')
+    
+    # Draft year range filter
+    if draft_year_min:
+        filters.append(f'FILTER(xsd:integer(?draftYear) >= {draft_year_min})')
+    
+    if draft_year_max:
+        filters.append(f'FILTER(xsd:integer(?draftYear) <= {draft_year_max})')
+    
+    # Height range filter (requires parsing the height format "6-9")
+    if height_min:
+        # Convert height format like "6-9" to total inches for comparison
+        feet, inches = height_min.split('-')
+        min_inches = int(feet) * 12 + int(inches)
+        
+        # Create a custom filter to compare the height string
+        height_filter = f"""
+            FILTER(
+                IF(REGEX(?height, "^[0-9]-[0-9]+$"),
+                    (xsd:integer(SUBSTR(?height, 1, 1)) * 12 + xsd:integer(SUBSTR(?height, 3))),
+                    0
+                ) >= {min_inches}
+            )
+        """
+        filters.append(height_filter)
+    
+    if height_max:
+        feet, inches = height_max.split('-')
+        max_inches = int(feet) * 12 + int(inches)
+        
+        height_filter = f"""
+            FILTER(
+                IF(REGEX(?height, "^[0-9]-[0-9]+$"),
+                    (xsd:integer(SUBSTR(?height, 1, 1)) * 12 + xsd:integer(SUBSTR(?height, 3))),
+                    1000
+                ) <= {max_inches}
+            )
+        """
+        filters.append(height_filter)
+    
+    # Add all filters to the query
+    for filter_stmt in filters:
+        query += f"    {filter_stmt}\n"
+    
+    # Close the query
+    query += """
+        }
+        ORDER BY ?nome
+    """
+    
+    # Execute the query
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
+    # Process results
+    jogadores = []
+    for result in results["results"]["bindings"]:
+        jogador = {
+            "id": result["id"]["value"],
+            "nome": result["nome"]["value"],
+            "position": result.get("position", {}).get("value", ""),
+            "height": result.get("height", {}).get("value", ""),
+            "weight": result.get("weight", {}).get("value", ""),
+            "draftYear": result.get("draftYear", {}).get("value", ""),
+            "birthdate": result.get("birthdate", {}).get("value", ""),
+            "bornIn": result.get("bornIn", {}).get("value", ""),
+            "school": result.get("school", {}).get("value", ""),
+            "photo": result.get("photo", {}).get("value", ""),
+            "teamId": result.get("teamId", {}).get("value", ""),
+            "teamName": result.get("teamName", {}).get("value", "")
+        }
+        jogadores.append(jogador)
+        
+    print("Filtered players:", len(jogadores))
+    
+    return JsonResponse({"jogadores": jogadores})
+
 def pagina_jogador(request, id):
     jogador_uri = f"http://example.org/nba/player_{id}"
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -254,18 +476,20 @@ def pagina_jogador(request, id):
 
         SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo WHERE {{
             ?player a nba:Player ;
-                    nba:name ?name ;
-                    nba:birthdate ?birthdate ;
-                    nba:bornIn ?bornIn ;
-                    nba:draftYear ?draftYear ;
-                    nba:position ?position ;
-                    nba:height ?height ;
-                    nba:weight ?weight ;
-                    nba:school ?school ;
-                    nba:photo ?photo .
+                    nba:name ?name .
             FILTER(STR(?player) = "{jogador_uri}")
+
+            OPTIONAL {{ ?player nba:birthdate ?birthdate. }}
+            OPTIONAL {{ ?player nba:bornIn ?bornIn. }}
+            OPTIONAL {{ ?player nba:draftYear ?draftYear. }}
+            OPTIONAL {{ ?player nba:position ?position. }}
+            OPTIONAL {{ ?player nba:height ?height. }}
+            OPTIONAL {{ ?player nba:weight ?weight. }}
+            OPTIONAL {{ ?player nba:school ?school. }}
+            OPTIONAL {{ ?player nba:photo ?photo. }}
         }}
     """)
+
     sparql.setReturnFormat(JSON)
     profile_data = sparql.query().convert()["results"]["bindings"]
 
@@ -385,7 +609,7 @@ def pagina_equipa(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?player ?playerName ?season ?seasonType WHERE {{
+        SELECT DISTINCT ?player ?playerName ?playerPhoto ?season ?seasonType WHERE {{
             ?p nba:team ?team ;
                nba:player ?player ;
                nba:season ?season ;
@@ -404,6 +628,7 @@ def pagina_equipa(request, id):
         season = p["season"]["value"]
         if season not in seasons:
             seasons[season] = {
+                "seasonName": season.split("_")[-1],  # ex: season_2001 → 2001
                 "seasonType": p["seasonType"]["value"],
                 "players": []
             }
@@ -473,14 +698,25 @@ def pagina_temporada(request, ano):
         "teams": []
     }
 
+    total_participations = 0
+
     for team_uri, data in teams.items():
+        team_participations = len(data["players"])
+        total_participations += team_participations
+        has_playoff = any("Playoffs" in p["seasonType"] for p in data["players"])
+
         season_data["teams"].append({
             "team": team_uri,
             "teamName": data["teamName"],
-            "players": data["players"]
+            "players": data["players"],
+            "participations": team_participations,
+            "has_playoffs": has_playoff
         })
 
-    return JsonResponse(season_data)
+    season_data["total_participations"] = total_participations
+
+    return render(request, "temporada.html", {"season": season_data})
+    #return JsonResponse(season_data)
 
 def list_arenas(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -781,7 +1017,7 @@ def comparar_jogadores(request):
         # Dados do jogador
         sparql.setQuery(f"""
             PREFIX nba: <http://example.org/nba/>
-            SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo WHERE {{
+            SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?positionName ?height ?weight ?school ?photo WHERE {{
                 ?player a nba:Player ;
                         nba:name ?name ;
                         nba:birthdate ?birthdate ;
@@ -792,6 +1028,7 @@ def comparar_jogadores(request):
                         nba:weight ?weight ;
                         nba:school ?school ;
                         nba:photo ?photo .
+                ?position nba:name ?positionName .
                 FILTER(STR(?player) = "{jogador_uri}")
             }}
         """)
@@ -829,10 +1066,15 @@ def comparar_jogadores(request):
                 "seasonType": p["seasonType"]["value"]
             })
 
+        num_teams = len(set(p["team"]["value"] for p in participacoes_data))
+        num_seasons = len(set(p["season"]["value"] for p in participacoes_data))
+
         return {
             "jogador": jogador_uri,
             **dados,
-            "participacoes": participacoes
+            "participacoes": participacoes,
+            "totalTeams": num_teams,
+            "totalSeasons": num_seasons
         }
 
     jogador1 = get_player_data(player1_id)
@@ -845,6 +1087,32 @@ def comparar_jogadores(request):
         "player1": jogador1,
         "player2": jogador2
     })
+
+def comparar_jogadores_template(request):
+
+    sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    sparql.setQuery("""
+        PREFIX nba: <http://example.org/nba/>
+        PREFIX schema: <http://www.w3.org/2000/01/rdf-schema#>
+
+        SELECT DISTINCT ?player ?playerName WHERE {
+            ?p nba:player ?player .
+            ?player nba:name ?playerName .
+        }
+        ORDER BY ?playerName
+    """)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
+    jogadores = [
+        {
+            "id": result["player"]["value"],
+            "nome": result["playerName"]["value"]
+        }
+        for result in results["results"]["bindings"]
+    ]
+
+    return render(request, "compare.html", {"jogadores": jogadores})
 
 def get_all_seasons():
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)

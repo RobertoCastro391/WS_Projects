@@ -1,0 +1,884 @@
+{% extends "layout.html" %}
+
+{% block title %}NBA Players{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Modern Player Card Styling */
+  .player-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(to bottom, #ffffff, #f9fafb);
+  }
+  
+  .player-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .player-img-container {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f0f4ff, #e0e7ff);
+  }
+  
+  .player-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+  
+  .player-card:hover .player-img {
+    transform: scale(1.05);
+  }
+  
+  .position-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    background-color: #17408B;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nationality-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    background-color: #C9082A;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .player-info {
+    padding: 1.25rem;
+    background-color: white;
+  }
+  
+  .player-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+  }
+  
+  .player-team {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+  }
+  
+  .player-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #718096;
+  }
+  
+  .view-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.25rem;
+    background-color: #17408B;
+    color: white;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    margin-top: 0.5rem;
+    text-decoration: none;
+  }
+  
+  .view-profile-btn:hover {
+    background-color: #0f2b5e;
+    transform: translateX(4px);
+    color: white;
+  }
+  
+  .view-profile-btn i {
+    margin-left: 0.5rem;
+    transition: transform 0.2s ease;
+  }
+  
+  .view-profile-btn:hover i {
+    transform: translateX(3px);
+  }
+  
+  .card-footer {
+    padding: 0.75rem 1.25rem 1.25rem;
+    background-color: white;
+    border-top: none;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .filter-section {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .filter-header {
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .pagination-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 2rem;
+  }
+  
+  .position-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #17408B;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  #players-container {
+    min-height: 400px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <h1 class="mb-2">⛹️ NBA Players</h1>
+    </div>
+  </div>
+  
+  <!-- Filters Section -->
+<div class="filter-section" data-aos="fade-down">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="filter-header text-dark m-0">🔍 Filter Players</h4>
+      <div>
+        <button type="button" id="apply-filters" class="btn btn-primary">
+          <i class="bi bi-funnel-fill me-1"></i>Apply Filters
+        </button>
+        <button type="button" id="reset-filters" class="btn btn-outline-secondary ms-2">
+          <i class="bi bi-x-circle me-1"></i>Reset
+        </button>
+      </div>
+    </div>
+    
+    <form id="filter-form">
+      <!-- Basic Filters Row -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text bg-primary text-white">
+              <i class="bi bi-person-circle"></i>
+            </span>
+            <input type="text" class="form-control" id="name-filter" placeholder="Search by player name...">
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text bg-primary text-white">
+              <i class="bi bi-pin-map-fill"></i>
+            </span>
+            <select class="form-select" id="position-filter">
+              <option value="">All Positions</option>
+              <option value="Forward">Forward (F)</option>
+              <option value="Center">Center (C)</option>
+              <option value="Guard">Guard (G)</option>
+              <option value="Forward-Center">Forward-Center (F-C)</option>
+              <option value="Guard-Forward">Guard-Forward (G-F)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text bg-primary text-white">
+              <i class="bi bi-building"></i>
+            </span>
+            <select class="form-select" id="team-filter">
+              <option value="">All Teams</option>
+              <!-- Teams will be loaded dynamically -->
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Origin Filters Row -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text bg-primary text-white">
+              <i class="bi bi-globe"></i>
+            </span>
+            <select class="form-select" id="nationality-filter">
+              <option value="">All Countries</option>
+              <!-- Countries will be loaded dynamically -->
+            </select>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text bg-primary text-white">
+              <i class="bi bi-mortarboard-fill"></i>
+            </span>
+            <select class="form-select" id="school-filter">
+              <option value="">All Schools/Colleges</option>
+              <!-- Schools will be loaded dynamically -->
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Advanced Filters - initially collapsed -->
+      <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-header bg-light p-2" id="advancedFiltersHeader" data-bs-toggle="collapse" 
+             data-bs-target="#advancedFiltersCollapse" aria-expanded="false" aria-controls="advancedFiltersCollapse" 
+             style="cursor: pointer;">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-dark">Advanced Filters</span>
+            <i class="bi bi-chevron-down"></i>
+          </div>
+        </div>
+        
+        <div class="collapse" id="advancedFiltersCollapse">
+          <div class="card-body">
+            <div class="row g-3">
+              <!-- Draft Year Range -->
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold mb-2">Draft Year Range</label>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="input-group">
+                      <span class="input-group-text">From</span>
+                      <input type="number" class="form-control" id="draft-year-min" min="1940" max="2023">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group">
+                      <span class="input-group-text">To</span>
+                      <input type="number" class="form-control" id="draft-year-max" min="1940" max="2023">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Height Range -->
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold mb-2">Height (ft-in)</label>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="input-group">
+                      <span class="input-group-text">Min</span>
+                      <input type="text" class="form-control" id="height-min" placeholder="e.g. 6-0">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group">
+                      <span class="input-group-text">Max</span>
+                      <input type="text" class="form-control" id="height-max" placeholder="e.g. 7-0">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <!-- Results Section -->
+  <div class="mb-4" id="results-summary" style="display: none;">
+    <div class="bg-white text-dark rounded p-3">
+      <span id="result-count" class="fs-5">0</span> players found
+      <span id="filter-tags" class="ms-3"></span>
+    </div>
+  </div>
+  
+  <!-- Players Grid -->
+  <div id="players-container">
+    <div class="row g-4" id="players-grid">
+      <!-- Players will be loaded here -->
+    </div>
+    <div id="loading" class="text-center" style="display: none;">
+      <div class="loader"></div>
+      <p class="text-white">Loading players...</p>
+    </div>
+    <div id="no-results" class="text-center p-5" style="display: none;">
+      <h4 class="text-white">No players found matching your filters</h4>
+      <p class="text-white">Try adjusting your search criteria</p>
+    </div>
+  </div>
+  
+  <!-- Pagination -->
+  <div class="pagination-container" id="pagination" style="display: none;">
+    <nav aria-label="Players pagination">
+      <ul class="pagination justify-content-center mb-0">
+        <!-- Pagination will be dynamically generated -->
+      </ul>
+    </nav>
+  </div>
+</div>
+
+  <!-- Player Card Template -->
+  {% comment %} <template id="player-card-template">
+    <div class="col-md-3 mb-4">
+      <div class="player-card shadow h-100">
+        <img src="" alt="" class="player-img">
+        <div class="player-info position-relative">
+          <span class="position-badge bg-primary text-white"></span>
+          <h5 class="card-title player-name text-dark"></h5>
+          <p class="card-text text-secondary mb-1">
+            <small class="player-height"></small> • <small class="player-weight"></small>
+          </p>
+          <p class="card-text text-muted mb-1">
+            <small><i class="bi bi-book"></i> <span class="player-school"></span></small>
+          </p>
+          <p class="card-text text-muted mb-1">
+            <small class="player-nationality"></small>
+          </p>
+          <p class="card-text text-muted">
+            <small>Draft: <span class="player-draft"></span></small>
+          </p>
+          <a href="#" class="btn btn-sm btn-outline-primary view-player">View Profile</a>
+        </div>
+      </div>
+    </div>
+  </template> {% endcomment %}
+  <template id="player-card-template">
+    <div class="col-md-3 mb-4">
+      <div class="player-card">
+        <div class="player-img-container">
+          <img src="/placeholder.svg" alt="" class="player-img">
+          <span class="position-badge"></span>
+          <span class="nationality-badge player-nationality"></span>
+        </div>
+        <div class="player-info">
+          <h5 class="player-name"></h5>
+          <p class="player-team"></p>
+          <div class="player-stats">
+            <div>
+              <span class="player-height"></span> | <span class="player-weight"></span>
+            </div>
+            <div>
+              <span class="player-draft"></span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="view-profile-btn">
+            View Profile <i class="bi bi-chevron-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </template>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const playersGrid = document.getElementById('players-grid');
+  const playerCardTemplate = document.getElementById('player-card-template');
+  const loadingIndicator = document.getElementById('loading');
+  const noResultsMessage = document.getElementById('no-results');
+  const resultCount = document.getElementById('result-count');
+  const resultsSummary = document.getElementById('results-summary');
+  const pagination = document.getElementById('pagination');
+  const filterTags = document.getElementById('filter-tags');
+  
+  // Filter elements
+  const nameFilter = document.getElementById('name-filter');
+  const positionFilter = document.getElementById('position-filter');
+  const teamFilter = document.getElementById('team-filter');
+  const draftYearMin = document.getElementById('draft-year-min');
+  const draftYearMax = document.getElementById('draft-year-max');
+  const heightMin = document.getElementById('height-min');
+  const heightMax = document.getElementById('height-max');
+  const applyFiltersBtn = document.getElementById('apply-filters');
+  const resetFiltersBtn = document.getElementById('reset-filters');
+  const nationalityFilter = document.getElementById('nationality-filter');
+  const schoolFilter = document.getElementById('school-filter');
+  
+  // Pagination variables
+  let currentPage = 1;
+  const playersPerPage = 20;
+  let allPlayers = [];
+  
+  // Load teams for the filter dropdown
+  loadTeams();
+  
+  // Initial load
+  loadPlayers();
+
+  loadCountries();
+  loadSchools();
+  
+  // Event listeners
+  applyFiltersBtn.addEventListener('click', applyFilters);
+  resetFiltersBtn.addEventListener('click', resetFilters);
+  nameFilter.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      applyFilters();
+    }
+  });
+
+  // Toggle advanced filters icon
+  document.getElementById('advancedFiltersHeader').addEventListener('click', function() {
+    const icon = this.querySelector('.bi');
+    if (icon.classList.contains('bi-chevron-down')) {
+        icon.classList.replace('bi-chevron-down', 'bi-chevron-up');
+    } else {
+    icon.classList.replace('bi-chevron-up', 'bi-chevron-down');
+    }
+  });
+  
+  // Load teams for filter dropdown
+  function loadTeams() {
+    fetch('/equipas/filter/')
+      .then(response => response.json())
+      .then(data => {
+        const teams = data.equipas;
+        const addedTeamIds = new Set();
+        teams.forEach(team => {
+            if (!addedTeamIds.has(team.id)) {
+                const option = document.createElement('option');
+                option.value = team.id;
+                option.textContent = team.name;
+                teamFilter.appendChild(option);
+
+                addedTeamIds.add(team.id);
+            }
+        });
+
+        const options = Array.from(teamFilter.options).slice(1); // Skip the "All Teams" option
+        options.sort((a, b) => a.text.localeCompare(b.text));
+        
+        // Clear and rebuild the dropdown with sorted options
+        while (teamFilter.options.length > 1) {
+            teamFilter.remove(1); // Keep the first "All Teams" option
+        }
+        
+        options.forEach(option => teamFilter.add(option));
+      })
+      .catch(error => console.error('Error loading teams:', error));
+  }
+  
+  // Load all players
+  function loadPlayers() {
+    showLoading();
+    
+    // Get the filter parameters
+    const filters = getFilterParams();
+    
+    // Convert filters to query string
+    const queryParams = new URLSearchParams();
+    for (const key in filters) {
+      if (filters[key]) {
+        queryParams.append(key, filters[key]);
+      }
+    }
+    
+    fetch(`/jogadores/filter/?${queryParams.toString()}`)
+      .then(response => response.json())
+      .then(data => {
+        allPlayers = data.jogadores;
+        updateResultsCount(allPlayers.length);
+        displayPlayers();
+        hideLoading();
+      })
+      .catch(error => {
+        console.error('Error loading players:', error);
+        hideLoading();
+        showNoResults();
+      });
+  }
+
+  function loadCountries() {
+    fetch('/jogadores/countries/')
+      .then(response => response.json())
+      .then(data => {
+        const countries = data.countries;
+        const addedCountries = new Set();
+        
+        countries.forEach(country => {
+          if (!addedCountries.has(country.name)) {
+            const option = document.createElement('option');
+            option.value = country.name;
+            option.textContent = country.name;
+            nationalityFilter.appendChild(option);
+            addedCountries.add(country.name);
+          }
+        });
+        
+        // Sort countries alphabetically
+        const options = Array.from(nationalityFilter.options).slice(1); // Skip the "All Countries" option
+        options.sort((a, b) => a.text.replace(/^\S+\s/, '').localeCompare(b.text.replace(/^\S+\s/, ''))); // Sort by country name (removing emoji)
+        
+        // Clear and rebuild dropdown
+        while (nationalityFilter.options.length > 1) {
+          nationalityFilter.remove(1); // Keep first option
+        }
+        
+        options.forEach(option => nationalityFilter.add(option));
+
+        console.log('Countries loaded:', countries);
+      })
+      .catch(error => console.error('Error loading countries:', error));
+  }
+
+  function loadSchools() {
+    fetch('/jogadores/schools/')
+      .then(response => response.json())
+      .then(data => {
+        const schools = data.schools;
+        const addedSchools = new Set();
+        
+        schools.forEach(school => {
+          if (!addedSchools.has(school.name) && school.name) { // Only add if not empty
+            const option = document.createElement('option');
+            option.value = school.name;
+            option.textContent = school.name;
+            schoolFilter.appendChild(option);
+            addedSchools.add(school.name);
+          }
+        });
+        
+        // Sort schools alphabetically
+        const options = Array.from(schoolFilter.options).slice(1); // Skip the "All Schools" option
+        options.sort((a, b) => a.text.localeCompare(b.text));
+        
+        // Clear and rebuild dropdown
+        while (schoolFilter.options.length > 1) {
+          schoolFilter.remove(1); // Keep first option
+        }
+        
+        options.forEach(option => schoolFilter.add(option));
+      })
+      .catch(error => console.error('Error loading schools:', error));
+  }
+  
+  // Display players with pagination
+  function displayPlayers() {
+    // Clear the grid
+    playersGrid.innerHTML = '';
+    
+    if (allPlayers.length === 0) {
+      showNoResults();
+      return;
+    }
+    
+    // Hide no results message
+    noResultsMessage.style.display = 'none';
+    
+    // Calculate pagination
+    const totalPages = Math.ceil(allPlayers.length / playersPerPage);
+    const startIndex = (currentPage - 1) * playersPerPage;
+    let endIndex = startIndex + playersPerPage;
+    if (endIndex > allPlayers.length) {
+      endIndex = allPlayers.length;
+    }
+    
+    // Display current page of players
+    const currentPlayers = allPlayers.slice(startIndex, endIndex);
+    
+    currentPlayers.forEach(player => {
+        const playerCard = playerCardTemplate.content.cloneNode(true);
+        
+        // Modified image loading with error handling
+        const playerImg = playerCard.querySelector('.player-img');
+        playerImg.alt = player.nome;
+
+        const placeholderPath = '/app/static/img/player-placeholder.png';
+
+        playerImg.src = placeholderPath;
+        
+        // Try to load the actual image, but handle errors
+        if (player.photo) {
+          // Create a new image to test loading
+          const testImg = new Image();
+          
+          // If image loads successfully, use it
+          testImg.onload = function() {
+            if (this.width < 50 || this.height < 50) {
+                console.log('Image too small:', player.photo, `(${this.width}x${this.height})`);
+            } 
+            else {
+                playerImg.src = player.photo;
+            }
+          };
+          
+          // If image fails to load, keep using the placeholder
+          testImg.onerror = function() {
+            console.log('Failed to load image:', player.photo);
+          };
+          
+          // Start loading the image
+          testImg.src = player.photo;
+        }
+        
+        // Set up the player card with the new design
+        playerCard.querySelector('.position-badge').textContent = player.position;
+        playerCard.querySelector('.player-name').textContent = player.nome;
+        
+        // Add team name if available
+        const teamElement = playerCard.querySelector('.player-team');
+        if (player.teamName) {
+          teamElement.textContent = player.teamName;
+        } else {
+          teamElement.innerHTML = '&nbsp;';
+        }
+        
+        playerCard.querySelector('.player-height').textContent = player.height || 'N/A';
+        playerCard.querySelector('.player-weight').textContent = player.weight ? player.weight + ' lbs' : 'N/A';
+        
+        // Nationality with flag emoji
+        playerCard.querySelector('.player-nationality').textContent = player.bornIn || 'N/A';
+  
+        playerCard.querySelector('.player-draft').textContent = player.draftYear ? 'Draft: ' + player.draftYear : 'Undrafted';
+        
+        // Set link to player profile
+        const viewProfileLink = playerCard.querySelector('.view-profile-btn');
+        const playerId = player.id.split('player_')[1];
+        viewProfileLink.href = `/jogador/${playerId}/`;
+        
+        // Remove the stretched-link class to fix the navigation issue
+        viewProfileLink.classList.remove('stretched-link');
+        
+        playersGrid.appendChild(playerCard);
+    });
+    
+    // Update pagination
+    updatePagination(totalPages);
+  }
+  
+  // Update pagination controls
+  function updatePagination(totalPages) {
+    if (totalPages <= 1) {
+      pagination.style.display = 'none';
+      return;
+    }
+    
+    pagination.style.display = 'block';
+    const paginationList = pagination.querySelector('ul');
+    paginationList.innerHTML = '';
+    
+    // Previous button
+    const prevItem = document.createElement('li');
+    prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    const prevLink = document.createElement('a');
+    prevLink.className = 'page-link';
+    prevLink.href = '#';
+    prevLink.textContent = 'Previous';
+    prevLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (currentPage > 1) {
+        currentPage--;
+        displayPlayers();
+        window.scrollTo(0, 0);
+      }
+    });
+    prevItem.appendChild(prevLink);
+    paginationList.appendChild(prevItem);
+    
+    // Page numbers
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    if (endPage - startPage < 4) {
+      startPage = Math.max(1, endPage - 4);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      const pageItem = document.createElement('li');
+      pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      const pageLink = document.createElement('a');
+      pageLink.className = 'page-link';
+      pageLink.href = '#';
+      pageLink.textContent = i;
+      pageLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentPage = i;
+        displayPlayers();
+        window.scrollTo(0, 0);
+      });
+      pageItem.appendChild(pageLink);
+      paginationList.appendChild(pageItem);
+    }
+    
+    // Next button
+    const nextItem = document.createElement('li');
+    nextItem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+    const nextLink = document.createElement('a');
+    nextLink.className = 'page-link';
+    nextLink.href = '#';
+    nextLink.textContent = 'Next';
+    nextLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (currentPage < totalPages) {
+        currentPage++;
+        displayPlayers();
+        window.scrollTo(0, 0);
+      }
+    });
+    nextItem.appendChild(nextLink);
+    paginationList.appendChild(nextItem);
+  }
+  
+  // Get filter parameters
+  function getFilterParams() {
+    return {
+      name: nameFilter.value,
+      position: positionFilter.value,
+      team: teamFilter.value,
+      nationality: nationalityFilter.value,
+      school: schoolFilter.value,
+      draftYearMin: draftYearMin.value,
+      draftYearMax: draftYearMax.value,
+      heightMin: heightMin.value,
+      heightMax: heightMax.value
+    };
+  }
+  
+  // Apply filters and reload players
+  function applyFilters() {
+    currentPage = 1;
+    loadPlayers();
+    updateFilterTags();
+  }
+  
+  // Reset all filters
+  function resetFilters() {
+    nameFilter.value = '';
+    positionFilter.value = '';
+    teamFilter.value = '';
+    nationalityFilter.value = '';
+    schoolFilter.value = '';
+    draftYearMin.value = '';
+    draftYearMax.value = '';
+    heightMin.value = '';
+    heightMax.value = '';
+    
+    filterTags.innerHTML = '';
+    currentPage = 1;
+    loadPlayers();
+  }
+  
+  // Update filter tags display
+  function updateFilterTags() {
+    filterTags.innerHTML = '';
+    
+    const filters = getFilterParams();
+    let hasFilters = false;
+    
+    for (const key in filters) {
+      if (filters[key]) {
+        hasFilters = true;
+        const tag = document.createElement('span');
+        tag.className = 'badge bg-primary me-2';
+        
+        let label = key;
+        switch(key) {
+          case 'name':
+            label = `Name: ${filters[key]}`;
+            break;
+          case 'position':
+            label = `Position: ${filters[key]}`;
+            break;
+          case 'team':
+            const teamName = teamFilter.options[teamFilter.selectedIndex].text;
+            label = `Team: ${teamName}`;
+            break;
+          case 'nationality':
+            label = `Country: ${filters[key]}`;
+            break;
+          case 'school':
+            label = `School: ${filters[key]}`;
+            break;
+          case 'draftYearMin':
+            label = `Draft from: ${filters[key]}`;
+            break;
+          case 'draftYearMax':
+            label = `Draft to: ${filters[key]}`;
+            break;
+          case 'heightMin':
+            label = `Min height: ${filters[key]}`;
+            break;
+          case 'heightMax':
+            label = `Max height: ${filters[key]}`;
+            break;
+        }
+        
+        tag.textContent = label;
+        filterTags.appendChild(tag);
+      }
+    }
+    
+    resultsSummary.style.display = hasFilters ? 'block' : 'none';
+  }
+  
+  // Update results count
+  function updateResultsCount(count) {
+    resultCount.textContent = count;
+    resultsSummary.style.display = 'block';
+  }
+  
+  // Show loading indicator
+  function showLoading() {
+    loadingIndicator.style.display = 'block';
+    playersGrid.innerHTML = '';
+    noResultsMessage.style.display = 'none';
+  }
+  
+  // Hide loading indicator
+  function hideLoading() {
+    loadingIndicator.style.display = 'none';
+  }
+  
+  // Show no results message
+  function showNoResults() {
+    noResultsMessage.style.display = 'block';
+    pagination.style.display = 'none';
+  }
+});
+</script>
+{% endblock %}
