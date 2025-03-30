@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from SPARQLWrapper import JSON, SPARQLWrapper
 import requests
+import json
+import re
 
 
 def home_page(request):
@@ -891,16 +893,14 @@ def rede_jogadores(request):
         "edges": edges
     })
 
-from SPARQLWrapper import SPARQLWrapper, JSON
-from django.conf import settings
-from django.http import JsonResponse
-from collections import defaultdict
-import re
+
+
+def extract_id(uri):
+    return uri.split("_")[-1] if "_" in uri else uri
 
 def stats(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
     sparql.setReturnFormat(JSON)
-
     stats_data = {}
 
     # 1. Participações por temporada
@@ -913,35 +913,47 @@ def stats(request):
     """)
     result = sparql.query().convert()["results"]["bindings"]
     stats_data["participacoes_por_temporada"] = [
-        {"season": r["season"]["value"], "total": int(r["total"]["value"])}
+        {"season": extract_id(r["season"]["value"]), "total": int(r["total"]["value"])}
         for r in result
     ]
 
-    # 2. Número de jogadores por equipa
+    # 2. Jogadores por equipa
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
-        SELECT ?team (COUNT(DISTINCT ?player) AS ?total) WHERE {
+        SELECT ?team_id ?team_name (COUNT(DISTINCT ?player) AS ?total) WHERE {
             ?p nba:team ?team ;
                nba:player ?player .
-        } GROUP BY ?team
+            ?team nba:name ?team_name .
+            BIND(STRAFTER(STR(?team), "_") AS ?team_id)
+        } GROUP BY ?team_id ?team_name
     """)
     result = sparql.query().convert()["results"]["bindings"]
-    stats_data["jogadores_por_equipa"] = [
-        {"team": r["team"]["value"], "total": int(r["total"]["value"])}
-        for r in result
-    ]
+    seen_teams = {}
+    for r in result:
+        team_id = r["team_id"]["value"]
+        name = r["team_name"]["value"]
+        total = int(r["total"]["value"])
+        # Se já vimos o ID, não sobrescrevemos o nome
+        if team_id not in seen_teams:
+            seen_teams[team_id] = {"team": team_id, "name": name, "total": total}
+    stats_data["jogadores_por_equipa"] = list(seen_teams.values())
 
     # 3. Jogadores com mais temporadas
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
-        SELECT ?player (COUNT(DISTINCT ?season) AS ?total) WHERE {
+        SELECT ?player ?name (COUNT(DISTINCT ?season) AS ?total) WHERE {
             ?p nba:player ?player ;
                nba:season ?season .
-        } GROUP BY ?player ORDER BY DESC(?total) LIMIT 10
+            ?player nba:name ?name .
+        } GROUP BY ?player ?name ORDER BY DESC(?total) LIMIT 10
     """)
     result = sparql.query().convert()["results"]["bindings"]
     stats_data["jogadores_mais_temporadas"] = [
-        {"player": r["player"]["value"], "total": int(r["total"]["value"])}
+        {
+            "player": extract_id(r["player"]["value"]),
+            "name": r["name"]["value"],
+            "total": int(r["total"]["value"])
+        }
         for r in result
     ]
 
@@ -955,7 +967,10 @@ def stats(request):
     """)
     result = sparql.query().convert()["results"]["bindings"]
     stats_data["distribuicao_posicoes"] = [
-        {"position": r["position"]["value"], "total": int(r["total"]["value"])}
+        {
+            "position": extract_id(r["position"]["value"]),
+            "total": int(r["total"]["value"])
+        }
         for r in result
     ]
 
@@ -971,16 +986,23 @@ def stats(request):
     result = sparql.query().convert()["results"]["bindings"]
     altura_por_posicao = defaultdict(list)
     for r in result:
-        pos = r["position"]["value"]
+        pos = extract_id(r["position"]["value"])
         altura = r["height"]["value"]
+        cm = None
         match = re.match(r"(\d+)-(\d+)", altura)
         if match:
             feet, inches = int(match.group(1)), int(match.group(2))
             cm = round((feet * 12 + inches) * 2.54, 1)
+        else:
+            try:
+                cm = float(altura)
+            except ValueError:
+                continue
+        if cm:
             altura_por_posicao[pos].append(cm)
     stats_data["altura_media_por_posicao"] = [
-        {"position": pos, "media_cm": round(sum(val)/len(val), 1)}
-        for pos, val in altura_por_posicao.items()
+        {"position": pos, "media_cm": round(sum(vals)/len(vals), 1)}
+        for pos, vals in altura_por_posicao.items()
     ]
 
     # 6. Peso médio por posição
@@ -995,7 +1017,7 @@ def stats(request):
     result = sparql.query().convert()["results"]["bindings"]
     peso_por_posicao = defaultdict(list)
     for r in result:
-        pos = r["position"]["value"]
+        pos = extract_id(r["position"]["value"])
         try:
             peso = int(r["weight"]["value"])
             peso_por_posicao[pos].append(peso)
@@ -1006,7 +1028,7 @@ def stats(request):
         for pos, val in peso_por_posicao.items()
     ]
 
-    # 7. Distribuição por ano de nascimento
+    # 7. Jogadores por ano de nascimento
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?birthdate WHERE {
@@ -1018,9 +1040,13 @@ def stats(request):
     anos = defaultdict(int)
     for r in result:
         year = r["birthdate"]["value"][:4]
-        anos[year] += 1
+        if year.isdigit():
+            anos[year] += 1
     stats_data["jogadores_por_ano_nascimento"] = [
         {"year": year, "total": total} for year, total in sorted(anos.items())
     ]
 
-    return JsonResponse(stats_data)
+    return render(request, "stats.html", {
+        "stats_json": json.dumps(stats_data),
+        "stats_data": stats_data
+    })
