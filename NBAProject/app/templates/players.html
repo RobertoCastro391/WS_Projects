@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (player.teamName) {
           teamElement.textContent = player.teamName;
         } else {
-          teamElement.style.display = 'none';
+          teamElement.innerHTML = '&nbsp;';
         }
         
         playerCard.querySelector('.player-height').textContent = player.height || 'N/A';
