@@ -14,9 +14,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from app import views
 from django.contrib import admin
 from django.urls import path
-from app import views
 
 urlpatterns = [
 
@@ -32,6 +32,12 @@ urlpatterns = [
     path('stats/geral/', views.stats_geral),  # Contagem global de jogadores, equipas, temporadas
 
     #Páginas de detalhe básicas
+
+    # Jogadores
+    path('jogadores/page/', views.players_page, name='players_page'),
+    path('jogadores/filter/', views.filter_players, name='filter_players'),
+    path('jogadores/countries/', views.get_player_countries, name='player_countries'),
+    path('jogadores/schools/', views.get_player_schools, name='player_schools'),
     path('jogador/<str:id>/', views.pagina_jogador),  # Página de jogador com participações
     #este dqui é giro se o complementarmos com o timelinde dos jogadores bem como com o grafo tudo o que tiver nas intermedias e for jogador 
 
