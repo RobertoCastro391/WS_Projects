@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+{% block title %}Arenas Map{% endblock %}
+
+{% block content %}
+<div class="position-relative mb-3 py-2">
+  <a href="{% url 'list_arenas' %}" class="custom-map-button position-absolute start-0 top-45 translate-middle-y ms-3">
+    ← Back to Arenas
+  </a>
+  <h2 class="text-center m-0">🗺️ Arenas Map</h2>
+</div>
+
+<div id="map" style="height: 600px;"></div>
+{% endblock %}
+
+
+
+{% block extra_head %}
+<style>
+.custom-map-button {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 14px;
+  background-color: #C9082A; /* vermelho NBA */
+  color: #fff !important; /* texto branco */
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none !important;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.custom-map-button:hover {
+  background-color: #a10621;
+  transform: scale(1.05);
+  color: #fff;
+}
+
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Leaflet CSS + JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const map = L.map("map").setView([39.5, -98.35], 4);
+
+  const redIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+    iconSize:     [25, 41],
+    iconAnchor:   [12, 41],
+    popupAnchor:  [1, -34],
+    shadowSize:   [41, 41]
+});
+
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  fetch("/mapa/arenas/")
+    .then(res => res.json())
+    .then(data => {
+      data.arenas.forEach(arena => {
+        const lat = parseFloat(arena.latitude);
+        const lng = parseFloat(arena.longitude);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          const marker = L.marker([lat, lng], { icon: redIcon }).addTo(map);
+
+          const arenaId = arena.id.split("arena_").pop(); 
+          const popupHtml = `
+            <strong>${arena.name}</strong><br>
+            ${arena.photo ? `<img src="${arena.photo}" style="max-width:150px; margin-top: 5px;"><br>` : ""}
+            <a href="/arena/${arenaId}" class="custom-map-button">See Details</a>
+          `;
+
+          marker.bindPopup(popupHtml);
+        }
+      });
+    })
+    .catch(error => console.error("Erro ao carregar arenas:", error));
+});
+</script>
+{% endblock %}

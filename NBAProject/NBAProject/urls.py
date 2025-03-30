@@ -46,9 +46,10 @@ urlpatterns = [
     path('temporada/<str:ano>/', views.pagina_temporada),  # Página de temporada com equipas e jogadores
 
     #Arenas
-    path('arenas/', views.list_arenas),  # Lista todas as arenas
+    path('arenas/', views.list_arenas, name="list_arenas"),  # Lista todas as arenas
     path('arena/<str:id>/', views.pagina_arena),  # Detalhe de uma arena
-    path('mapa/arenas/', views.mapa_arenas),  # Mapa interativo com arenas
+    path('mapa/arenas/', views.mapa_arenas, name="mapa_arenas"),  # Mapa interativo com arenas
+    path('mapa/arenas/view/', views.page_mapa_arenas, name='mapa_arenas_view'),
 
     #Funcionalidades Intermediárias
     path('jogador/<str:id>/timeline/', views.timeline_jogador),  # Linha do tempo da carreira do jogador
