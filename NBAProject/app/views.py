@@ -202,7 +202,8 @@ def list_temporadas(request):
 
     temporadas = [result["season"]["value"] for result in results["results"]["bindings"]]
 
-    return JsonResponse({"temporadas": temporadas})
+    return render(request, "temporadas.html", {"temporadas": temporadas})
+    #return JsonResponse({"temporadas": temporadas})
 
 def list_participacoes(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -697,14 +698,25 @@ def pagina_temporada(request, ano):
         "teams": []
     }
 
+    total_participations = 0
+
     for team_uri, data in teams.items():
+        team_participations = len(data["players"])
+        total_participations += team_participations
+        has_playoff = any("Playoffs" in p["seasonType"] for p in data["players"])
+
         season_data["teams"].append({
             "team": team_uri,
             "teamName": data["teamName"],
-            "players": data["players"]
+            "players": data["players"],
+            "participations": team_participations,
+            "has_playoffs": has_playoff
         })
 
-    return JsonResponse(season_data)
+    season_data["total_participations"] = total_participations
+
+    return render(request, "temporada.html", {"season": season_data})
+    #return JsonResponse(season_data)
 
 def list_arenas(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
