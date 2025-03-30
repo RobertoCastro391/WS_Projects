@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block title %}NBA | {{ team.names.0 }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .team-header {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 2rem;
+    color: #141414;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .team-logo {
+    max-height: 100px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+  }
+
+  .season-section {
+    margin-bottom: 2rem;
+  }
+
+  .player-badge {
+    margin: 0.2rem;
+    font-size: 0.9rem;
+  }
+
+  .history-section {
+    margin-top: 2rem;
+    font-size: 0.95rem;
+  }
+
+  .history-section ul {
+    padding-left: 1.2rem;
+  }
+
+  .logo-thumb {
+    height: 50px;
+    margin-right: 10px;
+    background: #f2f2f2;
+    padding: 4px;
+    border-radius: 8px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="team-header text-center">
+  {% if team.logo %}
+    <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo">
+  {% endif %}
+
+  <h2 class="mb-2">{{ team.name }}</h2>
+
+  {% if team.acronym %}
+    <h5 class="text-muted">{{ team.acronym }}</h5>
+  {% endif %}
+
+  <p class="mb-1">{{ team.city }}</p>
+  <p class="mb-1">Conference: <strong>{{ team.conference }}</strong> | Division: <strong>{{ team.division }}</strong></p>
+
+  {% if team.arena %}
+    <p class="mb-0">🏟 Arena: <a href="{{ team.arena }}" class="text-primary" target="_blank">{{ team.arenaname }}</a></p>
+  {% endif %}
+</div>
+
+{% if team.other_names or team.other_acronyms or team.other_logos %}
+<div class="history-section bg-white text-dark p-4 rounded shadow-sm">
+  <h5 class="mb-3">📜 Historical Info</h5>
+
+  {% if team.other_names %}
+    <p class="mb-1"><strong>Other Names:</strong>
+      {% for name in team.other_names %}
+        {{ name }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
+
+  {% if team.other_acronyms %}
+    <p class="mb-1"><strong>Other Acronyms:</strong>
+      {% for acronym in team.other_acronyms %}
+        {{ acronym }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
+
+  {% if team.other_logos %}
+    <p class="mb-1"><strong>Other Logos:</strong></p>
+    <div class="d-flex justify-content-center flex-wrap">
+      {% for logo in team.other_logos %}
+        <img src="{{ logo }}" alt="Logo histórico" class="logo-thumb mb-2">
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<h4 class="mb-4 mt-5 text-center">Players by Season</h4>
+
+<div class="row">
+  {% for season, data in team.seasons.items %}
+  <div class="col-md-6 season-section" data-aos="fade-up">
+    <div class="bg-white text-dark p-3 rounded shadow-sm h-100">
+      <h5 class="mb-2">🗓 Season: {{ season }} — {{ data.seasonType }}</h5>
+      {% for player in data.players %}
+        <span class="badge bg-primary player-badge">{{ player.playerName }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

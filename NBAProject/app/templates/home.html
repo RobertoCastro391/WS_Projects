@@ -104,6 +104,11 @@
 .badge {
   font-weight: 600;
   border-radius: 12px;
+  background-color: #17408B; /* azul NBA */
+}
+
+.new-summary {
+  color: #cfcfcf;
 }
 
 </style>
@@ -125,7 +130,7 @@
           <div class="p-4">
             <h5 class="fw-bold">{{ news.title }}</h5>
             {% if news.summary %}
-              <p class="text-muted">{{ news.summary }}</p>
+              <p class="new-summary">{{ news.summary }}</p>
             {% endif %}
             <a href="{{ news.link }}" class="btn btn-sm btn-primary" target="_blank">See More</a>
           </div>
@@ -166,7 +171,7 @@
     {% for season, count in top_temporadas %}
     <div class="col-md-6" data-aos="zoom-in">
       <div class="card shadow-sm p-3 d-flex flex-row align-items-center top-season-card">
-        <div class="badge bg-primary fs-4 px-3 py-2 me-3">
+        <div class="badge fs-4 px-3 py-2 me-3">
           #{{ forloop.counter }}
         </div>
         <div>
@@ -175,7 +180,7 @@
         </div>
         <div class="ms-auto text-end">
           <h6 class="mb-1 text-muted">Participations</h6>
-          <h4 class="text-primary fw-bold mb-0">{{ count }}</h4>
+          <h4 class="fw-bold mb-0" style="color: #17408B;">{{ count }}</h4>
         </div>
       </div>
     </div>

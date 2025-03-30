@@ -73,8 +73,16 @@
     }
 
     footer {
-      font-size: 0.95rem;
-      opacity: 0.9;
+      background-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      color: #141414;
+      font-weight: 500;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
     }
 
   </style>
@@ -103,7 +111,7 @@
             <li class="nav-item"><a class="nav-link" href="/equipas/">Teams</a></li>
             <li class="nav-item"><a class="nav-link" href="/temporadas/">Seasons</a></li>
             <li class="nav-item"><a class="nav-link" href="/arenas/">Arenas</a></li>
-            <li class="nav-item"><a class="nav-link" href="/stats/geral/">Statistics</a></li>
+            <li class="nav-item"><a class="nav-link" href="/stats/">Statistics</a></li>
           </ul>
         </div>
       </div>
@@ -118,7 +126,7 @@
 
   <!-- Floating Footer -->
   <div class="container mb-4">
-    <footer class="bg-white text-dark text-center rounded shadow py-3">
+    <footer class="text-dark text-center rounded shadow py-3">
       WS Project • Powered by Django, RDF & SPARQL
       <br>
       2025 © NBA Insight

@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% block title %}NBA | Teams{% endblock %}
+
+{% block extra_head %}
+<style>
+  .team-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    color: #141414;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+  }
+
+  .team-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .team-logo {
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+  }
+
+  .team-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .team-acronym {
+    font-size: 0.95rem;
+    color: #666;
+  }
+
+  .logo-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .logo-group img {
+    height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #f1f1f1;
+    padding: 4px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">NBA Teams</h2>
+<div class="mb-4 text-center">
+  <input id="searchInput" type="text" class="form-control form-control-lg w-50 mx-auto"
+         placeholder="🔍 Search for a team..." onkeyup="filterTeams()">
+</div>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+  {% for team in equipas %}
+  <div class="col">
+    <a href="/equipa/{{ team.id|cut:'http://example.org/nba/team_' }}" class="text-decoration-none">
+      <div class="team-card h-100">
+        {% if team.logo %}
+          <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo mb-3">
+        {% endif %}
+        <div class="team-name">{{ team.name }}</div>
+
+        {% if team.acronym %}
+          <div class="team-acronym">
+            <span class="badge bg-secondary">{{ team.acronym }}</span>
+          </div>
+        {% endif %}
+
+        {% if team.other_acronyms %}
+          <div class="mt-2">
+            {% for acr in team.other_acronyms %}
+              <span class="badge bg-light text-dark border">{{ acr }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if team.other_names %}
+          <div class="mt-2 text-muted small">
+            {% for n in team.other_names %}
+              {{ n }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </a>
+  </div>
+{% endfor %}
+</div>
+
+{% block extra_script %}
+<script>
+  function filterTeams() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const cards = document.querySelectorAll(".team-card-container");
+
+    cards.forEach(card => {
+      const name = card.getAttribute("data-name").toLowerCase();
+      if (name.includes(input)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+</script>
+{% endblock %}
+
+
+{% endblock %}
+
