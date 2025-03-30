@@ -1,0 +1,190 @@
+{% extends "layout.html" %}
+{% block title %}NBA Statistics{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  .chart-card {
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    height: 100%;
+  }
+
+  .chart-card:hover {
+    transform: scale(1.01);
+  }
+
+  .chart-card h5 {
+    text-align: center;
+    color: #212529;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  canvas {
+    max-height: 300px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-5 text-center">NBA Statistics Dashboard</h1>
+
+<div class="container">
+  <div class="row g-4">
+    <div class="col-md-6" data-aos="fade-up">
+      <div class="chart-card">
+        <h5>Season Participation</h5>
+        <canvas id="seasonChart"></canvas>
+      </div>
+    </div>
+
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+      <div class="chart-card">
+        <h5>Players per Team</h5>
+        <canvas id="teamChart"></canvas>
+      </div>
+    </div>
+
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+      <div class="chart-card">
+        <h5>Top 10 Players with Most Seasons</h5>
+        <canvas id="mostSeasonsChart"></canvas>
+      </div>
+    </div>
+
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
+      <div class="chart-card">
+        <h5>Players by Position</h5>
+        <canvas id="positionChart"></canvas>
+      </div>
+    </div>
+
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
+      <div class="chart-card">
+        <h5>Average Height by Position (cm)</h5>
+        <canvas id="heightChart"></canvas>
+      </div>
+    </div>
+
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
+      <div class="chart-card">
+        <h5>Average Weight by Position (lb)</h5>
+        <canvas id="weightChart"></canvas>
+      </div>
+    </div>
+
+    <div class="col-12" data-aos="fade-up" data-aos-delay="600">
+      <div class="chart-card">
+        <h5>Players by Birth Year</h5>
+        <canvas id="birthYearChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script>
+  const stats = JSON.parse('{{ stats_json|escapejs }}');
+
+  const positionLabels = {
+    "F": "Forward",
+    "G": "Guard",
+    "C": "Center",
+    "F-G": "Forward-Guard",
+    "G-F": "Guard-Forward",
+    "F-C": "Forward-Center",
+    "C-F": "Center-Forward"
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  };
+
+  new Chart(document.getElementById("seasonChart"), {
+    type: "bar",
+    data: {
+      labels: stats.participacoes_por_temporada.map(s => s.season),
+      datasets: [{ data: stats.participacoes_por_temporada.map(s => s.total), label: "Participations", borderWidth: 1 }]
+    },
+    options: chartOptions
+  });
+
+  new Chart(document.getElementById("teamChart"), {
+    type: "bar",
+    data: {
+      labels: stats.jogadores_por_equipa.map(t => t.name || t.team),
+      datasets: [{ data: stats.jogadores_por_equipa.map(t => t.total), label: "Players", borderWidth: 1 }]
+    },
+    options: chartOptions
+  });
+
+  new Chart(document.getElementById("mostSeasonsChart"), {
+    type: "bar",
+    data: {
+      labels: stats.jogadores_mais_temporadas.map(p => p.name),
+      datasets: [{ data: stats.jogadores_mais_temporadas.map(p => p.total), label: "Seasons", borderWidth: 1 }]
+    },
+    options: chartOptions
+  });
+
+  new Chart(document.getElementById("positionChart"), {
+    type: "bar",
+    data: {
+      labels: stats.distribuicao_posicoes.map(p => positionLabels[p.position] || p.position),
+      datasets: [{ data: stats.distribuicao_posicoes.map(p => p.total), label: "Players", borderWidth: 1 }]
+    },
+    options: chartOptions
+  });
+
+  new Chart(document.getElementById("heightChart"), {
+    type: "line",
+    data: {
+      labels: stats.altura_media_por_posicao.map(p => positionLabels[p.position] || p.position),
+      datasets: [{
+        label: "Height (cm)",
+        data: stats.altura_media_por_posicao.map(p => p.media_cm),
+        fill: false,
+        tension: 0.3,
+        borderColor: '#007bff',
+        pointBackgroundColor: '#007bff'
+      }]
+    },
+    options: chartOptions
+  });
+
+  new Chart(document.getElementById("weightChart"), {
+    type: "line",
+    data: {
+      labels: stats.peso_medio_por_posicao.map(p => positionLabels[p.position] || p.position),
+      datasets: [{
+        label: "Weight (lb)",
+        data: stats.peso_medio_por_posicao.map(p => p.media_lb),
+        fill: false,
+        tension: 0.3,
+        borderColor: 'rgba(255, 99, 132, 0.6)',
+        pointBackgroundColor: 'rgba(255, 99, 132, 0.6)'
+      }]
+    },
+    options: chartOptions
+  });
+
+  new Chart(document.getElementById("birthYearChart"), {
+    type: "bar",
+    data: {
+      labels: stats.jogadores_por_ano_nascimento.map(p => p.year),
+      datasets: [{ data: stats.jogadores_por_ano_nascimento.map(p => p.total), label: "Players", borderWidth: 1 }]
+    },
+    options: chartOptions
+  });
+</script>
+{% endblock %}

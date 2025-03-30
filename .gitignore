@@ -1,1 +1,5 @@
 NBAProject/.venv
+NBAProject/venv
+**/__pycache__/
+**/.idea
+NBAProject/.idea
