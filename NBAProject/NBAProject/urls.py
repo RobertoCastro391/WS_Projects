@@ -58,6 +58,7 @@ urlpatterns = [
 
     #Funcionalidades Avançadas
     path('comparar/', views.comparar_jogadores),  # Comparação entre dois jogadores
+    path('comparar_jogadores/', views.comparar_jogadores_template),  # Template para comparação de jogadores
     path("rede/jogadores/", views.rede_jogadores),
     path("rede/jogadores/expand/<path:player_id>/", views.expandir_jogador),
     path('stats/', views.stats),
