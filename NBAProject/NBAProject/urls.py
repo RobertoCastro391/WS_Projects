@@ -58,8 +58,8 @@ urlpatterns = [
 
     #Funcionalidades Avançadas
     path('comparar/', views.comparar_jogadores),  # Comparação entre dois jogadores
-    path('comparar_jogadores/', views.comparar_jogadores_template, name='comparar_template'),
-    path('rede/jogadores/', views.rede_jogadores),  # Rede de conexões entre jogadores
+    path("rede/jogadores/", views.rede_jogadores),
+    path("rede/jogadores/expand/<path:player_id>/", views.expandir_jogador),
     path('stats/', views.stats),
     
     #Funcionalidades Extras
