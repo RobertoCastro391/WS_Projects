@@ -107,12 +107,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="team-header text-center">
+<div class="team-header text-center" data-team-id="{{ team.id|cut:'http://example.org/nba/team_' }}" >
   {% if team.logo %}
   <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo">
   {% endif %}
 
   <h2 class="mb-2">{{ team.name }}</h2>
+
+  <!-- Favorite -->
+  <button class="favorite-btn btn btn-link p-0 mt-2" title="Toggle favorite">
+    <i class="fa-solid fa-heart fs-3 text-danger d-none"></i>
+    <i class="fa-regular fa-heart fs-3 text-secondary"></i>
+  </button>
+
 
   {% if team.acronym %}
   <h5 class="text-muted">{{ team.acronym }}</h5>
@@ -208,4 +215,38 @@
     });
   });
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const favBtn = document.querySelector('.favorite-btn');
+    const teamId = document.querySelector('.team-header').dataset.teamId;
+    const heartFilled = favBtn.querySelector('.fa-solid');
+    const heartOutline = favBtn.querySelector('.fa-regular');
+
+    let favorites = JSON.parse(localStorage.getItem('favoriteTeams')) || [];
+
+    const updateIcon = () => {
+      if (favorites.includes(teamId)) {
+        heartFilled.classList.remove('d-none');
+        heartOutline.classList.add('d-none');
+      } else {
+        heartFilled.classList.add('d-none');
+        heartOutline.classList.remove('d-none');
+      }
+    };
+
+    updateIcon();
+
+    favBtn.addEventListener('click', () => {
+      if (favorites.includes(teamId)) {
+        favorites = favorites.filter(id => id !== teamId);
+      } else {
+        favorites.push(teamId);
+      }
+
+      localStorage.setItem('favoriteTeams', JSON.stringify(favorites));
+      updateIcon();
+    });
+  });
+</script>
+
 {% endblock %}
