@@ -3,3 +3,4 @@ NBAProject/venv
 **/__pycache__/
 **/.idea
 NBAProject/.idea
+NBAProject/db.sqlite3
