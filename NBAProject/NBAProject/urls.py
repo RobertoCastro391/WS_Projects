@@ -63,6 +63,14 @@ urlpatterns = [
     path("rede/jogadores/", views.rede_jogadores),
     path("rede/jogadores/expand/<path:player_id>/", views.expandir_jogador),
     path('stats/', views.stats),
+
+    # Admin
+    path('staff/login/', views.login_view, name='staff_login'),
+    path('staff/logout/', views.logout_view, name='logout'),
+    path('staff/jogadores/adicionar/', views.add_player, name='add_player'),
+    path('staff/delete_player/<str:player_id>/', views.delete_player, name='delete_player'),
+    path('staff/jogadores/update/', views.update_player, name='update_player'),
+
     
     #Funcionalidades Extras
     path('game/', views.quiz_page, name='quiz_page'),  # this renders the HTML

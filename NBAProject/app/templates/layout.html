@@ -116,6 +116,12 @@
             <li class="nav-item"><a class="nav-link" href="/stats/">Statistics</a></li>
             <li class="nav-item"><a class="nav-link" href="/comparar_jogadores/">Compare</a></li>
             <li class="nav-item"><a class="nav-link" href="/game/">Quiz</a></li>
+            {% if not user.is_staff %}
+            <li class="nav-item"><a class="nav-link" href="/staff/login/">Admin Login</a></li>
+            {% endif %}
+            {% if user.is_authenticated and user.is_staff %}
+            <li class="nav-item"><a class="nav-link" href="/staff/logout">Logout</a></li>
+            {% endif %}
           </ul>
         </div>
       </div>
