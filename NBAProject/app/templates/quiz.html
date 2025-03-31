@@ -1,0 +1,169 @@
+{% extends "layout.html" %}
+
+{% block title %}🏀 NBA Quiz Game{% endblock %}
+
+{% block extra_head %}
+<style>
+  .quiz-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    padding: 2rem;
+    color: #141414;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+
+  .question {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+
+  .options button {
+    display: block;
+    width: 100%;
+    margin: 0.4rem 0;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 500;
+    background-color: #f1f1f1;
+    border: 2px solid transparent;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .options button:hover {
+    background-color: #eee;
+  }
+
+  .options button.correct {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+  }
+
+  .options button.wrong {
+    background-color: #C9082A;
+    color: white;
+    border-color: #C9082A;
+  }
+
+  #next-btn {
+    margin-top: 1.5rem;
+    display: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">🏀 NBA Trivia Quiz</h2>
+<h6 class="text-center mb-4">How much do you know about NBA? Let's test your knowledge!</h6>
+
+<div class="quiz-container mx-auto" style="max-width: 600px;" id="start-box">
+  <div class="mb-3">
+    <label for="player-name" class="form-label">Enter your name:</label>
+    <input type="text" id="player-name" class="form-control" placeholder="e.g. Michael">
+  </div>
+  <button id="start-btn" class="btn btn-success w-100">Start Quiz</button>
+</div>
+
+<div class="quiz-container mx-auto d-none" style="max-width: 600px;" id="quiz-box">
+  <div id="question-box">
+    <div class="question" id="question-text">Loading question...</div>
+    <div class="options" id="options-list"></div>
+    <button id="next-btn" class="btn btn-primary">Next</button>
+  </div>
+</div>
+
+<div class="quiz-container mx-auto d-none text-center" style="max-width: 600px;" id="result-box">
+  <h3 id="result-text"></h3>
+  <p id="result-message"></p>
+  <button class="btn btn-secondary" onclick="window.location.reload()">Play Again</button>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let currentQuestion = 0;
+let questions = [];
+let score = 0;
+let playerName = "";
+
+document.getElementById("start-btn").addEventListener("click", async () => {
+  playerName = document.getElementById("player-name").value.trim();
+  if (!playerName) {
+    alert("Please enter your name.");
+    return;
+  }
+
+  document.getElementById("start-box").classList.add("d-none");
+  document.getElementById("quiz-box").classList.remove("d-none");
+
+  const res = await fetch("/quiz/");
+  const data = await res.json();
+  questions = data.questions.slice(0, 10);  // Only 10 questions
+  showQuestion();
+});
+
+function showQuestion() {
+  const q = questions[currentQuestion];
+  document.getElementById("question-text").innerText = q.text;
+
+  const optionsList = document.getElementById("options-list");
+  optionsList.innerHTML = "";
+
+  q.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.innerText = opt.text;
+    btn.addEventListener("click", () => handleAnswer(btn, opt.is_correct));
+    optionsList.appendChild(btn);
+  });
+
+  document.getElementById("next-btn").style.display = "none";
+}
+
+function handleAnswer(button, isCorrect) {
+  const buttons = document.querySelectorAll("#options-list button");
+  buttons.forEach(btn => btn.disabled = true);
+
+  if (isCorrect) {
+    button.classList.add("correct");
+    score++;
+  } else {
+    button.classList.add("wrong");
+    const correct = Array.from(buttons).find(btn => {
+      const q = questions[currentQuestion];
+      return q.options.find(opt => opt.text === btn.innerText && opt.is_correct);
+    });
+    if (correct) correct.classList.add("correct");
+  }
+
+  document.getElementById("next-btn").style.display = "block";
+}
+
+document.getElementById("next-btn").addEventListener("click", () => {
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    showQuestion();
+  } else {
+    showResults();
+  }
+});
+
+function showResults() {
+  document.getElementById("quiz-box").classList.add("d-none");
+  const resultBox = document.getElementById("result-box");
+  resultBox.classList.remove("d-none");
+
+  const message = getScoreMessage(score);
+  document.getElementById("result-text").innerText = `${playerName}, you scored ${score} out of 10!`;
+  document.getElementById("result-message").innerText = message;
+}
+
+function getScoreMessage(score) {
+  if (score === 10) return "🏆 Perfect! You're an NBA legend!";
+  if (score >= 8) return "🔥 Great job! You really know your stuff.";
+  if (score >= 5) return "👍 Not bad, but you can do better!";
+  return "😅 Tough round! Time to brush up on your NBA knowledge.";
+}
+</script>
+{% endblock %}
