@@ -723,10 +723,16 @@ def list_arenas(request):
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT ?arena ?name ?photo WHERE {
-            ?arena a nba:Arena ;
-                   nba:name ?name .
-            OPTIONAL { ?arena nba:photo ?photo . }
+        SELECT DISTINCT ?arena ?name ?photo ?location ?opened ?capacity ?homeTeam ?homeTeamName WHERE {
+        ?arena a nba:Arena ;
+                nba:name ?name .
+        OPTIONAL { ?arena nba:photo ?photo . }
+        OPTIONAL { ?arena nba:location ?location . }
+        OPTIONAL { ?arena nba:capacity ?capacity . }
+        OPTIONAL { 
+            ?arena nba:homeTeam ?homeTeam .
+            ?homeTeam nba:name ?homeTeamName .
+        }
         }
         ORDER BY ?name
     """)
@@ -734,14 +740,44 @@ def list_arenas(request):
     results = sparql.query().convert()["results"]["bindings"]
 
     arenas = []
-    for r in results:
-        arenas.append({
-            "id": r["arena"]["value"],
-            "name": r["name"]["value"],
-            "photo": r.get("photo", {}).get("value", "")
-        })
+    locations = set()
+    years = set()
+    home_teams = set()
 
-    return render(request, "arenas.html", {"arenas": arenas})
+    seen = set()
+    arenas = []
+
+    for r in results:
+        arena_id = r["arena"]["value"]
+        
+        # Avoid duplicates by using arena ID
+        if arena_id in seen:
+            continue
+        seen.add(arena_id)
+
+        arena = {
+            "id": arena_id,
+            "name": r["name"]["value"],
+            "photo": r.get("photo", {}).get("value", ""),
+            "location": r.get("location", {}).get("value", ""),
+            "capacity": r.get("capacity", {}).get("value", ""),
+            "home_team": r.get("homeTeamName", {}).get("value", "")
+        }
+
+        if arena["location"]:
+            locations.add(arena["location"])
+        if arena["home_team"]:
+            home_teams.add(arena["home_team"])
+
+        arenas.append(arena)
+
+
+    return render(request, "arenas.html", {
+        "arenas": arenas,
+        "locations": sorted(locations),
+        "years": sorted(years),
+        "home_teams": sorted(home_teams)
+    })
 
 def pagina_arena(request, id):
     # Garante que só o número seja usado para montar o URI corretamente
@@ -814,6 +850,9 @@ def mapa_arenas(request):
         })
 
     return JsonResponse({"arenas": arenas})
+
+def page_mapa_arenas(request):
+    return render(request, "mapa_arenas.html")
 
 def timeline_jogador(request, id):
     player_uri = f"http://example.org/nba/player_{id}"

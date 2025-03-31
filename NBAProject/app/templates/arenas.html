@@ -18,7 +18,7 @@
 
 .card {
   position: relative;
-  max-width: 380px;
+  max-width: 31.7%;
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
@@ -140,6 +140,21 @@ padding: 16px 12px;
     opacity: 1;
 }
 
+  
+.filter-section {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .filter-header {
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
 </style>
 {% endblock %}
 
@@ -147,9 +162,54 @@ padding: 16px 12px;
 <h1 class="mb-4 text-center">🏟️ NBA Arenas</h1>
 
 {% if arenas %}
+<!-- Filter Section -->
+<div class="filter-section mb-4">
+  <form id="arena-filters" class="row g-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="filter-header text-dark m-0">🔍 Filter Arenas</h4>
+      <div>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-funnel-fill me-1"></i>Apply Filters
+        </button>
+        <button type="reset" class="btn btn-outline-secondary ms-2">
+          <i class="bi bi-x-circle me-1"></i>Reset
+        </button>
+      </div>
+    </div>  
+    <div class="col-md-4">
+      <label for="location" class="form-label d-flex justify-content-between align-items-center text-dark">
+        <span>📍 Location</span>
+        <a href="{% url 'mapa_arenas_view' %}" class="btn btn-sm btn-link p-0" style="font-size: 0.9rem;">See in map 🗺️</a>
+      </label>      
+      <select name="location" id="location" class="form-select">
+        <option value="">All</option>
+        {% for loc in locations %}
+          <option value="{{ loc }}">{{ loc }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="homeTeam" class="form-label text-dark">🏠 Home Team</label>
+      <select name="homeTeam" id="homeTeam" class="form-select">
+        <option value="">All</option>
+        {% for team in home_teams %}
+          <option value="{{ team }}">{{ team }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="capacity" class="form-label text-dark">👥 Min Capacity</label>
+      <input type="number" name="capacity" id="capacity" class="form-control" placeholder="e.g. 18000">
+    </div>
+  </form>
+</div>
+
 <section class="cards row justify-content-center">
   {% for arena in arenas %}
-    <article class="card card--1 col-md-4">
+    <article class="card card--1 col-md-4"
+          data-location="{{ arena.location|default:'' }}"
+          data-team="{{ arena.home_team|default:'' }}"
+          data-capacity="{{ arena.capacity|default:'' }}">
       <div class="card__info-hover">
         <svg class="card__like"  viewBox="0 0 24 24">
             <path fill="#000000" d="M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,3C14.76,3 13.09,3.81 12,5.08C10.91,3.81 9.24,3 7.5,3C4.42,3 2,5.41 2,8.5C2,12.27 5.4,15.36 10.55,20.03L12,21.35L13.45,20.03C18.6,15.36 22,12.27 22,8.5C22,5.41 19.58,3 16.5,3Z" />
@@ -168,4 +228,44 @@ padding: 16px 12px;
 {% else %}
 <p class="text-center text-muted">Nenhuma arena encontrada.</p>
 {% endif %}
+{% endblock %}
+
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("arena-filters");
+  const cards = document.querySelectorAll(".card");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const location = document.getElementById("location").value.toLowerCase();
+    const homeTeam = document.getElementById("homeTeam").value.toLowerCase();
+    const capacity = parseInt(document.getElementById("capacity").value);
+
+    cards.forEach(card => {
+      const cardLoc = card.dataset.location?.toLowerCase() || "";
+      const cardTeam = card.dataset.team?.toLowerCase() || "";
+      const cardCap = parseInt(card.dataset.capacity) || 0;
+
+      const show =
+        (!location || cardLoc.includes(location)) &&
+        (!homeTeam || cardTeam.includes(homeTeam)) &&
+        (isNaN(capacity) || cardCap >= capacity);
+
+      card.style.display = show ? "" : "none";
+    });
+  });
+
+  form.addEventListener("reset", () => {
+    setTimeout(() => {
+      cards.forEach(card => {
+        card.style.display = "";
+      });
+    }, 10);
+  });
+
+});
+</script>
 {% endblock %}
