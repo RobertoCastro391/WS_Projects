@@ -1,0 +1,730 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ name }} | NBA Player{% endblock %}
+
+{% block extra_head %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/player.css' %}">
+
+<link href="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/vis-network.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Player Profile Section -->
+  <div class="player-profile">
+    <div class="row">
+      <!-- Player Image -->
+      <div class="col-md-4">
+        <div class="player-image-container">
+          <img src="{{ photo }}" alt="{{ name }}" class="player-image" onerror="this.src='/app/static/img/player-placeholder.png'">
+        </div>
+      </div>
+      
+      <!-- Player Information -->
+      <div class="col-md-8 player-info">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+                <h1 class="mb-1">{{ name }}</h1>
+                <span class="position-badge">{{ position|default:"Unknown" }}</span>
+            </div> 
+          
+          {% if teamName %}
+          <div class="current-team-container">
+              <span class="team-label">Last Team</span>
+              <div class="current-team">
+              <img src="{{ teamLogo }}" alt="Team logo" onerror="this.src='/app/static/img/team-placeholder.png'">
+              <span class="current-team-name">{{ teamName }}</span>
+              </div>
+          </div>
+          {% endif %}
+        </div>
+        
+        <div class="row mt-4">
+          <!-- Personal Info Card -->
+          <div class="col-md-6">
+            <div class="player-stats-card">
+              <h4>Personal Info</h4>
+              
+              <div class="player-data-row">
+                <span class="player-data-label">Born</span>
+                <span class="player-data-value">{{ birthdate|default:"Unknown" }}</span>
+              </div>
+              
+              <div class="player-data-row">
+                <span class="player-data-label">Country</span>
+                <span class="player-data-value">{{ bornIn|default:"Unknown" }}</span>
+              </div>
+              
+              <div class="player-data-row">
+                <span class="player-data-label">School</span>
+                <span class="player-data-value">{{ school|default:"Unknown" }}</span>
+              </div>
+              
+              <div class="player-data-row">
+                <span class="player-data-label">Draft Year</span>
+                <span class="player-data-value">{{ draftYear|default:"Unknown" }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Physical Stats Card -->
+          <div class="col-md-6">
+            <div class="player-stats-card">
+              <h4>Physical Stats</h4>
+              
+              <div class="player-data-row">
+                <span class="player-data-label">Height</span>
+                <span class="player-data-value">{{ height|default:"Unknown" }}</span>
+              </div>
+              
+              <div class="player-data-row">
+                <span class="player-data-label">Weight</span>
+                <span class="player-data-value">{% if weight %}{{ weight }} lbs{% else %}Unknown{% endif %}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Tabs Section -->
+  <div class="player-tabs">
+    <ul class="nav nav-tabs" id="playerTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="career-tab" data-bs-toggle="tab" data-bs-target="#career" type="button" role="tab" aria-controls="career" aria-selected="true">
+            Career Timeline
+          </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="teammates-tab" data-bs-toggle="tab" data-bs-target="#teammates" type="button" role="tab" aria-controls="teammates" aria-selected="false">
+          Teammates
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="network-tab" data-bs-toggle="tab" data-bs-target="#network" type="button" role="tab" aria-controls="network" aria-selected="false">
+          Player Network
+        </button>
+      </li>
+    </ul>
+    
+    <div class="tab-content" id="playerTabsContent">
+      <!-- Career Timeline Tab -->
+      <div class="tab-pane fade show active" id="career" role="tabpanel" aria-labelledby="career-tab">
+        <div id="career-timeline" class="mt-3">
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Teammates Tab -->
+      <div class="tab-pane fade" id="teammates" role="tabpanel" aria-labelledby="teammates-tab">
+        <div id="teammates-container" class="mt-3">
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Network Tab -->
+      <div class="tab-pane fade" id="network" role="tabpanel" aria-labelledby="network-tab">
+        <div id="network-container" class="mt-3">
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Fetch the player's timeline data
+    fetch('/jogador/{{ id }}/timeline/')
+      .then(response => response.json())
+      .then(data => {
+        renderTimelineTab(data.timeline);
+      })
+      .catch(error => {
+        console.error('Error fetching timeline:', error);
+        document.getElementById('career-timeline').innerHTML = `
+          <div class="alert alert-danger">
+            Failed to load timeline data. Please try again later.
+          </div>
+        `;
+      });
+
+    // Fetch the player's teammates data when the teammates tab is clicked
+    document.getElementById('teammates-tab').addEventListener('click', function() {
+        if (!document.getElementById('teammates-data')) {
+          loadTeammatesData();
+        }
+    });
+
+    document.getElementById('network-tab').addEventListener('click', function() {
+      if (!document.getElementById('network-graph')) {
+        loadNetworkData();
+      }
+    });
+  });
+
+  function loadTeammatesData() {
+    fetch('/jogador/{{ id }}/companheiros/')
+      .then(response => response.json())
+      .then(data => {
+        renderTeammatesTab(data);
+      })
+      .catch(error => {
+        console.error('Error fetching teammates:', error);
+        document.getElementById('teammates-container').innerHTML = `
+          <div class="alert alert-danger">
+            Failed to load teammates data. Please try again later.
+          </div>
+        `;
+      });
+  }
+
+  function renderTeammatesTab(data) {
+    const container = document.getElementById('teammates-container');
+    const companions = data.companions;
+    
+    // Check if there are any companions
+    if (Object.keys(companions).length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="bi bi-people" style="font-size: 3rem; color: #dee2e6;"></i>
+          <p class="mt-3">No teammates data available for this player.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Convert object to array and sort by season (most recent first)
+    const sortedSeasons = Object.keys(companions).sort().reverse();
+    
+    // Start building HTML
+    let teammatesHTML = `
+      <div id="teammates-data" class="teammates-section">
+        <h4 class="teammates-header">Teammates Throughout Career</h4>
+        
+        <!-- Season tabs -->
+        <ul class="nav nav-pills season-tabs mb-4" id="seasonTabs" role="tablist">
+    `;
+    
+    // Add tab for each season
+    sortedSeasons.forEach((season, index) => {
+      const seasonId = season.replace(/[^a-zA-Z0-9]/g, '');
+      const seasonData = companions[season];
+      const seasonLabel = seasonData.seasonLabel || season.split('_').pop();
+      const teamsCount = Object.keys(seasonData).filter(key => key !== 'seasonLabel').length;
+      
+      teammatesHTML += `
+        <li class="nav-item" role="presentation">
+          <button class="nav-link ${index === 0 ? 'active' : ''}" 
+                  id="season-${seasonId}-tab" 
+                  data-bs-toggle="pill" 
+                  data-bs-target="#season-${seasonId}" 
+                  type="button" 
+                  role="tab" 
+                  aria-controls="season-${seasonId}" 
+                  aria-selected="${index === 0 ? 'true' : 'false'}">
+            ${seasonLabel} 
+            <span class="season-badge">${teamsCount} team${teamsCount !== 1 ? 's' : ''}</span>
+          </button>
+        </li>
+      `;
+    });
+    
+    teammatesHTML += `
+        </ul>
+        
+        <!-- Tab content for each season -->
+        <div class="tab-content" id="seasonTabsContent">
+    `;
+    
+    // Add content for each season tab
+    sortedSeasons.forEach((season, index) => {
+      const seasonId = season.replace(/[^a-zA-Z0-9]/g, '');
+      const seasonData = companions[season];
+      const seasonLabel = seasonData.seasonLabel || season.split('_').pop();
+      
+      teammatesHTML += `
+        <div class="tab-pane fade ${index === 0 ? 'show active' : ''}" 
+             id="season-${seasonId}" 
+             role="tabpanel" 
+             aria-labelledby="season-${seasonId}-tab">
+          
+          <div class="season-title">
+            <i class="bi bi-calendar-event me-2"></i> ${seasonLabel} Season
+          </div>
+      `;
+      
+      // Filter out non-team keys (like seasonLabel)
+      const teamKeys = Object.keys(seasonData).filter(key => key !== 'seasonLabel');
+      
+      // Add each team section
+      teamKeys.forEach(teamId => {
+        const teamData = seasonData[teamId];
+        const teamName = teamData.teamName;
+        const teamLogo = teamData.teamLogo || '/app/static/img/team-placeholder.png';
+        const players = teamData.players;
+        
+        teammatesHTML += `
+          <div class="team-section">
+            <div class="team-header">
+              <img src="${teamLogo}" alt="${teamName} logo" class="team-logo" 
+                   onerror="this.src='/app/static/img/team-placeholder.png'">
+              <h5 class="team-title">${teamName}</h5>
+            </div>
+            
+            <div class="teammates-grid">
+        `;
+        
+        // Add each player card
+        players.forEach(player => {
+          const playerId = player.player.split('_').pop();
+          
+          teammatesHTML += `
+            <a href="/jogador/${playerId}/" class="teammate-card">
+              <div class="teammate-photo-container">
+                <img src="${player.playerPhoto}" alt="${player.playerName}" class="teammate-photo" 
+                     onerror="this.src='/app/static/img/player-placeholder.png'">
+              </div>
+              <div class="teammate-name">${player.playerName}</div>
+            </a>
+          `;
+        });
+        
+        teammatesHTML += `
+            </div>
+          </div>
+        `;
+      });
+      
+      teammatesHTML += `
+        </div>
+      `;
+    });
+    
+    teammatesHTML += `
+        </div>
+      </div>
+    `;
+    
+    container.innerHTML = teammatesHTML;
+  }
+
+  function renderTimelineTab(timelineData) {
+    const container = document.getElementById('career-timeline');
+    
+    if (timelineData.length === 0) {
+      container.innerHTML = `
+        <div class="alert alert-info">
+          No career timeline data available for this player.
+        </div>
+      `;
+      return;
+    }
+  
+    // Group timeline entries by season type (Regular Season and Playoffs)
+    const groupedTimeline = {};
+    timelineData.forEach(entry => {
+      const seasonType = entry.seasonType === "http://example.org/nba/seasonType_Regular_Season" ? "Regular Season" : "Playoffs";
+      if (!groupedTimeline[seasonType]) {
+        groupedTimeline[seasonType] = [];
+      }
+      groupedTimeline[seasonType].push(entry);
+    });
+  
+    // Build the timeline HTML with inner tabs
+    let timelineHTML = `
+      <div class="career-timeline">
+        <h4 class="mb-4 timeline-header">Career Journey</h4>
+        
+        <!-- Season Type Tabs -->
+        <ul class="nav nav-pills mb-4" id="seasonTypeTabs" role="tablist">
+    `;
+  
+    // Add tab buttons for each season type
+    Object.entries(groupedTimeline).forEach(([seasonType, entries], index) => {
+      const id = seasonType.replace(/\s+/g, '').toLowerCase();
+      timelineHTML += `
+        <li class="nav-item" role="presentation">
+          <button class="nav-link ${index === 0 ? 'active' : ''}" 
+                  id="${id}-tab" 
+                  data-bs-toggle="pill" 
+                  data-bs-target="#${id}-content" 
+                  type="button" 
+                  role="tab" 
+                  aria-controls="${id}-content" 
+                  aria-selected="${index === 0 ? 'true' : 'false'}">
+            ${seasonType} <span class="season-count">${entries.length}</span>
+          </button>
+        </li>
+      `;
+    });
+  
+    timelineHTML += `
+        </ul>
+        
+        <!-- Season Type Tab Contents -->
+        <div class="tab-content" id="seasonTypeTabContent">
+    `;
+  
+    // Add content for each season type tab
+    Object.entries(groupedTimeline).forEach(([seasonType, entries], index) => {
+      const id = seasonType.replace(/\s+/g, '').toLowerCase();
+      
+      // Group entries by team to show consecutive seasons with the same team together
+      const entriesByTeam = {};
+      entries.forEach(entry => {
+        if (!entriesByTeam[entry.team]) {
+          entriesByTeam[entry.team] = {
+            teamName: entry.teamName,
+            teamLogo: entry.teamLogo,
+            seasons: []
+          };
+        }
+        entriesByTeam[entry.team].seasons.push({
+          season: entry.season,
+          seasonLabel: entry.seasonLabel
+        });
+      });
+      
+      // Sort teams by most recent season first
+      const sortedTeams = Object.values(entriesByTeam).sort((a, b) => {
+        const aLatestSeason = a.seasons.sort((s1, s2) => s2.season.localeCompare(s1.season))[0].season;
+        const bLatestSeason = b.seasons.sort((s1, s2) => s2.season.localeCompare(s1.season))[0].season;
+        return bLatestSeason.localeCompare(aLatestSeason);
+      });
+      
+      timelineHTML += `
+        <div class="tab-pane fade ${index === 0 ? 'show active' : ''}" 
+             id="${id}-content" 
+             role="tabpanel" 
+             aria-labelledby="${id}-tab">
+          <div class="timeline-container">
+      `;
+  
+      // Create timeline items for each team
+      sortedTeams.forEach((teamData, teamIndex) => {
+        const teamLogo = teamData.teamLogo || '/app/static/img/team-placeholder.png';
+        
+        // Sort seasons in descending order
+        const sortedSeasons = teamData.seasons.sort((a, b) => 
+          b.season.localeCompare(a.season)
+        );
+        
+        // Format seasons text (e.g., "2009-10, 2010-11, 2011-12")
+        const seasonsList = sortedSeasons.map(s => s.seasonLabel);
+        const seasonsText = seasonsList.join(', ');
+        
+        timelineHTML += `
+          <div class="timeline-item${teamIndex === 0 ? ' first' : ''}">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-card team-card">
+                <div class="timeline-team">
+                  <img src="${teamLogo}" alt="${teamData.teamName} logo" class="timeline-team-logo" 
+                       onerror="this.src='/app/static/img/team-placeholder.png'">
+                  <div class="timeline-team-info">
+                    <span class="timeline-team-name">${teamData.teamName}</span>
+                    <span class="timeline-seasons-list">${seasonsText}</span>
+                    <span class="timeline-seasons-count">${sortedSeasons.length} season${sortedSeasons.length > 1 ? 's' : ''}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="timeline-line${teamIndex === sortedTeams.length - 1 ? ' last' : ''}"></div>
+            </div>
+          </div>
+        `;
+      });
+  
+      timelineHTML += `
+          </div>
+        </div>
+      `;
+    });
+  
+    timelineHTML += `
+        </div>
+      </div>
+    `;
+    
+    container.innerHTML = timelineHTML;
+  }
+
+  function loadNetworkData() {
+    fetch('/grafo/jogador/{{ id }}/')
+      .then(response => response.json())
+      .then(data => {
+        renderNetworkGraph(data);
+      })
+      .catch(error => {
+        console.error('Error fetching network data:', error);
+        document.getElementById('network-container').innerHTML = `
+          <div class="alert alert-danger">
+            Failed to load network data. Please try again later.
+            <br><small>Error details: ${error.message}</small>
+          </div>
+        `;
+      });
+  }
+  
+  function renderNetworkGraph(data) {
+    const container = document.getElementById('network-container');
+    
+    // First, update the container's HTML with all necessary elements
+    container.innerHTML = `
+      <h4 class="teammates-header mb-4">Player Connection Network</h4>
+      <p class="mb-4">This network graph shows how ${data.playerName || "{{ name }}"} is connected to teams and teammates throughout their career.</p>
+      
+      <div class="network-container" id="network-graph">
+        <div class="network-legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: #C9082A;"></div>
+            <div class="legend-label">Current Player</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: #ff7700;"></div>
+            <div class="legend-label">Teammates</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: #17408B;"></div>
+            <div class="legend-label">Teams</div>
+          </div>
+        </div>
+        
+        <div class="network-controls">
+          <button id="zoom-in" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-zoom-in"></i>
+          </button>
+          <button id="zoom-out" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-zoom-out"></i>
+          </button>
+          <button id="reset-zoom" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrows-angle-expand"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  
+    // AFTER updating the innerHTML, now get the reference to the network graph container
+    const networkContainer = document.getElementById('network-graph');
+  
+    if (!networkContainer) {
+      console.error("Could not find network-graph element");
+      return;
+    }
+  
+    // Create network visualization
+    const nodes = data.nodes.map(node => {
+      const colors = {
+        'player': '#C9082A',    // Red for main player
+        'teammate': '#ff7700',  // Orange for teammates
+        'team': '#17408B',      // Blue for teams
+      };
+      
+      return {
+        id: node.id,
+        label: node.label,
+        group: node.type,
+        color: {
+          background: colors[node.type],
+          border: colors[node.type],
+          highlight: { background: colors[node.type], border: '#000000' }
+        },
+        font: { color: (node.type === 'player' || node.type === 'teammate') ? '#000000' : '#ffffff' },
+        shape: (node.type === 'player' || node.type === 'teammate') ? 'circularImage' : 'dot',
+        image: (node.type === 'player') ? '{{ photo|default:"/app/static/img/player-placeholder.png" }}' : 
+       (node.type === 'teammate') ? (node.photo || '/app/static/img/player-placeholder.png') : undefined,
+        size: node.type === 'player' ? 40 : node.type === 'teammate' ? 25 : 30
+      };
+    });
+    
+    // Create edges data
+    const edges = data.edges.map(edge => {
+      const isTeammateEdge = edge.type === 'teammate';
+      
+      return {
+        from: edge.source,
+        to: edge.target,
+        label: edge.label,
+        font: { size: 10, color: '#4a5568' },
+        arrows: 'to',
+        color: { 
+          color: isTeammateEdge ? '#ff7700' : '#a0aec0', 
+          highlight: isTeammateEdge ? '#ff7700' : '#4a5568',
+          opacity: isTeammateEdge ? 0.6 : 1
+        },
+        dashes: isTeammateEdge,
+        hidden: isTeammateEdge ? false : false,
+        team: edge.team,
+        season: edge.season,
+        type: edge.type
+      };
+    });
+    
+    // Create data sets
+    const nodesDataSet = new vis.DataSet(nodes);
+    const edgesDataSet = new vis.DataSet(edges);
+    
+    // Options for the network
+    const options = {
+      physics: {
+        stabilization: true,
+        barnesHut: {
+          gravitationalConstant: -2000,
+          centralGravity: 0.3,
+          springLength: 150,
+          springConstant: 0.04,
+          damping: 0.09
+        }
+      },
+      interaction: {
+        navigationButtons: true,
+        keyboard: true,
+        hover: true
+      },
+      layout: {
+        improvedLayout: true,
+        hierarchical: {
+          enabled: false
+        }
+      },
+      groups: {
+        player: {
+          shape: 'circularImage',
+          color: { background: '#C9082A', border: '#C9082A' }
+        },
+        teammate: {
+          shape: 'circularImage',
+          color: { background: '#ff7700', border: '#ff7700' }
+        },
+        team: {
+          shape: 'dot',
+          color: { background: '#17408B', border: '#17408B' }
+        }
+      }
+    };
+    
+    // Create a network
+    try {
+      const network = new vis.Network(
+        networkContainer,
+        { 
+          nodes: nodesDataSet, 
+          edges: edgesDataSet
+        },
+        options
+      );
+      
+      // Add click handler to show node info
+      network.on("click", function(params) {
+        if (params.nodes.length > 0) {
+          const nodeId = params.nodes[0];
+          const node = nodes.find(n => n.id === nodeId);
+          
+          if (node) {
+            // Remove any existing info panel
+            const existingPanel = document.querySelector('.network-info-panel');
+            if (existingPanel) {
+              existingPanel.remove();
+            }
+            
+            // Create info panel
+            const infoPanel = document.createElement('div');
+            infoPanel.className = 'network-info-panel';
+            
+            // Determine content based on node type
+            let content = '';
+            if (node.group === 'player') {
+              content = `<div class="network-info-title">Player: ${node.label}</div>`;
+            } else if (node.group === 'teammate') {
+              const teammateid = node.id.split('_').pop();
+              content = `
+                <div class="network-info-title">Teammate: ${node.label}</div>
+                <div class="network-info-content">
+                  <a href="/jogador/${teammateid}/" class="btn btn-sm btn-outline-primary mt-2">
+                    View Player Profile <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              `;
+            } else if (node.group === 'team') {
+              const teamId = node.id.split('_').pop();
+              content = `
+                <div class="network-info-title">Team: ${node.label}</div>
+                <div class="network-info-content">
+                  <a href="/equipa/${teamId}/" class="btn btn-sm btn-outline-primary mt-2">
+                    View Team Page <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              `;
+            } 
+
+            infoPanel.innerHTML = content;
+            networkContainer.appendChild(infoPanel);
+          }
+        } else {
+          // Remove info panel if clicking on empty space
+          const existingPanel = document.querySelector('.network-info-panel');
+          if (existingPanel) {
+            existingPanel.remove();
+          }
+        }
+      });
+      
+      // Add zoom controls after we've verified network is created
+      const zoomIn = document.getElementById('zoom-in');
+      const zoomOut = document.getElementById('zoom-out');
+      const resetZoom = document.getElementById('reset-zoom');
+      
+      if (zoomIn) {
+        zoomIn.addEventListener('click', function() {
+          network.moveTo({
+            scale: network.getScale() * 1.2
+          });
+        });
+      }
+      
+      if (zoomOut) {
+        zoomOut.addEventListener('click', function() {
+          network.moveTo({
+            scale: network.getScale() * 0.8
+          });
+        });
+      }
+      
+      if (resetZoom) {
+        resetZoom.addEventListener('click', function() {
+          network.fit({
+            animation: true
+          });
+        });
+      }
+    } catch (error) {
+      console.error("Error creating network visualization:", error);
+      container.innerHTML = `
+        <div class="alert alert-danger">
+          Failed to create network visualization. Please try again later.
+        </div>
+      `;
+    }
+  }
+
+</script>
+{% endblock %}

@@ -341,10 +341,10 @@ def filter_players(request):
         SELECT DISTINCT ?id ?nome ?position ?height ?weight ?draftYear ?birthdate ?bornIn ?school ?photo ?teamId ?teamName
         WHERE {
             ?id rdf:type nba:Player ;
-                nba:name ?nome ;
-                nba:position ?posObj .
-            ?posObj nba:name ?position .
+                nba:name ?nome .
             
+            OPTIONAL { ?id nba:position ?posObj . 
+                        ?posObj nba:name ?position . }
             OPTIONAL { ?id nba:height ?height . }
             OPTIONAL { ?id nba:weight ?weight . }
             OPTIONAL { ?id nba:draftYear ?draftYear . }
@@ -478,11 +478,12 @@ def pagina_jogador(request, id):
             ?player a nba:Player ;
                     nba:name ?name .
             FILTER(STR(?player) = "{jogador_uri}")
-
+        
+            OPTIONAL {{ ?player nba:position ?posObj.
+                        ?posObj nba:name ?position. }}
             OPTIONAL {{ ?player nba:birthdate ?birthdate. }}
             OPTIONAL {{ ?player nba:bornIn ?bornIn. }}
             OPTIONAL {{ ?player nba:draftYear ?draftYear. }}
-            OPTIONAL {{ ?player nba:position ?position. }}
             OPTIONAL {{ ?player nba:height ?height. }}
             OPTIONAL {{ ?player nba:weight ?weight. }}
             OPTIONAL {{ ?player nba:school ?school. }}
@@ -503,33 +504,31 @@ def pagina_jogador(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT ?team ?teamName ?season ?seasonType WHERE {{
+        SELECT ?team ?teamName ?teamLogo ?season ?seasonType WHERE {{
             ?p nba:player ?player ;
                nba:team ?team ;
                nba:season ?season ;
                nba:seasonType ?seasonType .
-            ?team nba:name ?teamName .
+            ?team nba:actualName ?teamName ;
+                    nba:logo ?teamLogo .
             FILTER(STR(?player) = "{jogador_uri}")
         }}
-        ORDER BY ?season
+        ORDER BY DESC(?season)
+        LIMIT 1
     """)
     sparql.setReturnFormat(JSON)
-    participacoes_data = sparql.query().convert()["results"]["bindings"]
+    team_data = sparql.query().convert()["results"]["bindings"]
 
-    participacoes = []
-    for p in participacoes_data:
-        participacoes.append({
-            "team": p["team"]["value"],
-            "teamName": p["teamName"]["value"],
-            "season": p["season"]["value"],
-            "seasonType": p["seasonType"]["value"]
-        })
+    # Add team data to player info if available
+    if team_data:
+        dados["teamId"] = team_data[0]["team"]["value"]
+        dados["teamName"] = team_data[0]["teamName"]["value"]
+        dados["teamLogo"] = team_data[0]["teamLogo"]["value"]
+        dados["lastSeason"] = team_data[0]["season"]["value"].split("_")[-1]
 
-    return JsonResponse({
-        "jogador": jogador_uri,
-        **dados,
-        "participacoes": participacoes
-    })
+    dados["id"] = id
+
+    return render(request, "player.html", dados)
 
 def pagina_equipa(request, id):
     from collections import defaultdict
@@ -823,12 +822,14 @@ def timeline_jogador(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?season ?team ?teamName ?seasonType WHERE {{
+        SELECT DISTINCT ?season ?seasonLabel ?team ?teamName ?teamLogo ?seasonType WHERE {{
             ?p nba:player ?player ;
                nba:season ?season ;
                nba:team ?team ;
                nba:seasonType ?seasonType .
             ?team nba:name ?teamName .
+            OPTIONAL {{ ?team nba:logo ?teamLogo . }}
+            OPTIONAL {{ ?season nba:label ?seasonLabel . }}
             FILTER(STR(?player) = "{player_uri}")
         }}
         ORDER BY ?season
@@ -845,12 +846,21 @@ def timeline_jogador(request, id):
             continue
         seen.add(key)
 
+        season_label = r.get("seasonLabel", {}).get("value", "")
+
         timeline.append({
             "season": r["season"]["value"],
+            "seasonLabel": season_label,
             "team": r["team"]["value"],
             "teamName": r["teamName"]["value"],
+            "teamLogo": r.get("teamLogo", {}).get("value", ""),
             "seasonType": r["seasonType"]["value"]
         })
+
+    # Sort timeline by season (most recent first)
+    timeline.sort(key=lambda x: x["season"], reverse=True)
+
+    print("Timeline:", timeline)
 
     return JsonResponse({
         "player": player_uri,
@@ -862,38 +872,87 @@ def grafo_jogador(request, id):
     player_uri = f"http://example.org/nba/player_{id}"
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 
+    # Get basic player info
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?team ?teamName ?season WHERE {{
+        SELECT ?name WHERE {{
+            <{player_uri}> nba:name ?name .
+        }}
+    """)
+    sparql.setReturnFormat(JSON)
+    player_result = sparql.query().convert()["results"]["bindings"]
+    
+    # Get player name for better display
+    player_name = "Player"
+    if player_result and "name" in player_result[0]:
+        player_name = player_result[0]["name"]["value"]
+
+    # Query for teams and seasons the player played in
+    sparql.setQuery(f"""
+        PREFIX nba: <http://example.org/nba/>
+
+        SELECT DISTINCT ?team ?teamName ?season ?seasonLabel WHERE {{
             ?p nba:player <{player_uri}> ;
                nba:team ?team ;
                nba:season ?season .
-            ?team nba:name ?teamName .
+            ?team nba:actualName ?teamName .
+            OPTIONAL {{ ?season nba:label ?seasonLabel . }}
         }}
         ORDER BY ?season
     """)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()["results"]["bindings"]
 
+    # Query for teammates who played with this player on the same teams and seasons
+    sparql.setQuery(f"""
+        PREFIX nba: <http://example.org/nba/>
+
+        SELECT DISTINCT ?teammate ?teammateName ?teammatePhoto ?team ?teamName ?season WHERE {{
+            # Find teams and seasons where our player played
+            ?p1 nba:player <{player_uri}> ;
+                nba:team ?team ;
+                nba:season ?season .
+            
+            # Find all other players who played for those same teams in those same seasons
+            ?p2 nba:player ?teammate ;
+                nba:team ?team ;
+                nba:season ?season .
+            
+            # Get teammate name and team name
+            ?teammate nba:name ?teammateName .
+            OPTIONAL {{ ?teammate nba:photo ?teammatePhoto . }}
+            ?team nba:actualName ?teamName .
+            
+            # Exclude the player themselves
+            FILTER(?teammate != <{player_uri}>)
+        }}
+        ORDER BY ?season ?team ?teammateName
+    """)
+    sparql.setReturnFormat(JSON)
+    teammates_results = sparql.query().convert()["results"]["bindings"]
+
+    # Initialize nodes and edges
     nodes = []
     edges = []
     seen_nodes = set()
     seen_edges = set()
 
-    # Nó do jogador
+    # Add player node
     nodes.append({
         "id": player_uri,
-        "label": f"Player {id}",
+        "label": player_name,
         "type": "player"
     })
+    seen_nodes.add(player_uri)
 
+    # Process teams and seasons
     for r in results:
         team_uri = r["team"]["value"]
         team_name = r["teamName"]["value"]
         season = r["season"]["value"]
 
-        # Nó da equipa
+        # Add team node if not seen yet
         if team_uri not in seen_nodes:
             nodes.append({
                 "id": team_uri,
@@ -902,16 +961,7 @@ def grafo_jogador(request, id):
             })
             seen_nodes.add(team_uri)
 
-        # Nó da season
-        if season not in seen_nodes:
-            nodes.append({
-                "id": season,
-                "label": season.split("_")[-1],
-                "type": "season"
-            })
-            seen_nodes.add(season)
-
-        # Aresta jogador → equipa
+        # Edge: player - team
         edge1 = (player_uri, team_uri)
         if edge1 not in seen_edges:
             edges.append({
@@ -921,18 +971,52 @@ def grafo_jogador(request, id):
             })
             seen_edges.add(edge1)
 
-        # Aresta equipa → temporada
-        edge2 = (team_uri, season)
-        if edge2 not in seen_edges:
-            edges.append({
-                "source": team_uri,
-                "target": season,
-                "label": "in season"
+    # Process teammates
+    for r in teammates_results:
+        teammate_uri = r["teammate"]["value"]
+        teammate_name = r["teammateName"]["value"]
+        teammate_photo = r["teammatePhoto"]["value"] if "teammatePhoto" in r and r["teammatePhoto"]["value"] else None
+        team_uri = r["team"]["value"]
+        season = r["season"]["value"]
+        
+        # Add teammate node if not seen yet
+        if teammate_uri not in seen_nodes:
+            nodes.append({
+                "id": teammate_uri,
+                "label": teammate_name,
+                "photo": teammate_photo,
+                "type": "teammate"
             })
-            seen_edges.add(edge2)
+            seen_nodes.add(teammate_uri)
+            
+        # Edge: teammate - team (same as player)
+        edge_to_team = (teammate_uri, team_uri)
+        if edge_to_team not in seen_edges:
+            edges.append({
+                "source": teammate_uri,
+                "target": team_uri,
+                "label": "played for"
+            })
+            seen_edges.add(edge_to_team)
+            
+        # Direct edge: player - teammate (with team and season context)
+        edge_to_teammate = (player_uri, teammate_uri, team_uri, season)
+        if edge_to_teammate not in seen_edges:
+            edges.append({
+                "source": player_uri,
+                "target": teammate_uri,
+                "label": "played with",
+                "team": team_uri,
+                "season": season,
+                "type": "teammate"
+            })
+            seen_edges.add(edge_to_teammate)
+
+        print("nodes:", nodes)
 
     return JsonResponse({
         "player": player_uri,
+        "playerName": player_name,
         "nodes": nodes,
         "edges": edges
     })
@@ -944,62 +1028,111 @@ def companheiros_jogador(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?season ?team ?teamName ?companion ?companionName WHERE {{
-            ?stat nba:player <{player_uri}> ;
-                  nba:season ?season ;
-                  nba:team ?team .
-
-            ?stat2 nba:player ?companion ;
-                   nba:season ?season ;
-                   nba:team ?team .
-
+        SELECT DISTINCT ?season ?seasonLabel ?team ?teamName ?teamLogo ?companion ?companionName ?companionPhoto ?seasonType WHERE {{
+            # Find teams and seasons where this player played
+            ?p1 nba:player <{player_uri}> ;
+                nba:team ?team ;
+                nba:season ?season ;
+                nba:seasonType ?seasonType .
+            
+            # Find all other players who played for those same teams in those same seasons
+            ?p2 nba:player ?companion ;
+                nba:team ?team ;
+                nba:season ?season ;
+                nba:seasonType ?seasonType .
+            
+            # Get team information
             ?team nba:name ?teamName .
+            OPTIONAL {{ ?team nba:logo ?teamLogo . }}
+            
+            # Get companion information
             ?companion nba:name ?companionName .
-
+            OPTIONAL {{ ?companion nba:photo ?companionPhoto . }}
+            
+            # Get season label if available
+            OPTIONAL {{ ?season nba:label ?seasonLabel . }}
+            
+            # Exclude the player themselves
             FILTER(?companion != <{player_uri}>)
         }}
-        ORDER BY ?season ?team ?companionName
+        ORDER BY DESC(?season) ?teamName ?companionName
     """)
 
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()["results"]["bindings"]
 
+    # Initialize the response structure
     grouped_data = {
         "player": player_uri,
         "companions": {}
     }
 
-    # Estrutura auxiliar para evitar duplicados
-    seen_companions = {}
-
+    # Process each result row
     for row in results:
         season = row["season"]["value"]
         team = row["team"]["value"]
         team_name = row["teamName"]["value"]
         companion = row["companion"]["value"]
         companion_name = row["companionName"]["value"]
-
-        # Cria as chaves se não existirem
+        season_type = row["seasonType"]["value"]
+        
+        # Get the season label if available, otherwise format the season ID
+        if "seasonLabel" in row:
+            season_label = row["seasonLabel"]["value"]
+        else:
+            season_label = season.split("_")[-1]
+            
+        # Set default values for optional fields
+        team_logo = row.get("teamLogo", {}).get("value", "")
+        companion_photo = row.get("companionPhoto", {}).get("value", "")
+        
+        # Create season entry if it doesn't exist
         if season not in grouped_data["companions"]:
-            grouped_data["companions"][season] = {}
-            seen_companions[season] = {}
-
-        if team not in grouped_data["companions"][season]:
-            grouped_data["companions"][season][team] = {
+            grouped_data["companions"][season] = {
+                "seasonLabel": season_label,
+                "teams": {}
+            }
+            
+        # Create team entry if it doesn't exist
+        if team not in grouped_data["companions"][season]["teams"]:
+            grouped_data["companions"][season]["teams"][team] = {
                 "teamName": team_name,
+                "teamLogo": team_logo,
                 "players": []
             }
-            seen_companions[season][team] = set()
-
-        # Adiciona apenas se ainda não foi adicionado para a época e equipa
-        if companion not in seen_companions[season][team]:
-            grouped_data["companions"][season][team]["players"].append({
+            
+        # Check if this companion is already added (avoid duplicates)
+        player_exists = any(p["player"] == companion for p in grouped_data["companions"][season]["teams"][team]["players"])
+        
+        # Add player if not already added
+        if not player_exists:
+            grouped_data["companions"][season]["teams"][team]["players"].append({
                 "player": companion,
-                "playerName": companion_name
+                "playerName": companion_name,
+                "playerPhoto": companion_photo
             })
-            seen_companions[season][team].add(companion)
 
-    return JsonResponse(grouped_data)
+    # Convert the response to a more frontend-friendly format
+    response_data = {
+        "player": player_uri,
+        "companions": {}
+    }
+    
+    # Process each season
+    for season, season_data in grouped_data["companions"].items():
+        response_data["companions"][season] = {
+            "seasonLabel": season_data["seasonLabel"],
+        }
+        
+        # Process each team in this season
+        for team, team_data in season_data["teams"].items():
+            response_data["companions"][season][team] = {
+                "teamName": team_data["teamName"],
+                "teamLogo": team_data["teamLogo"],
+                "players": team_data["players"]
+            }
+    
+    return JsonResponse(response_data)
 
 def comparar_jogadores(request):
     player1_id = request.GET.get("player1")
