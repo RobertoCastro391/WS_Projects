@@ -738,7 +738,7 @@ def list_arenas(request):
         OPTIONAL { ?arena nba:capacity ?capacity . }
         OPTIONAL { 
             ?arena nba:homeTeam ?homeTeam .
-            ?homeTeam nba:name ?homeTeamName .
+            ?homeTeam nba:actualName ?homeTeamName .
         }
         }
         ORDER BY ?name
@@ -1575,7 +1575,7 @@ def quiz_questions(request):
                nba:team ?team ;
                nba:season ?season .
             ?player nba:name ?playerName .
-            ?team nba:name ?teamName .
+            ?team nba:actualName ?teamName .
         } LIMIT 300
     """)
     results = sparql.query().convert()["results"]["bindings"]
@@ -1603,7 +1603,7 @@ def quiz_questions(request):
             ?arena a nba:Arena ;
                    nba:name ?arenaName ;
                    nba:homeTeam ?team .
-            ?team nba:name ?teamName .
+            ?team nba:actualName ?teamName .
         } LIMIT 100
     """)
     results = sparql.query().convert()["results"]["bindings"]

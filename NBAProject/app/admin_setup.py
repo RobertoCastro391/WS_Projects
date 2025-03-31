@@ -7,18 +7,10 @@ from dotenv import load_dotenv
 
 User = get_user_model()
 
-# Get the env file from parent directory
-current_file = Path(__file__).resolve()
-project_root = current_file.parent.parent  # This should be NBAProject/
-env_file_path = project_root / '.env'
-
-# Load environment variables from .env file
-load_dotenv(env_file_path)
-
 # Define the admin user credentials
-ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
-ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
-ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', 'NBAAdmin')
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'nbaadmin123@example.com')
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'adminpass123')
 
 def create_admin_user():
     # Skip this during certain management commands to avoid issues

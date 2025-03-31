@@ -133,3 +133,5 @@ else:
     SPARQL_ENDPOINT = "http://localhost:7200/repositories/NBA"
     SPARQL_ENDPOINT_UPDATE = "http://localhost:7200/repositories/NBA/statements"
 
+
+

@@ -6,8 +6,6 @@ services:
       - "7200:7200"
     environment:
       - GRAPHDB_HOME=/opt/graphdb/home
-      - GRAPHDB_MIN_DISK_SPACE_MB=50
-      - JAVA_OPTS=-Dgraphdb.workbench.maxUploadSize=5000000
     volumes:
       - graphdb-data:/opt/graphdb/home
     restart: unless-stopped
@@ -24,6 +22,9 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=NBAProject.settings
       - DJANGO_ENV=prod
+      - ADMIN_USERNAME=NBAAdmin
+      - ADMIN_EMAIL=nbaadmin123@example.com
+      - ADMIN_PASSWORD=adminpass123
 
   graphdb-init:
     image: curlimages/curl:latest
