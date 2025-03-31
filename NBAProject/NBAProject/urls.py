@@ -63,6 +63,10 @@ urlpatterns = [
     path("rede/jogadores/", views.rede_jogadores),
     path("rede/jogadores/expand/<path:player_id>/", views.expandir_jogador),
     path('stats/', views.stats),
+
+    # Admin
+    path('staff/login/', views.login_view, name='staff_login'),
+    path('staff/logout/', views.logout_view, name='logout'),
     
     #Funcionalidades Extras
     # path('sparql/', views.executar_sparql),  # Playground SPARQL

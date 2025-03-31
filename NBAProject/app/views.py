@@ -1,11 +1,14 @@
 import json
 import re
 from collections import defaultdict
-from django.views.decorators.cache import cache_page
+
 import requests
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.cache import cache_page
 from SPARQLWrapper import JSON, SPARQLWrapper
 
 
@@ -1552,3 +1555,30 @@ def stats(request):
         "stats_json": json.dumps(stats_data),
         "stats_data": stats_data
     })
+
+# ================ Admin views ====================
+
+def is_admin(user):
+    """Check if user is staff or superuser"""
+    return user.is_staff or user.is_superuser
+
+def login_view(request):
+    """Handle user login"""
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None and (user.is_staff or user.is_superuser):
+            login(request, user)
+            return redirect('/')
+        else:
+            error_message = "Invalid login credentials or insufficient permissions."
+            return render(request, 'login.html', {'error_message': error_message})
+    else:
+        return render(request, 'login.html')
+    
+def logout_view(request):
+    """Handle user logout"""
+    logout(request)
+    return redirect('/staff/login')
