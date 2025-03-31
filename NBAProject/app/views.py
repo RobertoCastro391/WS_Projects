@@ -804,7 +804,7 @@ def pagina_arena(request, id):
             OPTIONAL {{ <{arena_uri}> nba:latitude ?latitude. }}
             OPTIONAL {{ <{arena_uri}> nba:longitude ?longitude. }}
             OPTIONAL {{ <{arena_uri}> nba:photo ?photo. }}
-            OPTIONAL {{ ?homeTeam nba:name ?homeTeamName. }}
+            OPTIONAL {{ ?homeTeam nba:actualName ?homeTeamName. }}
         }}
     """)
     sparql.setReturnFormat(JSON)
