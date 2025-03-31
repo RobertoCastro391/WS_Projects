@@ -23,6 +23,7 @@ services:
       - graphdb
     environment:
       - DJANGO_SETTINGS_MODULE=NBAProject.settings
+      - DJANGO_ENV=prod
 
   graphdb-init:
     image: curlimages/curl:latest

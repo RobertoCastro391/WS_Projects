@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -124,4 +125,8 @@ STATIC_URL = 'app/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SPARQL_ENDPOINT = "http://localhost:7200/repositories/NBA"
+ENV = os.getenv("DJANGO_ENV", "dev")
+if ENV == "prod":
+    SPARQL_ENDPOINT = "http://graphdb:7200/repositories/NBA"
+else:
+    SPARQL_ENDPOINT = "http://localhost:7200/repositories/NBA"
