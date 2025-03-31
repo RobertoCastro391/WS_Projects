@@ -89,6 +89,14 @@
         </div>
       </div>
     </div>
+    {% if user.is_authenticated and user.is_staff %}
+    <div class="mt-4 d-flex justify-content-end">
+      <button class="btn btn-danger" id="deletePlayerBtn">
+        <i class="bi bi-trash-fill me-1"></i> Delete Player
+      </button>
+    </div>
+  {% endif %}
+
   </div>
   
   <!-- Tabs Section -->
@@ -725,6 +733,54 @@
       `;
     }
   }
+
+  // Handle player deletion
+const deleteBtn = document.getElementById("deletePlayerBtn");
+
+if (deleteBtn) {
+  deleteBtn.addEventListener("click", function () {
+    if (confirm("Are you sure you want to delete this player? This action cannot be undone.")) {
+      fetch(`/staff/delete_player/{{ id }}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          alert("Player deleted successfully!");
+          window.location.href = "/jogadores/page/";  // Redirect to players list
+        } else if (data.error) {
+          alert("Error deleting player: " + data.error);
+        }
+      })
+      .catch(error => {
+        console.error("Error deleting player:", error);
+        alert("Something went wrong while trying to delete the player.");
+      });
+    }
+  });
+}
+
+// CSRF helper function
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 
 </script>
 {% endblock %}

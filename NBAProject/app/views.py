@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import cache_page
-from SPARQLWrapper import JSON, SPARQLWrapper
+from django.views.decorators.csrf import csrf_exempt
+from SPARQLWrapper import JSON, POST, SPARQLWrapper
 
 
 def home_page(request):
@@ -1582,3 +1583,122 @@ def logout_view(request):
     """Handle user logout"""
     logout(request)
     return redirect('/staff/login')
+
+@csrf_exempt
+@login_required
+@user_passes_test(is_admin)
+def add_player(request):
+    """Add a new player to the database"""
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Only POST method is allowed"}, status=405)
+    
+    try:
+        # Parse JSON data from request
+        data = json.loads(request.body)
+        
+        # Validate required fields
+        if not data.get('name'):
+            return JsonResponse({"success": False, "message": "Player name is required"}, status=400)
+
+        # Generate player ID - use a timestamp-based approach to ensure uniqueness
+        import time
+        from datetime import datetime
+
+        # Create a unique ID based on timestamp
+        timestamp = int(time.time())
+        player_id = f"player_{timestamp}"
+        
+        # Format birthdate if provided (from YYYY-MM-DD to YYYY-DD-MM as in original data)
+        birthdate = data.get('birthdate', '')
+        if birthdate:
+            try:
+                date_obj = datetime.strptime(birthdate, '%Y-%m-%d')
+                birthdate = date_obj.strftime('%Y-%m-%d')
+            except ValueError:
+                birthdate = ""
+        
+        # Map position to URI if provided
+        position = data.get('position', '')
+        position_uri = f"nba:position_{position.replace('-', '_')}" if position else ""
+        
+        # Create SPARQL query for inserting the player
+        sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT_UPDATE)
+        sparql.setMethod(POST)
+        
+        # Build the insert query with the available data
+        query = f"""
+            PREFIX nba: <http://example.org/nba/>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            
+            INSERT DATA {{
+                nba:{player_id} rdf:type nba:Player ;
+                    nba:name "{data.get('name')}" .
+        """
+        
+        # Add optional fields if they are provided
+        if birthdate:
+            query += f'nba:{player_id} nba:birthdate "{birthdate}" .\n'
+        
+        if data.get('bornIn'):
+            query += f'nba:{player_id} nba:bornIn "{data.get("bornIn")}" .\n'
+        
+        if position_uri:
+            query += f'nba:{player_id} nba:position {position_uri} .\n'
+        
+        if data.get('height'):
+            query += f'nba:{player_id} nba:height "{data.get("height")}" .\n'
+        
+        if data.get('weight'):
+            query += f'nba:{player_id} nba:weight "{data.get("weight")}" .\n'
+        
+        if data.get('draftYear'):
+            query += f'nba:{player_id} nba:draftYear "{data.get("draftYear")}" .\n'
+        
+        if data.get('school'):
+            query += f'nba:{player_id} nba:school "{data.get("school")}" .\n'
+        
+        if data.get('photo'):
+            query += f'nba:{player_id} nba:photo <{data.get("photo")}> .\n'
+        
+        # Close the query
+        query += "}"
+        
+        # Execute the SPARQL UPDATE query
+        sparql.setQuery(query)
+        sparql.query()
+        
+        return JsonResponse({
+            "success": True, 
+            "message": f"Player {data.get('name')} added successfully!",
+            "player_id": player_id
+        })
+        
+    except Exception as e:
+        print(f"Error adding player: {str(e)}")
+        return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
+
+
+@csrf_exempt
+@login_required
+@user_passes_test(is_admin)
+def delete_player(request, player_id):
+    if request.method == 'POST':
+        try:
+            player_uri = f"<http://example.org/nba/player_{player_id}>"
+
+            sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT_UPDATE)
+            sparql.setMethod(POST)
+            sparql.setQuery(f"""
+                PREFIX nba: <http://example.org/nba/>
+                DELETE WHERE {{
+                    ?s ?p {player_uri} .
+                }};
+                DELETE WHERE {{
+                    {player_uri} ?p ?o .
+                }}
+            """)
+            sparql.query()
+
+            return JsonResponse({'message': 'Player deleted successfully!'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

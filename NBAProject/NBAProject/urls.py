@@ -67,6 +67,9 @@ urlpatterns = [
     # Admin
     path('staff/login/', views.login_view, name='staff_login'),
     path('staff/logout/', views.logout_view, name='logout'),
+    path('staff/jogadores/adicionar/', views.add_player, name='add_player'),
+    path('staff/delete_player/<str:player_id>/', views.delete_player, name='delete_player'),
+
     
     #Funcionalidades Extras
     # path('sparql/', views.executar_sparql),  # Playground SPARQL
