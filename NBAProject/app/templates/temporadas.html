@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block title %}NBA | Seasnos{% endblock %}
+
+{% block extra_head %}
+<style>
+    .season-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        color: #141414;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        font-weight: bold;
+        font-size: 1.4rem;
+    }
+
+    .season-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease-out;
+    }
+
+    .animate-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">NBA Seasons</h2>
+
+<!-- Cards -->
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for temporada in temporadas %}
+    <div class="col season-card-container animate-on-scroll" data-season="{{ temporada }}">
+      <a href="/temporada/{{ temporada|cut:'http://example.org/nba/season_' }}" class="text-decoration-none">
+        <div class="season-card h-100">
+          {{ temporada|cut:"http://example.org/nba/season_" }}
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Pagination -->
+  <nav class="mt-5">
+    <ul id="pagination" class="pagination justify-content-center"></ul>
+  </nav>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+    function paginate(page) {
+        const cards = Array.from(document.querySelectorAll('.season-card-container'));
+        const perPage = 12;
+        const totalPages = Math.ceil(cards.length / perPage);
+
+        // Hide all cards
+        cards.forEach(card => card.style.display = 'none');
+
+        // Show only the ones for this page
+        const start = (page - 1) * perPage;
+        const end = start + perPage;
+        cards.slice(start, end).forEach(card => card.style.display = 'block');
+
+        // Update pagination controls
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement('li');
+            li.className = `page-item ${i === page ? 'active' : ''}`;
+            li.innerHTML = `<button class="page-link" onclick="paginate(${i})">${i}</button>`;
+            pagination.appendChild(li);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Animate on scroll
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+        // Trigger first pagination
+        paginate(1);
+    });
+</script>
+{% endblock %}

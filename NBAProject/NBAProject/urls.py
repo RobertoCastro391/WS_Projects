@@ -28,7 +28,7 @@ urlpatterns = [
     path('jogadores/', views.list_jogadores),  # Lista todos os jogadores únicos
     path('equipas/', views.equipas_page),  # Render da página de equipas
     path('equipas/filter/', views.list_equipas),  # Lista todas as equipas
-    path('temporadas/', views.list_temporadas),  # Lista todas as temporadas
+    path('temporadas/', views.list_temporadas, name='seasons'),  # Lista todas as temporadas
     path('participacoes/', views.list_participacoes),  # Lista todas as participações
     path('stats/geral/', views.stats_geral),  # Contagem global de jogadores, equipas, temporadas
 
@@ -59,8 +59,9 @@ urlpatterns = [
 
     #Funcionalidades Avançadas
     path('comparar/', views.comparar_jogadores),  # Comparação entre dois jogadores
-    path('comparar_jogadores/', views.comparar_jogadores_template, name='comparar_template'),
-    path('rede/jogadores/', views.rede_jogadores),  # Rede de conexões entre jogadores
+    path('comparar_jogadores/', views.comparar_jogadores_template),  # Template para comparação de jogadores
+    path("rede/jogadores/", views.rede_jogadores),
+    path("rede/jogadores/expand/<path:player_id>/", views.expandir_jogador),
     path('stats/', views.stats),
     
     #Funcionalidades Extras
