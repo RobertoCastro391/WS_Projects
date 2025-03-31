@@ -1,6 +1,8 @@
 import json
 import re
+import time
 from collections import defaultdict
+from datetime import datetime
 
 import requests
 from django.conf import settings
@@ -935,11 +937,12 @@ def grafo_jogador(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT DISTINCT ?team ?teamName ?season ?seasonLabel WHERE {{
+        SELECT DISTINCT ?team ?teamName ?teamPhoto ?season ?seasonLabel WHERE {{
             ?p nba:player <{player_uri}> ;
                nba:team ?team ;
                nba:season ?season .
-            ?team nba:actualName ?teamName .
+            ?team nba:actualName ?teamName ;
+                    nba:logo ?teamPhoto .
             OPTIONAL {{ ?season nba:label ?seasonLabel . }}
         }}
         ORDER BY ?season
@@ -993,6 +996,7 @@ def grafo_jogador(request, id):
     for r in results:
         team_uri = r["team"]["value"]
         team_name = r["teamName"]["value"]
+        team_photo = r["teamPhoto"]["value"]
         season = r["season"]["value"]
 
         # Add team node if not seen yet
@@ -1000,9 +1004,12 @@ def grafo_jogador(request, id):
             nodes.append({
                 "id": team_uri,
                 "label": team_name,
+                "photo": team_photo,
                 "type": "team"
             })
             seen_nodes.add(team_uri)
+
+            print("photo: ", team_photo)
 
         # Edge: player - team
         edge1 = (player_uri, team_uri)
@@ -1054,8 +1061,6 @@ def grafo_jogador(request, id):
                 "type": "teammate"
             })
             seen_edges.add(edge_to_teammate)
-
-        print("nodes:", nodes)
 
     return JsonResponse({
         "player": player_uri,
@@ -1600,10 +1605,6 @@ def add_player(request):
         if not data.get('name'):
             return JsonResponse({"success": False, "message": "Player name is required"}, status=400)
 
-        # Generate player ID - use a timestamp-based approach to ensure uniqueness
-        import time
-        from datetime import datetime
-
         # Create a unique ID based on timestamp
         timestamp = int(time.time())
         player_id = f"player_{timestamp}"
@@ -1619,7 +1620,7 @@ def add_player(request):
         
         # Map position to URI if provided
         position = data.get('position', '')
-        position_uri = f"nba:position_{position.replace('-', '_')}" if position else ""
+        position_uri = f"nba:position_{position}" if position else ""
         
         # Create SPARQL query for inserting the player
         sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT_UPDATE)
@@ -1702,3 +1703,112 @@ def delete_player(request, player_id):
             return JsonResponse({'message': 'Player deleted successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+        
+@csrf_exempt
+@login_required
+@user_passes_test(is_admin)
+def update_player(request):
+    """Update an existing player in the database"""
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Only POST method is allowed"}, status=405)
+    
+    try:
+        # Parse JSON data from request
+        data = json.loads(request.body)
+        
+        # Validate required fields
+        if not data.get('name'):
+            return JsonResponse({"success": False, "message": "Player name is required"}, status=400)
+        
+        # Get player ID
+        player_id = data.get('id')
+        if not player_id:
+            return JsonResponse({"success": False, "message": "Player ID is required"}, status=400)
+        
+        # Build the player URI
+        player_uri = f"nba:player_{player_id}"
+        
+        # Format birthdate if provided
+        birthdate = data.get('birthdate', '')
+        if birthdate:
+            try:
+                date_obj = datetime.strptime(birthdate, '%Y-%m-%d')
+                birthdate = date_obj.strftime('%Y-%m-%d')
+            except ValueError:
+                birthdate = ""
+        
+        # Map position to URI if provided
+        position = data.get('position', '')
+        position_uri = f"nba:position_{position}" if position else ""
+        
+        # Create SPARQL query for updating the player
+        sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT_UPDATE)
+        sparql.setMethod(POST)
+        
+        # First, delete all existing player properties except type
+        delete_query = f"""
+            PREFIX nba: <http://example.org/nba/>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            
+            DELETE {{
+                {player_uri} ?p ?o .
+            }}
+            WHERE {{
+                {player_uri} ?p ?o .
+                FILTER(?p != rdf:type)
+            }}
+        """
+        
+        sparql.setQuery(delete_query)
+        sparql.query()
+        
+        # Now, insert all the updated properties
+        insert_query = f"""
+            PREFIX nba: <http://example.org/nba/>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            
+            INSERT DATA {{
+                {player_uri} nba:name "{data.get('name')}" .
+        """
+        
+        # Add optional fields if they are provided
+        if birthdate:
+            insert_query += f'{player_uri} nba:birthdate "{birthdate}" .\n'
+        
+        if data.get('bornIn'):
+            insert_query += f'{player_uri} nba:bornIn "{data.get("bornIn")}" .\n'
+        
+        if position_uri:
+            insert_query += f'{player_uri} nba:position {position_uri} .\n'
+        
+        if data.get('height'):
+            insert_query += f'{player_uri} nba:height "{data.get("height")}" .\n'
+        
+        if data.get('weight'):
+            insert_query += f'{player_uri} nba:weight "{data.get("weight")}" .\n'
+        
+        if data.get('draftYear'):
+            insert_query += f'{player_uri} nba:draftYear "{data.get("draftYear")}" .\n'
+        
+        if data.get('school'):
+            insert_query += f'{player_uri} nba:school "{data.get("school")}" .\n'
+        
+        if data.get('photo'):
+            insert_query += f'{player_uri} nba:photo <{data.get("photo")}> .\n'
+        
+        # Close the query
+        insert_query += "}"
+        
+        # Execute the SPARQL INSERT query
+        sparql.setQuery(insert_query)
+        sparql.query()
+        
+        return JsonResponse({
+            "success": True, 
+            "message": f"Player {data.get('name')} updated successfully!",
+            "player_id": player_id
+        })
+        
+    except Exception as e:
+        print(f"Error updating player: {str(e)}")
+        return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)

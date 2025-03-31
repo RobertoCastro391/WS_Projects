@@ -69,6 +69,7 @@ urlpatterns = [
     path('staff/logout/', views.logout_view, name='logout'),
     path('staff/jogadores/adicionar/', views.add_player, name='add_player'),
     path('staff/delete_player/<str:player_id>/', views.delete_player, name='delete_player'),
+    path('staff/jogadores/update/', views.update_player, name='update_player'),
 
     
     #Funcionalidades Extras
