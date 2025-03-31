@@ -1,11 +1,17 @@
 import json
 import re
-from collections import defaultdict
-from django.views.decorators.cache import cache_page
+import random
 import requests
+
+from collections import defaultdict
+from .models import QuizScore
+
+from django.views.decorators.cache import cache_page
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.csrf import csrf_exempt
+
 from SPARQLWrapper import JSON, SPARQLWrapper
 
 
@@ -1552,3 +1558,94 @@ def stats(request):
         "stats_json": json.dumps(stats_data),
         "stats_data": stats_data
     })
+
+
+def quiz_questions(request):
+    sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    sparql.setReturnFormat(JSON)
+
+    # 1. Player-Team-Season Questions
+    sparql.setQuery("""
+        PREFIX nba: <http://example.org/nba/>
+        SELECT DISTINCT ?player ?playerName ?team ?teamName ?season WHERE {
+            ?p nba:player ?player ;
+               nba:team ?team ;
+               nba:season ?season .
+            ?player nba:name ?playerName .
+            ?team nba:name ?teamName .
+        } LIMIT 300
+    """)
+    results = sparql.query().convert()["results"]["bindings"]
+
+    player_team_q = []
+    for r in results:
+        player_name = r["playerName"]["value"]
+        team_name = r["teamName"]["value"]
+        season = r["season"]["value"].split("_")[-1]
+
+        # 💡 skip invalid names
+        if not team_name.strip() or team_name.strip().lower() == "u":
+            continue
+
+        player_team_q.append({
+            "type": "player-team-season",
+            "text": f"Which team did {player_name} play for in season {season}?",
+            "correct": team_name
+        })
+
+    # 2. Arena-HomeTeam Questions
+    sparql.setQuery("""
+        PREFIX nba: <http://example.org/nba/>
+        SELECT DISTINCT ?arenaName ?teamName WHERE {
+            ?arena a nba:Arena ;
+                   nba:name ?arenaName ;
+                   nba:homeTeam ?team .
+            ?team nba:name ?teamName .
+        } LIMIT 100
+    """)
+    results = sparql.query().convert()["results"]["bindings"]
+
+    arena_team_q = []
+    for r in results:
+        arena_name = r["arenaName"]["value"]
+        team_name = r["teamName"]["value"]
+        arena_team_q.append({
+            "type": "arena-home-team",
+            "text": f"What is the home team of the arena {arena_name}?",
+            "correct": team_name
+        })
+
+    # Combine and prepare options
+    all = player_team_q + arena_team_q
+    random.shuffle(all)
+    selected = all[:20]
+
+    # Get pool of all teams
+    all_teams = list({q["correct"] for q in all})
+
+    for q in selected:
+        wrong = [t for t in all_teams if t != q["correct"]]
+        options = [q["correct"]] + random.sample(wrong, min(3, len(wrong)))
+        random.shuffle(options)
+        q["options"] = [{"text": opt, "is_correct": opt == q["correct"]} for opt in options]
+        del q["correct"]  # no need to expose it
+
+    return JsonResponse({"questions": selected})
+
+def quiz_page(request):
+    top_scores = QuizScore.objects.order_by('-score', '-timestamp')[:10]
+    return render(request, "quiz.html", {"top_scores": top_scores})
+
+@csrf_exempt
+def submit_score(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        name = data.get("name", "")
+        score = data.get("score", 0)
+
+        if name:
+            QuizScore.objects.create(player_name=name, score=score)
+            return JsonResponse({"status": "ok"})
+        return JsonResponse({"status": "error", "message": "Name required"}, status=400)
+
+    return JsonResponse({"status": "error", "message": "POST only"}, status=405)
