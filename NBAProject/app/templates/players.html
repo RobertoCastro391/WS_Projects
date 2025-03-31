@@ -186,7 +186,7 @@
   </div>
   
   <!-- Filters Section -->
-<div class="filter-section" data-aos="fade-down">
+ <div class="filter-section" data-aos="fade-down">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 class="filter-header text-dark m-0">🔍 Filter Players</h4>
       <div>
@@ -326,10 +326,29 @@
   </div>
   
   <!-- Results Section -->
-  <div class="mb-4" id="results-summary" style="display: none;">
-    <div class="bg-white text-dark rounded p-3">
-      <span id="result-count" class="fs-5">0</span> players found
-      <span id="filter-tags" class="ms-3"></span>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center results-div">
+        <div id="results-summary" style="display: none;">
+          <div class="bg-white rounded-pill py-2 px-4 shadow-sm d-inline-flex align-items-center">
+            <span class="badge bg-primary rounded-circle me-2 p-2">
+              <i class="bi bi-people-fill"></i>
+            </span>
+            <span id="result-count" class="fw-bold text-primary">0</span>
+            <span class="text-dark ms-1">players found</span>
+            <span id="filter-tags" class="ms-3"></span>
+          </div>
+        </div>
+
+        <!-- Add Player -->
+        {% if user.is_authenticated and user.is_staff %}
+        <div class="admin-actions" style="display: none;">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPlayerModal">
+            <i class="bi bi-person-plus-fill me-1"></i>Add New Player
+          </button>
+        </div>
+        {% endif %}
+      </div>
     </div>
   </div>
   
@@ -356,33 +375,126 @@
       </ul>
     </nav>
   </div>
-</div>
 
-  <!-- Player Card Template -->
-  {% comment %} <template id="player-card-template">
-    <div class="col-md-3 mb-4">
-      <div class="player-card shadow h-100">
-        <img src="" alt="" class="player-img">
-        <div class="player-info position-relative">
-          <span class="position-badge bg-primary text-white"></span>
-          <h5 class="card-title player-name text-dark"></h5>
-          <p class="card-text text-secondary mb-1">
-            <small class="player-height"></small> • <small class="player-weight"></small>
-          </p>
-          <p class="card-text text-muted mb-1">
-            <small><i class="bi bi-book"></i> <span class="player-school"></span></small>
-          </p>
-          <p class="card-text text-muted mb-1">
-            <small class="player-nationality"></small>
-          </p>
-          <p class="card-text text-muted">
-            <small>Draft: <span class="player-draft"></span></small>
-          </p>
-          <a href="#" class="btn btn-sm btn-outline-primary view-player">View Profile</a>
-        </div>
+  <!-- Add Player Modal -->
+<div class="modal fade" id="addPlayerModal" tabindex="-1" aria-labelledby="addPlayerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="addPlayerModalLabel">
+          <i class="bi bi-person-plus-fill me-2"></i>Add New Player
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addPlayerForm">
+          <!-- Basic Info Section -->
+          <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">Basic Information</h6>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="playerName" class="form-label">Player Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="playerName" name="name" required>
+                  <div class="invalid-feedback">Please enter a player name.</div>
+                </div>
+                <div class="col-md-6">
+                  <label for="playerPosition" class="form-label">Position</label>
+                  <select class="form-select" id="playerPosition" name="position">
+                    <option value="">Select Position</option>
+                    <option value="F">Forward (F)</option>
+                    <option value="C">Center (C)</option>
+                    <option value="G">Guard (G)</option>
+                    <option value="F-C">Forward-Center (F-C)</option>
+                    <option value="G-F">Guard-Forward (G-F)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="playerBirthdate" class="form-label">Birthdate</label>
+                  <input type="date" class="form-control" id="playerBirthdate" name="birthdate">
+                </div>
+                <div class="col-md-6">
+                  <label for="playerCountry" class="form-label">Country of Birth</label>
+                  <input type="text" class="form-control" id="playerCountry" name="bornIn">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Physical Attributes Section -->
+          <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">Physical Attributes</h6>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="playerHeight" class="form-label">Height (ft-in)</label>
+                  <input type="text" class="form-control" id="playerHeight" name="height" placeholder="e.g. 6-8">
+                  <small class="form-text text-muted">Format: feet-inches (e.g., 6-8)</small>
+                  <div class="invalid-feedback">Please use the format: feet-inches (e.g., 6-8)</div>
+                </div>
+                <div class="col-md-6">
+                  <label for="playerWeight" class="form-label">Weight (lbs)</label>
+                  <input type="number" class="form-control" id="playerWeight" name="weight" min="0" placeholder="e.g. 220">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Draft & Education Section -->
+          <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">Draft & Education</h6>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="playerDraftYear" class="form-label">Draft Year</label>
+                  <input type="number" class="form-control" id="playerDraftYear" name="draftYear" min="1950" max="2025">
+                </div>
+                <div class="col-md-6">
+                  <label for="playerSchool" class="form-label">School/College</label>
+                  <input type="text" class="form-control" id="playerSchool" name="school">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Media Section -->
+          <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">Media</h6>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="playerPhoto" class="form-label">Photo URL</label>
+                  <input type="url" class="form-control" id="playerPhoto" name="photo" placeholder="https://...">
+                  <small class="form-text text-muted">Full URL to player's photo</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="formAlerts"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="submitPlayerForm">
+          <i class="bi bi-save me-1"></i>Save Player
+        </button>
       </div>
     </div>
-  </template> {% endcomment %}
+  </div>
+</div>
+</div>
+
   <template id="player-card-template">
     <div class="col-md-3 mb-4">
       <div class="player-card">
@@ -657,16 +769,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Set up the player card with the new design
-        playerCard.querySelector('.position-badge').textContent = player.position;
+        playerCard.querySelector('.position-badge').textContent = player.position || 'N/A';
         playerCard.querySelector('.player-name').textContent = player.nome;
         
         // Add team name if available
-        const teamElement = playerCard.querySelector('.player-team');
-        if (player.teamName) {
-          teamElement.textContent = player.teamName;
-        } else {
-          teamElement.innerHTML = '&nbsp;';
-        }
+        playerCard.querySelector('.player-team').textContent = player.teamName || 'N/A';
         
         playerCard.querySelector('.player-height').textContent = player.height || 'N/A';
         playerCard.querySelector('.player-weight').textContent = player.weight ? player.weight + ' lbs' : 'N/A';
@@ -860,6 +967,12 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateResultsCount(count) {
     resultCount.textContent = count;
     resultsSummary.style.display = 'block';
+
+    // Show admin actions (Add New Player button) if it exists
+    const adminActions = document.querySelector('.admin-actions');
+    if (adminActions) {
+      adminActions.style.display = 'block';
+    }
   }
   
   // Show loading indicator
@@ -880,5 +993,180 @@ document.addEventListener('DOMContentLoaded', function() {
     pagination.style.display = 'none';
   }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  // If we're using the button approach, we don't need to modify it
+  // The button already has proper attributes from the HTML
+  
+  // Initialize the modal
+  const addPlayerModal = document.getElementById('addPlayerModal');
+  if (addPlayerModal) {
+    const modal = new bootstrap.Modal(addPlayerModal);
+    
+    // Clear form when modal is hidden
+    addPlayerModal.addEventListener('hidden.bs.modal', function() {
+      document.getElementById('addPlayerForm').reset();
+      document.getElementById('formAlerts').innerHTML = '';
+      
+      // Reset validation styling
+      addPlayerForm.querySelectorAll('.is-invalid').forEach(field => {
+        field.classList.remove('is-invalid');
+      });
+    });
+  }
+
+  // Handle the form submission
+  const addPlayerForm = document.getElementById('addPlayerForm');
+  const submitBtn = document.getElementById('submitPlayerForm');
+  
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function() {
+      // Validate the form
+      if (!validatePlayerForm()) {
+        return;
+      }
+      
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+      
+      // Collect form data
+      const formData = new FormData(addPlayerForm);
+      const playerData = {};
+      
+      // Convert FormData to JSON object
+      for (const [key, value] of formData.entries()) {
+        if (value.trim() !== '') {
+          playerData[key] = value.trim();
+        }
+      }
+      
+      // Send the data via fetch API
+      fetch('/staff/jogadores/adicionar/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCsrfToken() // Get CSRF token function defined below
+        },
+        body: JSON.stringify(playerData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Reset loading state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-save me-1"></i>Save Player';
+        
+        if (data.success) {
+          // Show success message
+          showFormAlert('success', `<i class="bi bi-check-circle me-1"></i>${data.message}`);
+          
+          // Clear the form
+          addPlayerForm.reset();
+          
+          // Close the modal after 1.5 seconds
+          setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addPlayerModal'));
+            modal.hide();
+            
+            // Reload the player list
+            loadPlayers();
+          }, 1500);
+        } else {
+          // Show error message
+          showFormAlert('danger', `<i class="bi bi-exclamation-triangle me-1"></i>${data.message || 'An error occurred while saving the player.'}`);
+        }
+      })
+      .catch(error => {
+        // Reset loading state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-save me-1"></i>Save Player';
+        
+        // Show error message
+        showFormAlert('danger', `<i class="bi bi-exclamation-triangle me-1"></i>Error: ${error.message}`);
+        console.error('Error:', error);
+      });
+    });
+  }
+  
+  // Helper function to validate the form
+  function validatePlayerForm() {
+    const playerName = document.getElementById('playerName').value.trim();
+    let isValid = true;
+    
+    // Reset validation styling
+    addPlayerForm.querySelectorAll('.is-invalid').forEach(field => {
+      field.classList.remove('is-invalid');
+    });
+    
+    // Name is required
+    if (!playerName) {
+      document.getElementById('playerName').classList.add('is-invalid');
+      isValid = false;
+    }
+    
+    // Validate height format (if provided)
+    const heightField = document.getElementById('playerHeight');
+    const heightValue = heightField.value.trim();
+    if (heightValue && !heightValue.match(/^\d+-\d+$/)) {
+      heightField.classList.add('is-invalid');
+      isValid = false;
+    }
+    
+    return isValid;
+  }
+  
+  // Helper function to show alert messages in the form
+  function showFormAlert(type, message) {
+    const alertsContainer = document.getElementById('formAlerts');
+    
+    // Create alert element
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    // Clear previous alerts
+    alertsContainer.innerHTML = '';
+    
+    // Add the new alert
+    alertsContainer.appendChild(alert);
+    
+    // Auto-dismiss success alerts after 3 seconds
+    if (type === 'success') {
+      setTimeout(() => {
+        alert.classList.remove('show');
+        setTimeout(() => alertsContainer.removeChild(alert), 150);
+      }, 3000);
+    }
+  }
+  
+  // Helper function to get CSRF token
+  function getCsrfToken() {
+    // Try to get token from cookies
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'csrftoken') {
+        return value;
+      }
+    }
+    
+    // If not found in cookies, look for the token in a meta tag
+    const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    if (csrfInput) {
+      return csrfInput.value;
+    }
+    
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    if (csrfMeta) {
+      return csrfMeta.getAttribute('content');
+    }
+    
+    return '';
+  }
+});
+
 </script>
 {% endblock %}
