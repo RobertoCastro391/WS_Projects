@@ -1,13 +1,18 @@
 import json
 import re
-from collections import defaultdict
-from django.views.decorators.cache import cache_page
+import random
 import requests
+
+from collections import defaultdict
+from .models import QuizScore
+
+from django.views.decorators.cache import cache_page
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.csrf import csrf_exempt
+
 from SPARQLWrapper import JSON, SPARQLWrapper
-import random
 
 
 def home_page(request):
@@ -1628,4 +1633,19 @@ def quiz_questions(request):
     return JsonResponse({"questions": selected})
 
 def quiz_page(request):
-    return render(request, "quiz.html")
+    top_scores = QuizScore.objects.order_by('-score', '-timestamp')[:10]
+    return render(request, "quiz.html", {"top_scores": top_scores})
+
+@csrf_exempt
+def submit_score(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        name = data.get("name", "")
+        score = data.get("score", 0)
+
+        if name:
+            QuizScore.objects.create(player_name=name, score=score)
+            return JsonResponse({"status": "ok"})
+        return JsonResponse({"status": "error", "message": "Name required"}, status=400)
+
+    return JsonResponse({"status": "error", "message": "POST only"}, status=405)

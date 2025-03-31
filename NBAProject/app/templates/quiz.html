@@ -79,6 +79,20 @@
   <p id="result-message"></p>
   <button class="btn btn-secondary" onclick="window.location.reload()">Play Again</button>
 </div>
+
+<div class="quiz-container mx-auto mt-5" style="max-width: 600px;" id="scoreboard">
+  <h4 class="text-center mb-3">🏆 Top Scores</h4>
+  <table class="table table-striped table-bordered bg-white text-dark">
+    <thead><tr><th>Name</th><th>Score</th></tr></thead>
+    <tbody>
+      {% for s in top_scores %}
+        <tr><td>{{ s.player_name }}</td><td>{{ s.score }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
 {% endblock %}
 
 {% block extra_scripts %}
@@ -157,7 +171,41 @@ function showResults() {
   const message = getScoreMessage(score);
   document.getElementById("result-text").innerText = `${playerName}, you scored ${score} out of 10!`;
   document.getElementById("result-message").innerText = message;
+
+  // Send score to backend
+  fetch("/quiz/save_score/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: JSON.stringify({ name: playerName, score: score })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "ok") {
+      // Optionally re-fetch and update the leaderboard dynamically
+      updateLeaderboard();
+    }
+  });
+
 }
+
+async function updateLeaderboard() {
+  const res = await fetch("/quiz/");  // re-fetch the page data
+  const html = await res.text();
+
+  // Parse returned HTML and update leaderboard
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  const newTable = doc.querySelector("#scoreboard tbody");
+
+  const currentTable = document.querySelector("#scoreboard tbody");
+  if (newTable && currentTable) {
+    currentTable.innerHTML = newTable.innerHTML;
+  }
+}
+
 
 function getScoreMessage(score) {
   if (score === 10) return "🏆 Perfect! You're an NBA legend!";
@@ -165,5 +213,21 @@ function getScoreMessage(score) {
   if (score >= 5) return "👍 Not bad, but you can do better!";
   return "😅 Tough round! Time to brush up on your NBA knowledge.";
 }
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 </script>
 {% endblock %}

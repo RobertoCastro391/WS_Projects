@@ -67,6 +67,7 @@ urlpatterns = [
     #Funcionalidades Extras
     path('game/', views.quiz_page, name='quiz_page'),  # this renders the HTML
     path('quiz/', views.quiz_questions, name="quiz"),  # Quiz sobre a NBA
+    path("quiz/save_score/", views.submit_score, name="save_score"),  # Save score to database
     # path('sparql/', views.executar_sparql),  # Playground SPARQL
     # path('exportar/participacoes/', views.exportar_participacoes),  # Exportar participações em CSV/JSON
 ]
