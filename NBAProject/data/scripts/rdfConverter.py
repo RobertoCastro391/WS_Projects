@@ -12,17 +12,18 @@ def uri(resource_type, identifier):
 
 graph = SimpleGraph()
 
+# Load CSV files (Files are relative to the script location)
 dfs = {
-    "arenas": pd.read_csv("./datasets/arenas.csv"),
-    "conferences": pd.read_csv("./datasets/conferences.csv"),
-    "divisions": pd.read_csv("./datasets/divisions.csv"),
-    "players": pd.read_csv("./datasets/players.csv"),
-    "positions": pd.read_csv("./datasets/positions.csv"),
-    "seasons": pd.read_csv("./datasets/seasons.csv"),
-    "seasonTypes": pd.read_csv("./datasets/seasonTypes.csv"),
-    "states": pd.read_csv("./datasets/states.csv"),
-    "teams": pd.read_csv("./datasets/teams.csv"),
-    "stats": pd.read_csv("./datasets/estatisticas_completas.csv"),
+    "arenas": pd.read_csv("../datasets/arenas.csv"),
+    "conferences": pd.read_csv("../datasets/conferences.csv"),
+    "divisions": pd.read_csv("../datasets/divisions.csv"),
+    "players": pd.read_csv("../datasets/players.csv"),
+    "positions": pd.read_csv("../datasets/positions.csv"),
+    "seasons": pd.read_csv("../datasets/seasons.csv"),
+    "seasonTypes": pd.read_csv("../datasets/seasonTypes.csv"),
+    "states": pd.read_csv("../datasets/states.csv"),
+    "teams": pd.read_csv("../datasets/teams.csv"),
+    "stats": pd.read_csv("../datasets/estatisticas_completas.csv"),
 }
 
 # States
@@ -167,25 +168,7 @@ for _, row in dfs["players"].iterrows():
         clean_biography = str(row["Biography"]).replace("\n", " ").replace("\r", " ").strip()
         graph.add(t, f"{BASE}biography", clean_biography)
 
-    # if not pd.isna(row["Teams"]):
-    #     try:
-    #         teams = ast.literal_eval(row["Teams"])
-    #         for team in teams:
-    #             if "Id" in team:
-    #                 graph.add(p, f"{BASE}playsFor", uri("team", team["Id"]))
-    #     except Exception as e:
-    #         print(f"Error parsing teams for player {row['Id']}: {e}")
-
-    # if not pd.isna(row["Seasons"]):
-    #     try:
-    #         seasons = json.loads(row["Seasons"].replace("'", '"'))
-    #         for season in seasons:
-    #             if "Id" in season:
-    #                 graph.add(p, f"{BASE}playedIn", uri("season", season["Id"]))
-    #     except Exception as e:
-    #         print(f"Error parsing seasons for player {row['Id']}: {e}")
-
-# Estatísticas completas - Participation node
+# Statistics - Participation node
 for _, row in dfs["stats"].iterrows():
     players = ast.literal_eval(row["Players"])
     for player in players:
@@ -200,7 +183,7 @@ for _, row in dfs["stats"].iterrows():
 # Export CSV
 graph.save("nba_triples.csv")
 
-# Export N3 com agrupamento por sujeito
+# Export N3 format
 with open("nba_triples.n3", "w", encoding="utf-8") as f:
     f.write("@prefix ex: <http://example.org/nba/> .\n")
     f.write("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n\n")

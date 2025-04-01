@@ -126,12 +126,12 @@ STATIC_URL = 'app/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ENV = os.getenv("DJANGO_ENV", "dev")
-if ENV == "prod":
-    SPARQL_ENDPOINT = "http://graphdb:7200/repositories/NBA"
-    SPARQL_ENDPOINT_UPDATE = "http://graphdb:7200/repositories/NBA/statements"
+if ENV == "prod_docker":
+    SPARQL_ENDPOINT = "http://graphdb:7200/repositories/NBA_G4"
+    SPARQL_ENDPOINT_UPDATE = "http://graphdb:7200/repositories/NBA_G4/statements"
 else:
-    SPARQL_ENDPOINT = "http://localhost:7200/repositories/NBA"
-    SPARQL_ENDPOINT_UPDATE = "http://localhost:7200/repositories/NBA/statements"
+    SPARQL_ENDPOINT = "http://localhost:7200/repositories/NBA_G4"
+    SPARQL_ENDPOINT_UPDATE = "http://localhost:7200/repositories/NBA_G4/statements"
 
 
 
