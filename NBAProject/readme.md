@@ -75,7 +75,7 @@ python manage.py runserver
 ### Prerequisites
 - Docker and Docker Compose installed on your machine
 
-### ▶️ Run the full system:
+### Run the full system:
 From the **root of the project** (where `docker-compose.yml` is located), run:
 
 ```bash
