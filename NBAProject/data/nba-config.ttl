@@ -1,12 +1,12 @@
-# Example RDF4J configuration template for a GraphDB repository named "NBA"
+# Example RDF4J configuration template for a GraphDB repository named "NBA_G4"
 
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rep: <http://www.openrdf.org/config/repository#> .
 @prefix sail: <http://www.openrdf.org/config/sail#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<#NBA> a rep:Repository;
-    rep:repositoryID "NBA";
+<#NBA_G4> a rep:Repository;
+    rep:repositoryID "NBA_G4";
     rep:repositoryImpl [
         rep:repositoryType "graphdb:SailRepository";
         <http://www.openrdf.org/config/repository/sail#sailImpl> [
