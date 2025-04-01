@@ -717,14 +717,24 @@
     // Options for the network
     const options = {
       physics: {
-        stabilization: true,
+        enabled: true,
+        stabilization: {
+          enabled: true,
+          iterations: 1000,    // Increase iterations for better initial stability
+          updateInterval: 100,
+          onlyDynamicEdges: false,
+          fit: true
+        },
         barnesHut: {
-          gravitationalConstant: -2000,
-          centralGravity: 0.3,
-          springLength: 150,
-          springConstant: 0.04,
-          damping: 0.09
-        }
+          gravitationalConstant: -8000,  // Stronger repulsion
+          centralGravity: 0.1,           // Reduce central gravity
+          springLength: 200,             // Longer springs
+          springConstant: 0.02,          // Softer springs
+          damping: 0.15,                 // More damping
+          avoidOverlap: 1                // Critical for preventing collisions
+        },
+        minVelocity: 0.75,               // Helps system reach rest state
+        maxVelocity: 30                  // Prevent extreme movements
       },
       interaction: {
         navigationButtons: true,
