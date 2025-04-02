@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -124,4 +125,13 @@ STATIC_URL = 'app/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SPARQL_ENDPOINT = "http://localhost:7200/repositories/NBA"
+ENV = os.getenv("DJANGO_ENV", "dev")
+if ENV == "prod_docker":
+    SPARQL_ENDPOINT = "http://graphdb:7200/repositories/NBA_G4"
+    SPARQL_ENDPOINT_UPDATE = "http://graphdb:7200/repositories/NBA_G4/statements"
+else:
+    SPARQL_ENDPOINT = "http://localhost:7200/repositories/NBA_G4"
+    SPARQL_ENDPOINT_UPDATE = "http://localhost:7200/repositories/NBA_G4/statements"
+
+
+

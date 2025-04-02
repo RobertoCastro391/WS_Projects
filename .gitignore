@@ -4,3 +4,5 @@ NBAProject/venv
 **/.idea
 NBAProject/.idea
 NBAProject/db.sqlite3
+*.pyc
+.env
