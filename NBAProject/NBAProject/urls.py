@@ -34,13 +34,12 @@ urlpatterns = [
 
     #Páginas de detalhe básicas
 
-    # Jogadores
+    #Jogadores
     path('jogadores/page/', views.players_page, name='players_page'),
     path('jogadores/filter/', views.filter_players, name='filter_players'),
     path('jogadores/countries/', views.get_player_countries, name='player_countries'),
     path('jogadores/schools/', views.get_player_schools, name='player_schools'),
     path('jogador/<str:id>/', views.pagina_jogador),  # Página de jogador com participações
-    #este dqui é giro se o complementarmos com o timelinde dos jogadores bem como com o grafo tudo o que tiver nas intermedias e for jogador 
 
     path('equipa/<str:id>/', views.pagina_equipa),  # Página de equipa com jogadores por temporada
     path('temporada/<str:ano>/', views.pagina_temporada),  # Página de temporada com equipas e jogadores
@@ -55,7 +54,6 @@ urlpatterns = [
     path('jogador/<str:id>/timeline/', views.timeline_jogador),  # Linha do tempo da carreira do jogador
     path('grafo/jogador/<str:id>/', views.grafo_jogador),  # Grafo: Jogador → Equipas → Temporadas
     path('jogador/<str:id>/companheiros/', views.companheiros_jogador),  # Companheiros na mesma época
-    # path('participacoes/filtradas/', views.filtrar_participacoes),  # Participações filtradas por jogador e temporada
 
     #Funcionalidades Avançadas
     path('comparar/', views.comparar_jogadores),  # Comparação entre dois jogadores
@@ -78,6 +76,4 @@ urlpatterns = [
     path("quiz/save_score/", views.submit_score, name="save_score"),  # Save score to database
     path("quiz/check_answer/", views.check_answer, name="check_answer"),  # Check answer
     path("quiz/check_correct_answer/", views.check_correct_answer, name="check_correct_answer"),  # Check correct answer
-    # path('sparql/', views.executar_sparql),  # Playground SPARQL
-    # path('exportar/participacoes/', views.exportar_participacoes),  # Exportar participações em CSV/JSON
 ]
