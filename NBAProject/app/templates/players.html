@@ -4,7 +4,6 @@
 
 {% block extra_head %}
 <style>
-  /* Modern Player Card Styling */
   .player-card {
     border-radius: 12px;
     overflow: hidden;
@@ -538,7 +537,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const pagination = document.getElementById('pagination');
   const filterTags = document.getElementById('filter-tags');
   
-  // Filter elements
   const nameFilter = document.getElementById('name-filter');
   const positionFilter = document.getElementById('position-filter');
   const teamFilter = document.getElementById('team-filter');
@@ -551,21 +549,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const nationalityFilter = document.getElementById('nationality-filter');
   const schoolFilter = document.getElementById('school-filter');
   
-  // Pagination variables
   let currentPage = 1;
   const playersPerPage = 20;
   let allPlayers = [];
   
-  // Load teams for the filter dropdown
+ 
   loadTeams();
   
-  // Initial load
   loadPlayers();
 
   loadCountries();
   loadSchools();
   
-  // Event listeners
   applyFiltersBtn.addEventListener('click', applyFilters);
   resetFiltersBtn.addEventListener('click', resetFilters);
   nameFilter.addEventListener('keypress', function(e) {
@@ -574,7 +569,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Toggle advanced filters icon
   document.getElementById('advancedFiltersHeader').addEventListener('click', function() {
     const icon = this.querySelector('.bi');
     if (icon.classList.contains('bi-chevron-down')) {
@@ -584,7 +578,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Load teams for filter dropdown
   function loadTeams() {
     fetch('/equipas/filter/')
       .then(response => response.json())
@@ -602,12 +595,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        const options = Array.from(teamFilter.options).slice(1); // Skip the "All Teams" option
+        const options = Array.from(teamFilter.options).slice(1); 
         options.sort((a, b) => a.text.localeCompare(b.text));
         
-        // Clear and rebuild the dropdown with sorted options
+       
         while (teamFilter.options.length > 1) {
-            teamFilter.remove(1); // Keep the first "All Teams" option
+            teamFilter.remove(1); 
         }
         
         options.forEach(option => teamFilter.add(option));
@@ -615,14 +608,11 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(error => console.error('Error loading teams:', error));
   }
   
-  // Load all players
   function loadPlayers() {
     showLoading();
     
-    // Get the filter parameters
     const filters = getFilterParams();
     
-    // Convert filters to query string
     const queryParams = new URLSearchParams();
     for (const key in filters) {
       if (filters[key]) {
@@ -662,13 +652,11 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
         
-        // Sort countries alphabetically
-        const options = Array.from(nationalityFilter.options).slice(1); // Skip the "All Countries" option
-        options.sort((a, b) => a.text.replace(/^\S+\s/, '').localeCompare(b.text.replace(/^\S+\s/, ''))); // Sort by country name (removing emoji)
+        const options = Array.from(nationalityFilter.options).slice(1); 
+        options.sort((a, b) => a.text.replace(/^\S+\s/, '').localeCompare(b.text.replace(/^\S+\s/, ''))); 
         
-        // Clear and rebuild dropdown
         while (nationalityFilter.options.length > 1) {
-          nationalityFilter.remove(1); // Keep first option
+          nationalityFilter.remove(1); 
         }
         
         options.forEach(option => nationalityFilter.add(option));
@@ -686,7 +674,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const addedSchools = new Set();
         
         schools.forEach(school => {
-          if (!addedSchools.has(school.name) && school.name) { // Only add if not empty
+          if (!addedSchools.has(school.name) && school.name) { 
             const option = document.createElement('option');
             option.value = school.name;
             option.textContent = school.name;
@@ -695,13 +683,11 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
         
-        // Sort schools alphabetically
-        const options = Array.from(schoolFilter.options).slice(1); // Skip the "All Schools" option
+        const options = Array.from(schoolFilter.options).slice(1); 
         options.sort((a, b) => a.text.localeCompare(b.text));
         
-        // Clear and rebuild dropdown
         while (schoolFilter.options.length > 1) {
-          schoolFilter.remove(1); // Keep first option
+          schoolFilter.remove(1); 
         }
         
         options.forEach(option => schoolFilter.add(option));
@@ -709,9 +695,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(error => console.error('Error loading schools:', error));
   }
   
-  // Display players with pagination
   function displayPlayers() {
-    // Clear the grid
     playersGrid.innerHTML = '';
     
     if (allPlayers.length === 0) {
@@ -719,10 +703,8 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
-    // Hide no results message
     noResultsMessage.style.display = 'none';
     
-    // Calculate pagination
     const totalPages = Math.ceil(allPlayers.length / playersPerPage);
     const startIndex = (currentPage - 1) * playersPerPage;
     let endIndex = startIndex + playersPerPage;
@@ -730,13 +712,11 @@ document.addEventListener('DOMContentLoaded', function() {
       endIndex = allPlayers.length;
     }
     
-    // Display current page of players
     const currentPlayers = allPlayers.slice(startIndex, endIndex);
     
     currentPlayers.forEach(player => {
         const playerCard = playerCardTemplate.content.cloneNode(true);
         
-        // Modified image loading with error handling
         const playerImg = playerCard.querySelector('.player-img');
         playerImg.alt = player.nome;
 
@@ -744,12 +724,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         playerImg.src = placeholderPath;
         
-        // Try to load the actual image, but handle errors
         if (player.photo) {
-          // Create a new image to test loading
           const testImg = new Image();
           
-          // If image loads successfully, use it
           testImg.onload = function() {
             if (this.width < 50 || this.height < 50) {
                 console.log('Image too small:', player.photo, `(${this.width}x${this.height})`);
@@ -759,46 +736,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           };
           
-          // If image fails to load, keep using the placeholder
           testImg.onerror = function() {
             console.log('Failed to load image:', player.photo);
           };
           
-          // Start loading the image
           testImg.src = player.photo;
         }
         
-        // Set up the player card with the new design
         playerCard.querySelector('.position-badge').textContent = player.position || 'N/A';
         playerCard.querySelector('.player-name').textContent = player.nome;
         
-        // Add team name if available
         playerCard.querySelector('.player-team').textContent = player.teamName || 'N/A';
         
         playerCard.querySelector('.player-height').textContent = player.height || 'N/A';
         playerCard.querySelector('.player-weight').textContent = player.weight ? player.weight + ' lbs' : 'N/A';
         
-        // Nationality with flag emoji
         playerCard.querySelector('.player-nationality').textContent = player.bornIn || 'N/A';
   
         playerCard.querySelector('.player-draft').textContent = player.draftYear ? 'Draft: ' + player.draftYear : 'Undrafted';
         
-        // Set link to player profile
         const viewProfileLink = playerCard.querySelector('.view-profile-btn');
         const playerId = player.id.split('player_')[1];
         viewProfileLink.href = `/jogador/${playerId}/`;
         
-        // Remove the stretched-link class to fix the navigation issue
         viewProfileLink.classList.remove('stretched-link');
         
         playersGrid.appendChild(playerCard);
     });
     
-    // Update pagination
     updatePagination(totalPages);
   }
   
-  // Update pagination controls
   function updatePagination(totalPages) {
     if (totalPages <= 1) {
       pagination.style.display = 'none';
@@ -809,7 +777,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const paginationList = pagination.querySelector('ul');
     paginationList.innerHTML = '';
     
-    // Previous button
     const prevItem = document.createElement('li');
     prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
     const prevLink = document.createElement('a');
@@ -827,7 +794,6 @@ document.addEventListener('DOMContentLoaded', function() {
     prevItem.appendChild(prevLink);
     paginationList.appendChild(prevItem);
     
-    // Page numbers
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + 4);
     
@@ -852,7 +818,6 @@ document.addEventListener('DOMContentLoaded', function() {
       paginationList.appendChild(pageItem);
     }
     
-    // Next button
     const nextItem = document.createElement('li');
     nextItem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
     const nextLink = document.createElement('a');
@@ -871,7 +836,6 @@ document.addEventListener('DOMContentLoaded', function() {
     paginationList.appendChild(nextItem);
   }
   
-  // Get filter parameters
   function getFilterParams() {
     return {
       name: nameFilter.value,
@@ -886,14 +850,12 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
   
-  // Apply filters and reload players
   function applyFilters() {
     currentPage = 1;
     loadPlayers();
     updateFilterTags();
   }
   
-  // Reset all filters
   function resetFilters() {
     nameFilter.value = '';
     positionFilter.value = '';
@@ -910,7 +872,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadPlayers();
   }
   
-  // Update filter tags display
   function updateFilterTags() {
     filterTags.innerHTML = '';
     
@@ -995,27 +956,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  // If we're using the button approach, we don't need to modify it
-  // The button already has proper attributes from the HTML
-  
-  // Initialize the modal
+ 
   const addPlayerModal = document.getElementById('addPlayerModal');
   if (addPlayerModal) {
     const modal = new bootstrap.Modal(addPlayerModal);
     
-    // Clear form when modal is hidden
+    
     addPlayerModal.addEventListener('hidden.bs.modal', function() {
       document.getElementById('addPlayerForm').reset();
       document.getElementById('formAlerts').innerHTML = '';
       
-      // Reset validation styling
+      
       addPlayerForm.querySelectorAll('.is-invalid').forEach(field => {
         field.classList.remove('is-invalid');
       });
     });
   }
 
-  // Handle the form submission
   const addPlayerForm = document.getElementById('addPlayerForm');
   const submitBtn = document.getElementById('submitPlayerForm');
   

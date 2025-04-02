@@ -211,7 +211,7 @@
     const seasonMap = {};
 
     participations.forEach(p => {
-      const season = p.season.split("_").pop(); // extract just the year
+      const season = p.season.split("_").pop(); 
       if (!seasonMap[season]) {
         seasonMap[season] = new Set();
       }

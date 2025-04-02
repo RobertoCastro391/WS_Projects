@@ -13,17 +13,14 @@
 
 {% block content %}
 <div class="container">
-  <!-- Player Profile Section -->
   <div class="player-profile">
     <div class="row">
-      <!-- Player Image -->
       <div class="col-md-4">
         <div class="player-image-container">
           <img src="{{ photo }}" alt="{{ name }}" class="player-image" onerror="this.src='/app/static/img/player-placeholder.png'">
         </div>
       </div>
       
-      <!-- Player Information -->
       <div class="col-md-8 player-info">
         <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
@@ -43,7 +40,6 @@
         </div>
         
         <div class="row mt-4">
-          <!-- Personal Info Card -->
           <div class="col-md-6">
             <div class="player-stats-card">
               <h4>Personal Info</h4>
@@ -70,7 +66,7 @@
             </div>
           </div>
           
-          <!-- Physical Stats Card -->
+          
           <div class="col-md-6">
             <div class="player-stats-card">
               <h4>Physical Stats</h4>
@@ -102,7 +98,6 @@
 
   </div>
   
-  <!-- Tabs Section -->
   <div class="player-tabs">
     <ul class="nav nav-tabs" id="playerTabs" role="tablist">
       <li class="nav-item" role="presentation">
@@ -123,7 +118,6 @@
     </ul>
     
     <div class="tab-content" id="playerTabsContent">
-      <!-- Career Timeline Tab -->
       <div class="tab-pane fade show active" id="career" role="tabpanel" aria-labelledby="career-tab">
         <div id="career-timeline" class="mt-3">
           <div class="d-flex justify-content-center">
@@ -133,8 +127,6 @@
           </div>
         </div>
       </div>
-      
-      <!-- Teammates Tab -->
       <div class="tab-pane fade" id="teammates" role="tabpanel" aria-labelledby="teammates-tab">
         <div id="teammates-container" class="mt-3">
           <div class="d-flex justify-content-center">
@@ -145,7 +137,6 @@
         </div>
       </div>
       
-      <!-- Network Tab -->
       <div class="tab-pane fade" id="network" role="tabpanel" aria-labelledby="network-tab">
         <div id="network-container" class="mt-3">
           <div class="d-flex justify-content-center">
@@ -158,7 +149,6 @@
     </div>
   </div>
 
-  <!-- Update Player Modal -->
 <div class="modal fade" id="updatePlayerModal" tabindex="-1" aria-labelledby="updatePlayerModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -171,7 +161,6 @@
       <div class="modal-body">
         <form id="updatePlayerForm">
           {% csrf_token %}
-          <!-- Basic Info Section -->
           <div class="card mb-3 border-0 shadow-sm">
             <div class="card-header bg-light">
               <h6 class="mb-0">Basic Information</h6>
@@ -208,7 +197,6 @@
             </div>
           </div>
 
-          <!-- Physical Attributes Section -->
           <div class="card mb-3 border-0 shadow-sm">
             <div class="card-header bg-light">
               <h6 class="mb-0">Physical Attributes</h6>
@@ -228,8 +216,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Draft & Education Section -->
           <div class="card mb-3 border-0 shadow-sm">
             <div class="card-header bg-light">
               <h6 class="mb-0">Draft & Education</h6>
@@ -247,8 +233,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Media Section -->
           <div class="card mb-3 border-0 shadow-sm">
             <div class="card-header bg-light">
               <h6 class="mb-0">Media</h6>
@@ -283,7 +267,6 @@
 {{ block.super }}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Fetch the player's timeline data
     fetch('/jogador/{{ id }}/timeline/')
       .then(response => response.json())
       .then(data => {
@@ -297,8 +280,6 @@
           </div>
         `;
       });
-
-    // Fetch the player's teammates data when the teammates tab is clicked
     document.getElementById('teammates-tab').addEventListener('click', function() {
         if (!document.getElementById('teammates-data')) {
           loadTeammatesData();
@@ -331,8 +312,6 @@
   function renderTeammatesTab(data) {
     const container = document.getElementById('teammates-container');
     const companions = data.companions;
-    
-    // Check if there are any companions
     if (Object.keys(companions).length === 0) {
       container.innerHTML = `
         <div class="empty-state">
@@ -342,11 +321,7 @@
       `;
       return;
     }
-    
-    // Convert object to array and sort by season (most recent first)
     const sortedSeasons = Object.keys(companions).sort().reverse();
-    
-    // Start building HTML
     let teammatesHTML = `
       <div id="teammates-data" class="teammates-section">
         <h4 class="teammates-header">Teammates Throughout Career</h4>
@@ -355,7 +330,6 @@
         <ul class="nav nav-pills season-tabs mb-4" id="seasonTabs" role="tablist">
     `;
     
-    // Add tab for each season
     sortedSeasons.forEach((season, index) => {
       const seasonId = season.replace(/[^a-zA-Z0-9]/g, '');
       const seasonData = companions[season];
@@ -386,7 +360,6 @@
         <div class="tab-content" id="seasonTabsContent">
     `;
     
-    // Add content for each season tab
     sortedSeasons.forEach((season, index) => {
       const seasonId = season.replace(/[^a-zA-Z0-9]/g, '');
       const seasonData = companions[season];
@@ -403,10 +376,8 @@
           </div>
       `;
       
-      // Filter out non-team keys (like seasonLabel)
       const teamKeys = Object.keys(seasonData).filter(key => key !== 'seasonLabel');
       
-      // Add each team section
       teamKeys.forEach(teamId => {
         const teamData = seasonData[teamId];
         const teamName = teamData.teamName;
@@ -424,7 +395,6 @@
             <div class="teammates-grid">
         `;
         
-        // Add each player card
         players.forEach(player => {
           const playerId = player.player.split('_').pop();
           
@@ -470,7 +440,6 @@
       return;
     }
   
-    // Group timeline entries by season type (Regular Season and Playoffs)
     const groupedTimeline = {};
     timelineData.forEach(entry => {
       const seasonType = entry.seasonType === "http://example.org/nba/seasonType_Regular_Season" ? "Regular Season" : "Playoffs";
@@ -480,7 +449,6 @@
       groupedTimeline[seasonType].push(entry);
     });
   
-    // Build the timeline HTML with inner tabs
     let timelineHTML = `
       <div class="career-timeline">
         <h4 class="mb-4 timeline-header">Career Journey</h4>
@@ -489,7 +457,6 @@
         <ul class="nav nav-pills mb-4" id="seasonTypeTabs" role="tablist">
     `;
   
-    // Add tab buttons for each season type
     Object.entries(groupedTimeline).forEach(([seasonType, entries], index) => {
       const id = seasonType.replace(/\s+/g, '').toLowerCase();
       timelineHTML += `
@@ -515,11 +482,9 @@
         <div class="tab-content" id="seasonTypeTabContent">
     `;
   
-    // Add content for each season type tab
     Object.entries(groupedTimeline).forEach(([seasonType, entries], index) => {
       const id = seasonType.replace(/\s+/g, '').toLowerCase();
       
-      // Group entries by team to show consecutive seasons with the same team together
       const entriesByTeam = {};
       entries.forEach(entry => {
         if (!entriesByTeam[entry.team]) {
@@ -535,7 +500,6 @@
         });
       });
       
-      // Sort teams by most recent season first
       const sortedTeams = Object.values(entriesByTeam).sort((a, b) => {
         const aLatestSeason = a.seasons.sort((s1, s2) => s2.season.localeCompare(s1.season))[0].season;
         const bLatestSeason = b.seasons.sort((s1, s2) => s2.season.localeCompare(s1.season))[0].season;
@@ -550,16 +514,13 @@
           <div class="timeline-container">
       `;
   
-      // Create timeline items for each team
       sortedTeams.forEach((teamData, teamIndex) => {
         const teamLogo = teamData.teamLogo || '/app/static/img/team-placeholder.png';
         
-        // Sort seasons in descending order
         const sortedSeasons = teamData.seasons.sort((a, b) => 
           b.season.localeCompare(a.season)
         );
         
-        // Format seasons text (e.g., "2009-10, 2010-11, 2011-12")
         const seasonsList = sortedSeasons.map(s => s.seasonLabel);
         const seasonsText = seasonsList.join(', ');
         
@@ -618,7 +579,6 @@
   function renderNetworkGraph(data) {
     const container = document.getElementById('network-container');
     
-    // First, update the container's HTML with all necessary elements
     container.innerHTML = `
       <h4 class="teammates-header mb-4">Player Connection Network</h4>
       <p class="mb-4">This network graph shows how ${data.playerName || "{{ name }}"} is connected to teams and teammates throughout their career.</p>
@@ -653,7 +613,6 @@
       </div>
     `;
   
-    // AFTER updating the innerHTML, now get the reference to the network graph container
     const networkContainer = document.getElementById('network-graph');
   
     if (!networkContainer) {
@@ -664,9 +623,9 @@
     // Create network visualization
     const nodes = data.nodes.map(node => {
       const colors = {
-        'player': '#C9082A',    // Red for main player
-        'teammate': '#ff7700',  // Orange for teammates
-        'team': '#17408B',      // Blue for teams
+        'player': '#C9082A',    
+        'teammate': '#ff7700',  
+        'team': '#17408B',      
       };
       
       return {
@@ -687,7 +646,6 @@
       };
     });
     
-    // Create edges data
     const edges = data.edges.map(edge => {
       const isTeammateEdge = edge.type === 'teammate';
       
@@ -710,31 +668,29 @@
       };
     });
     
-    // Create data sets
     const nodesDataSet = new vis.DataSet(nodes);
     const edgesDataSet = new vis.DataSet(edges);
     
-    // Options for the network
     const options = {
       physics: {
         enabled: true,
         stabilization: {
           enabled: true,
-          iterations: 1000,    // Increase iterations for better initial stability
+          iterations: 1000,    
           updateInterval: 100,
           onlyDynamicEdges: false,
           fit: true
         },
         barnesHut: {
-          gravitationalConstant: -8000,  // Stronger repulsion
-          centralGravity: 0.1,           // Reduce central gravity
-          springLength: 200,             // Longer springs
-          springConstant: 0.02,          // Softer springs
-          damping: 0.15,                 // More damping
-          avoidOverlap: 1                // Critical for preventing collisions
+          gravitationalConstant: -8000, 
+          centralGravity: 0.1,          
+          springLength: 200,            
+          springConstant: 0.02,         
+          damping: 0.15,                
+          avoidOverlap: 1               
         },
-        minVelocity: 0.75,               // Helps system reach rest state
-        maxVelocity: 30                  // Prevent extreme movements
+        minVelocity: 0.75,              
+        maxVelocity: 30                 
       },
       interaction: {
         navigationButtons: true,
@@ -763,7 +719,6 @@
       }
     };
     
-    // Create a network
     try {
       const network = new vis.Network(
         networkContainer,
@@ -774,24 +729,20 @@
         options
       );
       
-      // Add click handler to show node info
       network.on("click", function(params) {
         if (params.nodes.length > 0) {
           const nodeId = params.nodes[0];
           const node = nodes.find(n => n.id === nodeId);
           
           if (node) {
-            // Remove any existing info panel
             const existingPanel = document.querySelector('.network-info-panel');
             if (existingPanel) {
               existingPanel.remove();
             }
             
-            // Create info panel
             const infoPanel = document.createElement('div');
             infoPanel.className = 'network-info-panel';
             
-            // Determine content based on node type
             let content = '';
             if (node.group === 'player') {
               content = `<div class="network-info-title">Player: ${node.label}</div>`;
@@ -821,7 +772,6 @@
             networkContainer.appendChild(infoPanel);
           }
         } else {
-          // Remove info panel if clicking on empty space
           const existingPanel = document.querySelector('.network-info-panel');
           if (existingPanel) {
             existingPanel.remove();
@@ -829,7 +779,6 @@
         }
       });
       
-      // Add zoom controls after we've verified network is created
       const zoomIn = document.getElementById('zoom-in');
       const zoomOut = document.getElementById('zoom-out');
       const resetZoom = document.getElementById('reset-zoom');
@@ -867,7 +816,6 @@
     }
   }
 
-// Handle player deletion
 const deleteBtn = document.getElementById("deletePlayerBtn");
 
 if (deleteBtn) {
@@ -885,7 +833,7 @@ if (deleteBtn) {
       .then(data => {
         if (data.message) {
           alert("Player deleted successfully!");
-          window.location.href = "/jogadores/page/";  // Redirect to players list
+          window.location.href = "/jogadores/page/";  
         } else if (data.error) {
           alert("Error deleting player: " + data.error);
         }
@@ -898,7 +846,6 @@ if (deleteBtn) {
   });
 }
 
-// CSRF helper function
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -914,36 +861,33 @@ function getCookie(name) {
   return cookieValue;
 }
 
-// Handle player update
-// Add this to the existing script block in player.html
-// Player Update Functionality
 
-// Set up the update player modal
+
+
+
 const updatePlayerBtn = document.getElementById('updatePlayerBtn');
 const updatePlayerModal = document.getElementById('updatePlayerModal');
 const updatePlayerForm = document.getElementById('updatePlayerForm');
 const submitUpdateFormBtn = document.getElementById('submitUpdateForm');
 
 if (updatePlayerBtn && updatePlayerModal) {
-  // Configure date format if a birthdate is available
   const birthdateInput = document.getElementById('playerBirthdate');
   if (birthdateInput && birthdateInput.value) {
-    // If the date is in YYYY-MM-DD format already, this will work
-    // Otherwise, we may need additional date formatting
+    
+    
     try {
-      // Check if we need to reformat the date
       if (birthdateInput.value.includes('/') || birthdateInput.value.length > 10) {
         const parts = birthdateInput.value.split(/[\/-]/);
         if (parts.length >= 3) {
-          // Assuming the format is like "YYYY-MM-DD" or similar
-          // Standardize to YYYY-MM-DD for the date input
+          
+          
           let year = parts[0];
           if (year.length === 2) {
-            year = (parseInt(year) < 50 ? '20' : '19') + year; // Simple Y2K fix
+            year = (parseInt(year) < 50 ? '20' : '19') + year; 
           }
           
           const month = parts[1].padStart(2, '0');
-          const day = parts[2].split(' ')[0].padStart(2, '0'); // Remove any time component
+          const day = parts[2].split(' ')[0].padStart(2, '0'); 
           
           birthdateInput.value = `${year}-${month}-${day}`;
         }
@@ -953,29 +897,29 @@ if (updatePlayerBtn && updatePlayerModal) {
     }
   }
 
-  // Show the modal when the update button is clicked
+
   updatePlayerBtn.addEventListener('click', function() {
     const modal = new bootstrap.Modal(updatePlayerModal);
     modal.show();
   });
   
-  // Handle form submission
+
   if (submitUpdateFormBtn) {
     submitUpdateFormBtn.addEventListener('click', function() {
-      // Validate the form
+
       if (!validateUpdatePlayerForm()) {
         return;
       }
       
-      // Show loading state
+
       submitUpdateFormBtn.disabled = true;
       submitUpdateFormBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
       
-      // Collect form data
+
       const formData = new FormData(updatePlayerForm);
       const playerData = {};
       
-      // Convert FormData to JSON object
+
       for (const [key, value] of formData.entries()) {
         // Skip the CSRF token
         if (key === 'csrfmiddlewaretoken') continue;
@@ -985,10 +929,10 @@ if (updatePlayerBtn && updatePlayerModal) {
         }
       }
       
-      // Add the player ID
+
       playerData.id = '{{ id }}';
       
-      // Send the data via fetch API
+
       fetch('/staff/jogadores/update/', {
         method: 'POST',
         headers: {
@@ -999,56 +943,50 @@ if (updatePlayerBtn && updatePlayerModal) {
       })
       .then(response => response.json())
       .then(data => {
-        // Reset loading state
         submitUpdateFormBtn.disabled = false;
         submitUpdateFormBtn.innerHTML = '<i class="bi bi-save me-1"></i>Update Player';
         
         if (data.success) {
-          // Show success message
           showUpdateFormAlert('success', `<i class="bi bi-check-circle me-1"></i>${data.message}`);
           
-          // Close the modal after 1.5 seconds and refresh the page
+
           setTimeout(() => {
             const modal = bootstrap.Modal.getInstance(updatePlayerModal);
             modal.hide();
             
-            // Reload the page to show the updated data
+
             window.location.reload();
           }, 1500);
         } else {
-          // Show error message
+          
           showUpdateFormAlert('danger', `<i class="bi bi-exclamation-triangle me-1"></i>${data.message || 'An error occurred while updating the player.'}`);
         }
       })
       .catch(error => {
-        // Reset loading state
+        
         submitUpdateFormBtn.disabled = false;
         submitUpdateFormBtn.innerHTML = '<i class="bi bi-save me-1"></i>Update Player';
         
-        // Show error message
+       
         showUpdateFormAlert('danger', `<i class="bi bi-exclamation-triangle me-1"></i>Error: ${error.message}`);
         console.error('Error:', error);
       });
     });
   }
   
-  // Helper function to validate the form
   function validateUpdatePlayerForm() {
     const playerName = document.getElementById('playerName').value.trim();
     let isValid = true;
     
-    // Reset validation styling
     updatePlayerForm.querySelectorAll('.is-invalid').forEach(field => {
       field.classList.remove('is-invalid');
     });
     
-    // Name is required
     if (!playerName) {
       document.getElementById('playerName').classList.add('is-invalid');
       isValid = false;
     }
     
-    // Validate height format (if provided)
     const heightField = document.getElementById('playerHeight');
     const heightValue = heightField.value.trim();
     if (heightValue && !heightValue.match(/^\d+-\d+$/)) {
@@ -1059,11 +997,9 @@ if (updatePlayerBtn && updatePlayerModal) {
     return isValid;
   }
   
-  // Helper function to show alert messages in the form
   function showUpdateFormAlert(type, message) {
     const alertsContainer = document.getElementById('updateFormAlerts');
     
-    // Create alert element
     const alert = document.createElement('div');
     alert.className = `alert alert-${type} alert-dismissible fade show`;
     alert.innerHTML = `
@@ -1071,13 +1007,10 @@ if (updatePlayerBtn && updatePlayerModal) {
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
     
-    // Clear previous alerts
     alertsContainer.innerHTML = '';
     
-    // Add the new alert
     alertsContainer.appendChild(alert);
     
-    // Auto-dismiss success alerts after 3 seconds
     if (type === 'success') {
       setTimeout(() => {
         alert.classList.remove('show');

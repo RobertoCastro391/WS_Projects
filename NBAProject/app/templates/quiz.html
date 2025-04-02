@@ -114,7 +114,7 @@ document.getElementById("start-btn").addEventListener("click", async () => {
 
   const res = await fetch("/quiz/");
   const data = await res.json();
-  questions = data.questions.slice(0, 10);  // Only 10 questions
+  questions = data.questions.slice(0, 10);  
   showQuestion();
 });
 
@@ -164,7 +164,6 @@ async function handleAnswer(button, _) {
   } else {
     button.classList.add("wrong");
 
-    // 🔍 Find the correct answer using another call
     const correctRes = await fetch("/quiz/check_correct_answer/", {
       method: "POST",
       headers: {
@@ -207,7 +206,6 @@ function showResults() {
   document.getElementById("result-text").innerText = `${playerName}, you scored ${score} out of 10!`;
   document.getElementById("result-message").innerText = message;
 
-  // Send score to backend
   fetch("/quiz/save_score/", {
     method: "POST",
     headers: {
@@ -219,7 +217,7 @@ function showResults() {
   .then(res => res.json())
   .then(data => {
     if (data.status === "ok") {
-      // Optionally re-fetch and update the leaderboard dynamically
+     
       updateLeaderboard();
     }
   });
@@ -227,10 +225,9 @@ function showResults() {
 }
 
 async function updateLeaderboard() {
-  const res = await fetch("/quiz/");  // re-fetch the page data
+  const res = await fetch("/quiz/");  
   const html = await res.text();
 
-  // Parse returned HTML and update leaderboard
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
   const newTable = doc.querySelector("#scoreboard tbody");
