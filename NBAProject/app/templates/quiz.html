@@ -135,7 +135,26 @@ function showQuestion() {
   document.getElementById("next-btn").style.display = "none";
 }
 
-function handleAnswer(button, isCorrect) {
+async function handleAnswer(button, _) {
+  const q = questions[currentQuestion];
+  const selectedAnswer = button.innerText;
+
+  const res = await fetch("/quiz/check_answer/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: JSON.stringify({
+      type: q.type,
+      question: q.text,
+      selected: selectedAnswer
+    })
+  });
+
+  const data = await res.json();
+  const isCorrect = data.correct;
+
   const buttons = document.querySelectorAll("#options-list button");
   buttons.forEach(btn => btn.disabled = true);
 
@@ -144,15 +163,31 @@ function handleAnswer(button, isCorrect) {
     score++;
   } else {
     button.classList.add("wrong");
-    const correct = Array.from(buttons).find(btn => {
-      const q = questions[currentQuestion];
-      return q.options.find(opt => opt.text === btn.innerText && opt.is_correct);
+
+    // 🔍 Find the correct answer using another call
+    const correctRes = await fetch("/quiz/check_correct_answer/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken")
+      },
+      body: JSON.stringify({
+        type: q.type,
+        question: q.text,
+        options: q.options.map(o => o.text)
+      })
     });
-    if (correct) correct.classList.add("correct");
+
+    const correctData = await correctRes.json();
+    const correctAnswer = correctData.correct_answer;
+
+    const correctBtn = Array.from(buttons).find(btn => btn.innerText === correctAnswer);
+    if (correctBtn) correctBtn.classList.add("correct");
   }
 
   document.getElementById("next-btn").style.display = "block";
 }
+
 
 document.getElementById("next-btn").addEventListener("click", () => {
   currentQuestion++;

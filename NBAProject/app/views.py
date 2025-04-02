@@ -1653,6 +1653,133 @@ def submit_score(request):
 
     return JsonResponse({"status": "error", "message": "POST only"}, status=405)
 
+
+@csrf_exempt
+def check_answer(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        q_type = data.get("type")
+        question_text = data.get("question", "")
+        selected = data.get("selected", "").strip()
+
+        sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+        sparql.setReturnFormat(JSON)
+
+        if q_type == "player-team-season":
+            match = re.match(r"Which team did (.+) play for in season (\d+)\?", question_text)
+            if not match:
+                return JsonResponse({"correct": False})
+            player_name, season = match.groups()
+
+            sparql.setQuery(f"""
+                PREFIX nba: <http://example.org/nba/>
+                ASK {{
+                    ?player nba:name "{player_name}" .
+                    ?team nba:actualName "{selected}" .
+                    ?season nba:label "{season}" .
+                    ?p nba:player ?player ;
+                       nba:team ?team ;
+                       nba:season ?season .
+                }}
+            """)
+            result = sparql.query().convert()
+            return JsonResponse({"correct": result["boolean"]})
+
+        elif q_type == "arena-home-team":
+            match = re.match(r"What is the home team of the arena (.+)\?", question_text)
+            if not match:
+                return JsonResponse({"correct": False})
+            arena_name = match.group(1)
+
+            sparql.setQuery(f"""
+                PREFIX nba: <http://example.org/nba/>
+                ASK {{
+                    ?arena nba:name "{arena_name}" ;
+                           nba:homeTeam ?team .
+                    ?team nba:actualName "{selected}" .
+                }}
+            """)
+            result = sparql.query().convert()
+            return JsonResponse({"correct": result["boolean"]})
+
+        return JsonResponse({"correct": False})
+    
+    except Exception as e:
+        # Add logging to terminal for debugging
+        import traceback
+        print("⚠️ Error in check_answer view:")
+        traceback.print_exc()
+        return JsonResponse({"error": "Server error"}, status=500)
+
+@csrf_exempt
+def check_correct_answer(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        q_type = data.get("type")
+        question_text = data.get("question", "")
+        options = data.get("options", [])
+
+        sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+        sparql.setReturnFormat(JSON)
+
+        for opt in options:
+            selected = opt.strip()
+
+            if q_type == "player-team-season":
+                import re
+                match = re.match(r"Which team did (.+) play for in season (\d+)\?", question_text)
+                if not match:
+                    continue
+                player_name, season = match.groups()
+
+                sparql.setQuery(f"""
+                    PREFIX nba: <http://example.org/nba/>
+                    ASK {{
+                        ?player nba:name "{player_name}" .
+                        ?team nba:actualName "{selected}" .
+                        ?season nba:label "{season}" .
+                        ?p nba:player ?player ;
+                           nba:team ?team ;
+                           nba:season ?season .
+                    }}
+                """)
+                result = sparql.query().convert()
+                if result["boolean"]:
+                    return JsonResponse({"correct_answer": selected})
+
+            elif q_type == "arena-home-team":
+                import re
+                match = re.match(r"What is the home team of the arena (.+)\?", question_text)
+                if not match:
+                    continue
+                arena_name = match.group(1)
+
+                sparql.setQuery(f"""
+                    PREFIX nba: <http://example.org/nba/>
+                    ASK {{
+                        ?arena nba:name "{arena_name}" ;
+                               nba:homeTeam ?team .
+                        ?team nba:actualName "{selected}" .
+                    }}
+                """)
+                result = sparql.query().convert()
+                if result["boolean"]:
+                    return JsonResponse({"correct_answer": selected})
+
+        return JsonResponse({"correct_answer": None})
+    
+    except Exception as e:
+        import traceback
+        print("⚠️ Error in check_correct_answer:")
+        traceback.print_exc()
+        return JsonResponse({"error": "Server error"}, status=500)
+
 # ================ Admin views ====================
 
 def is_admin(user):
