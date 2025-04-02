@@ -133,12 +133,12 @@ def get_all_teams():
 
         SELECT DISTINCT ?team ?actualName ?name ?acronym ?logo WHERE {
             ?team a nba:Team ;
-                  nba:name ?name .
-            OPTIONAL { ?team nba:actualName ?actualName . }
+                  nba:actualName ?actualName ;
+            OPTIONAL { ?team nba:name ?name . }
             OPTIONAL { ?team nba:acronym ?acronym . }
             OPTIONAL { ?team nba:logo ?logo . }
         }
-        ORDER BY ?name
+        ORDER BY ?actualName
     """)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
@@ -547,9 +547,10 @@ def pagina_equipa(request, id):
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT ?name ?acronym ?logo ?city ?statename ?conference ?conferencename ?divison ?divisionname ?arena ?arenaname WHERE {{
+        SELECT ?name ?actualName ?acronym ?logo ?city ?statename ?conference ?conferencename ?divison ?divisionname ?arena ?arenaname WHERE {{
             ?team a nba:Team ;
-                  nba:name ?name .
+                  nba:actualName ?actualName ;
+            OPTIONAL {{ ?team nba:name ?name . }}
             OPTIONAL {{ ?team nba:acronym ?acronym . }}
             OPTIONAL {{ ?team nba:logo ?logo . }}
             OPTIONAL {{ ?team nba:city ?city . }}
@@ -578,6 +579,7 @@ def pagina_equipa(request, id):
     city = state = conference = division = arenaname = arena = ""
 
     for row in result:
+        actual_name = row.get("actualName", {}).get("value", "")
         names.add(row.get("name", {}).get("value", ""))
         acronyms.add(row.get("acronym", {}).get("value", ""))
         logos.add(row.get("logo", {}).get("value", ""))
@@ -597,10 +599,10 @@ def pagina_equipa(request, id):
 
     team_info = {
         "id": team_uri,
-        "name": names_list[0] if names_list else "",
+        "name": actual_name,
         "acronym": acronyms_list[0] if acronyms_list else "",
         "logo": logos_list[0] if logos_list else "",
-        "other_names": names_list[1:] if len(names_list) > 1 else [],
+        "other_names": names_list if len(names_list) > 1 else [],
         "other_acronyms": acronyms_list[1:] if len(acronyms_list) > 1 else [],
         "other_logos": logos_list[1:] if len(logos_list) > 1 else [],
         "city": city,
@@ -664,7 +666,7 @@ def pagina_temporada(request, ano):
                nba:team ?team ;
                nba:player ?player ;
                nba:seasonType ?seasonType .
-            ?team nba:name ?teamName .
+            ?team nba:actualName ?teamName .
             ?player nba:name ?playerName .
             FILTER(STR(?season) = "{season_uri}")
         }}
@@ -873,7 +875,7 @@ def timeline_jogador(request, id):
                nba:season ?season ;
                nba:team ?team ;
                nba:seasonType ?seasonType .
-            ?team nba:name ?teamName .
+            ?team nba:actualName ?teamName .
             OPTIONAL {{ ?team nba:logo ?teamLogo . }}
             OPTIONAL {{ ?season nba:label ?seasonLabel . }}
             FILTER(STR(?player) = "{player_uri}")
@@ -1091,7 +1093,7 @@ def companheiros_jogador(request, id):
                 nba:seasonType ?seasonType .
             
             # Get team information
-            ?team nba:name ?teamName .
+            ?team nba:actualName ?teamName .
             OPTIONAL {{ ?team nba:logo ?teamLogo . }}
             
             # Get companion information
@@ -1231,7 +1233,7 @@ def comparar_jogadores(request):
                    nba:team ?team ;
                    nba:season ?season ;
                    nba:seasonType ?seasonType .
-                ?team nba:name ?teamName .
+                ?team nba:actualName ?teamName .
                 FILTER(STR(?player) = "{jogador_uri}")
             }}
             ORDER BY ?season
@@ -1570,12 +1572,13 @@ def quiz_questions(request):
     # 1. Player-Team-Season Questions
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
-        SELECT DISTINCT ?player ?playerName ?team ?teamName ?season WHERE {
+        SELECT DISTINCT ?player ?playerName ?team ?teamName ?season ?seasonLabel WHERE {
             ?p nba:player ?player ;
                nba:team ?team ;
                nba:season ?season .
             ?player nba:name ?playerName .
             ?team nba:actualName ?teamName .
+            ?season nba:label ?seasonLabel .
         } LIMIT 300
     """)
     results = sparql.query().convert()["results"]["bindings"]
@@ -1584,7 +1587,7 @@ def quiz_questions(request):
     for r in results:
         player_name = r["playerName"]["value"]
         team_name = r["teamName"]["value"]
-        season = r["season"]["value"].split("_")[-1]
+        season = r["seasonLabel"]["value"]
 
         # 💡 skip invalid names
         if not team_name.strip() or team_name.strip().lower() == "u":
@@ -1669,10 +1672,11 @@ def check_answer(request):
         sparql.setReturnFormat(JSON)
 
         if q_type == "player-team-season":
-            match = re.match(r"Which team did (.+) play for in season (\d+)\?", question_text)
+            match = re.match(r"Which team did (.+) play for in season (\d{4}-\d{2})\?", question_text)
             if not match:
                 return JsonResponse({"correct": False})
             player_name, season = match.groups()
+
 
             sparql.setQuery(f"""
                 PREFIX nba: <http://example.org/nba/>
@@ -1685,6 +1689,7 @@ def check_answer(request):
                        nba:season ?season .
                 }}
             """)
+            print(player_name, selected, season)
             result = sparql.query().convert()
             return JsonResponse({"correct": result["boolean"]})
 
@@ -1733,7 +1738,7 @@ def check_correct_answer(request):
 
             if q_type == "player-team-season":
                 import re
-                match = re.match(r"Which team did (.+) play for in season (\d+)\?", question_text)
+                match = re.match(r"Which team did (.+) play for in season (\d{4}-\d{2})\?", question_text)
                 if not match:
                     continue
                 player_name, season = match.groups()
@@ -1749,6 +1754,7 @@ def check_correct_answer(request):
                            nba:season ?season .
                     }}
                 """)
+                print(player_name, selected, season)
                 result = sparql.query().convert()
                 if result["boolean"]:
                     return JsonResponse({"correct_answer": selected})
