@@ -96,6 +96,11 @@ This will:
 
 From the GraphDB interface, you can explore the repository, run SPARQL queries, and inspect the imported RDF data.
 
+## Admin Access
+
+- Username: `NBAAdmin`
+- Password: `adminpass123`
+
 ---
 Work done by:
 - Roberto Rolão de Castro - 107133
