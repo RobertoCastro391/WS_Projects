@@ -19,7 +19,7 @@ from SPARQLWrapper import JSON, POST, SPARQLWrapper
 def home_page(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 
-    # Obter estatísticas globais
+    # Get general statistics
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
 
@@ -44,7 +44,7 @@ def home_page(request):
         "participations": int(row["participations"]["value"]),
     }
 
-    # Obter participações por temporada
+    # Get participations by season
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?season (COUNT(?p) AS ?count) WHERE {
@@ -60,7 +60,7 @@ def home_page(request):
     top_temporadas = []
     for result in participacoes_result["results"]["bindings"]:
         season_uri = result["season"]["value"]
-        season_label = season_uri.split("_")[-1]  # ex: season_2001 → 2001
+        season_label = season_uri.split("_")[-1] 
         participacao = int(result["count"]["value"])
         top_temporadas.append((season_label, participacao))
 
@@ -477,7 +477,7 @@ def pagina_jogador(request, id):
     jogador_uri = f"http://example.org/nba/player_{id}"
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 
-    # Query de dados do jogador
+    # Data Player Query
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
@@ -507,7 +507,7 @@ def pagina_jogador(request, id):
     player_info = profile_data[0]
     dados = {k: player_info[k]["value"] for k in player_info}
 
-    # Query para participações com nome da equipa
+    # Get the last team and season
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
@@ -543,7 +543,7 @@ def pagina_equipa(request, id):
     team_uri = f"http://example.org/nba/team_{id}"
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 
-    # 1. Info da equipa
+    # 1. Team Info
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
@@ -613,7 +613,7 @@ def pagina_equipa(request, id):
         "arenaName": arenaname
     }
 
-    # 2. Jogadores por temporada (agrupado)
+    # 2. Get all players and seasons for the team
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
@@ -630,13 +630,13 @@ def pagina_equipa(request, id):
     sparql.setReturnFormat(JSON)
     participations = sparql.query().convert()["results"]["bindings"]
 
-    # Agrupar por temporada
+    # Group by season
     seasons = {}
     for p in participations:
         season = p["season"]["value"]
         if season not in seasons:
             seasons[season] = {
-                "seasonName": season.split("_")[-1],  # ex: season_2001 → 2001
+                "seasonName": season.split("_")[-1],
                 "seasonType": p["seasonType"]["value"],
                 "players": []
             }
@@ -650,7 +650,6 @@ def pagina_equipa(request, id):
 
     team_info["seasons"] = seasons
 
-    #return JsonResponse(team_info)
     return render(request, "team.html", {"team": team_info})
 
 
@@ -681,7 +680,7 @@ def pagina_temporada(request, ano):
         "players": []
     })
 
-    seen = set()  # to deduplicate
+    seen = set()
 
     for r in results:
         team_uri = r["team"]["value"]
@@ -724,7 +723,6 @@ def pagina_temporada(request, ano):
     season_data["total_participations"] = total_participations
 
     return render(request, "temporada.html", {"season": season_data})
-    #return JsonResponse(season_data)
 
 def list_arenas(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -789,7 +787,7 @@ def list_arenas(request):
     })
 
 def pagina_arena(request, id):
-    # Garante que só o número seja usado para montar o URI corretamente
+    # Ensure that only the number is used to build the URI correctly
     arena_uri = f"http://example.org/nba/arena_{id}"
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 
@@ -1198,7 +1196,7 @@ def comparar_jogadores(request):
         jogador_uri = f"http://example.org/nba/player_{player_id}"
         sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 
-        # Dados do jogador
+        # Player Data
         sparql.setQuery(f"""
             PREFIX nba: <http://example.org/nba/>
             SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?positionName ?height ?weight ?school ?photo WHERE {{
@@ -1225,7 +1223,7 @@ def comparar_jogadores(request):
         player_info = profile_data[0]
         dados = {k: player_info[k]["value"] for k in player_info}
 
-        # Participações
+        # Participations
         sparql.setQuery(f"""
             PREFIX nba: <http://example.org/nba/>
             SELECT ?team ?teamName ?season ?seasonType WHERE {{
@@ -1363,7 +1361,6 @@ def rede_jogadores(request):
 
     return render(request, "playerNetwork.html", context)
 
-
 @cache_page(60 * 60)
 def expandir_jogador(request, player_id):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -1417,7 +1414,7 @@ def stats(request):
     sparql.setReturnFormat(JSON)
     stats_data = {}
 
-    # 1. Participações por temporada
+    # 1. Participations By Team
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?season (COUNT(?player) AS ?total) WHERE {
@@ -1431,7 +1428,7 @@ def stats(request):
         for r in result
     ]
 
-    # 2. Jogadores por equipa
+    # 2. Players per team
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?team_id ?team_name (COUNT(DISTINCT ?player) AS ?total) WHERE {
@@ -1447,12 +1444,13 @@ def stats(request):
         team_id = r["team_id"]["value"]
         name = r["team_name"]["value"]
         total = int(r["total"]["value"])
-        # Se já vimos o ID, não sobrescrevemos o nome
+
+        # If we haven't seen this team ID before, add it to the dictionary
         if team_id not in seen_teams:
             seen_teams[team_id] = {"team": team_id, "name": name, "total": total}
     stats_data["jogadores_por_equipa"] = list(seen_teams.values())
 
-    # 3. Jogadores com mais temporadas
+    # 3. Players with most seasons
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?player ?name (COUNT(DISTINCT ?season) AS ?total) WHERE {
@@ -1471,7 +1469,7 @@ def stats(request):
         for r in result
     ]
 
-    # 4. Distribuição por posições
+    # 4. Position Distribution
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?position (COUNT(?player) AS ?total) WHERE {
@@ -1488,7 +1486,7 @@ def stats(request):
         for r in result
     ]
 
-    # 5. Altura média por posição
+    # 5. Mean height by position
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?position ?height WHERE {
@@ -1519,7 +1517,7 @@ def stats(request):
         for pos, vals in altura_por_posicao.items()
     ]
 
-    # 6. Peso médio por posição
+    # 6. Mean weight by position
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?position ?weight WHERE {
@@ -1542,7 +1540,7 @@ def stats(request):
         for pos, val in peso_por_posicao.items()
     ]
 
-    # 7. Jogadores por ano de nascimento
+    # 7. Players by birth year
     sparql.setQuery("""
         PREFIX nba: <http://example.org/nba/>
         SELECT ?birthdate WHERE {
@@ -1589,7 +1587,7 @@ def quiz_questions(request):
         team_name = r["teamName"]["value"]
         season = r["seasonLabel"]["value"]
 
-        # 💡 skip invalid names
+        # skip invalid names
         if not team_name.strip() or team_name.strip().lower() == "u":
             continue
 
@@ -1715,7 +1713,7 @@ def check_answer(request):
     except Exception as e:
         # Add logging to terminal for debugging
         import traceback
-        print("⚠️ Error in check_answer view:")
+        print("Error in check_answer view:")
         traceback.print_exc()
         return JsonResponse({"error": "Server error"}, status=500)
 
@@ -1782,7 +1780,7 @@ def check_correct_answer(request):
     
     except Exception as e:
         import traceback
-        print("⚠️ Error in check_correct_answer:")
+        print("Error in check_correct_answer:")
         traceback.print_exc()
         return JsonResponse({"error": "Server error"}, status=500)
 
