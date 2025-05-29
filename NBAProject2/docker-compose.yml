@@ -1,0 +1,41 @@
+services:
+  graphdb:
+    image: ontotext/graphdb:10.8.4
+    container_name: graphdb
+    ports:
+      - "7200:7200"
+    environment:
+      - GRAPHDB_HOME=/opt/graphdb/home
+    volumes:
+      - graphdb-data:/opt/graphdb/home
+    restart: unless-stopped
+
+  django:
+    build: .
+    container_name: django_app
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - graphdb
+    environment:
+      - DJANGO_SETTINGS_MODULE=NBAProject.settings
+      - DJANGO_ENV=prod_docker
+      - ADMIN_USERNAME=NBAAdmin
+      - ADMIN_EMAIL=nbaadmin123@example.com
+      - ADMIN_PASSWORD=adminpass123
+
+  graphdb-init:
+    image: curlimages/curl:latest
+    container_name: graphdb_init
+    depends_on:
+      - graphdb
+    volumes:
+      - ./data/nba-config.ttl:/repo-config.ttl   
+      - ./data/nba_triples.n3:/data.rdf.n3            
+      - ./docker/graphdb-init.sh:/graphdb-init.sh
+    entrypoint: ["sh", "/graphdb-init.sh"]
+
+volumes:
+  graphdb-data:

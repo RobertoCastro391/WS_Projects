@@ -6,3 +6,7 @@ NBAProject/.idea
 NBAProject/db.sqlite3
 *.pyc
 .env
+NBAProject2/.venv
+NBAProject2/venv
+NBAProject2/.idea
+NBAProject2/db.sqlite3
