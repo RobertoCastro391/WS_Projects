@@ -1,0 +1,322 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix nba: <http://example.org/nba> .
+
+# Ontology
+
+<http://example.org/nba> a owl:Ontology ;
+    rdfs:label "NBA Basketball Ontology" ;
+    rdfs:comment "An ontology for NBA basketball data including players, teams, conferences, divisions, arenas, and participation records." .
+
+
+# CLASSES
+
+nba:Person rdf:type owl:Class .
+nba:Team rdf:type owl:Class .
+nba:Conference rdf:type owl:Class .
+nba:Division rdf:type owl:Class .
+nba:Arena rdf:type owl:Class .
+nba:Season rdf:type owl:Class .
+nba:SeasonType rdf:type owl:Class .
+nba:State rdf:type owl:Class .
+nba:Position rdf:type owl:Class .
+nba:Participation rdf:type owl:Class .
+
+# SUBCLASSES
+
+nba:Player rdf:type owl:Class ;
+    rdfs:subClassOf nba:Person .
+
+
+# PROPERTIES
+
+# Person PROPERTIES
+
+nba:personName rdf:type owl:DatatypeProperty ;
+    rdfs:label "personName" ;
+    rdfs:domain nba:Person ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Person's Name" .
+
+nba:birthdate rdf:type owl:DatatypeProperty ;
+    rdfs:label "birthdate" ;
+    rdfs:domain nba:Person ;
+    rdfs:range xsd:date ;
+    rdfs:comment "The birthdate of a person" .
+
+nba:bornIn rdf:type owl:DatatypeProperty ;
+    rdfs:label "bornIn" ;
+    rdfs:domain nba:Person ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The place of birth of a person" .
+
+# Player PROPERTIES
+
+nba:playerPhoto rdf:type owl:DatatypeProperty ;
+    rdfs:label "playerPhoto" ;
+    rdfs:domain nba:Player ;
+    rdfs:range xsd:anyURI ;
+    rdfs:comment "URL to player's photo" .
+
+nba:school rdf:type owl:DatatypeProperty ;
+    rdfs:label "school" ;
+    rdfs:domain nba:Player ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The school a player attended to become NBA player" .
+
+nba:height rdf:type owl:DatatypeProperty ;
+    rdfs:label "height" ;
+    rdfs:domain nba:Player ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The height of a player" .
+
+nba:weight rdf:type owl:DatatypeProperty ;
+    rdfs:label "weight" ;
+    rdfs:domain nba:Player ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The weight of a player" .
+
+nba:draftYear rdf:type owl:DatatypeProperty ;
+    rdfs:label "draftYear" ;
+    rdfs:domain nba:Player ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The year a player was drafted" .
+
+nba:position rdf:type owl:ObjectProperty ;
+    rdfs:label "position" ;
+    rdfs:domain nba:Player ;
+    rdfs:range nba:Position ;
+    rdfs:comment "The position that a player plays" .
+
+
+# Team PROPERTIES
+
+nba:teamName rdf:type owl:DatatypeProperty ;
+    rdfs:label "teamName" ;
+    rdfs:domain nba:Team ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Team's Name" .
+
+nba:actualName rdf:type owl:DatatypeProperty ;
+    rdfs:label "actualName" ;
+    rdfs:domain nba:Team ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Team's Actual Name" .
+
+nba:acronym rdf:type owl:DatatypeProperty ;
+    rdfs:label "acronym" ;
+    rdfs:domain nba:Team ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The acronym of a team's name" .
+
+nba:logo rdf:type owl:DatatypeProperty ;
+    rdfs:label "logo" ;
+    rdfs:domain nba:Team ;
+    rdfs:range xsd:anyURI ;
+    rdfs:comment "The team's logo" .
+
+nba:city rdf:type owl:DatatypeProperty ;
+    rdfs:label "city" ;
+    rdfs:domain nba:Team ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The city of a team" .
+
+nba:history rdf:type owl:DatatypeProperty ;
+    rdfs:label "history" ;
+    rdfs:domain nba:Team ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Information about a team and history" .
+
+nba:conference rdf:type owl:ObjectProperty ;
+    rdfs:label "conference" ;
+    rdfs:domain nba:Team ;
+    rdfs:range nba:Conference ;
+    rdfs:comment "The conference that a team belongs to" .
+
+nba:division rdf:type owl:ObjectProperty ;
+    rdfs:label "division" ;
+    rdfs:domain nba:Team ;
+    rdfs:range nba:Division ;
+    rdfs:comment "The division that a team belongs to" .
+
+nba:participatedIn rdf:type owl:ObjectProperty ;
+    rdfs:label "participatedIn" ;
+    rdfs:domain nba:Team ;
+    rdfs:range nba:Participation ;
+    rdfs:comment "Participation identifier for a team" .
+
+nba:arena rdf:type owl:ObjectProperty ;
+    rdfs:label "arena" ;
+    rdfs:domain nba:Team ;
+    rdfs:range nba:Arena ;
+    rdfs:comment "The name of the team's home arena" .
+
+nba:state rdf:type owl:ObjectProperty ;
+    rdfs:label "state" ;
+    rdfs:domain nba:Team ;
+    rdfs:range nba:State ;
+    rdfs:comment "The state of the team's home arena" .
+
+nba:locatedIn rdf:type owl:ObjectProperty ;
+    rdfs:label "locatedIn" ;
+    rdfs:domain nba:Team ;
+    rdfs:range nba:State ;
+    rdfs:comment "The real state of the team's home arena" .
+
+
+# Arena PROPERTIES
+
+nba:arenaName rdf:type owl:DatatypeProperty ;
+    rdfs:label "arenaName" ;
+    rdfs:domain nba:Arena ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Arena's Name" .
+
+nba:arenaPhoto rdf:type owl:DatatypeProperty ;
+    rdfs:label "arenaPhoto" ;
+    rdfs:domain nba:Arena ;
+    rdfs:range xsd:anyURI ;
+    rdfs:comment "URL to arena's photo" .
+
+nba:location rdf:type owl:DatatypeProperty ;
+    rdfs:label "location" ;
+    rdfs:domain nba:Arena ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Where an arena is located" .
+
+nba:opened rdf:type owl:DatatypeProperty ;
+    rdfs:label "opened" ;
+    rdfs:domain nba:Arena ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The year an arena was opened" .
+
+nba:capacity rdf:type owl:DatatypeProperty ;
+    rdfs:label "capacity" ;
+    rdfs:domain nba:Arena ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The seating capacity of an arena" .
+
+nba:latitude rdf:type owl:DatatypeProperty ;
+    rdfs:label "latitude" ;
+    rdfs:domain nba:Arena ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The latitude coordinate of an arena" .
+
+nba:longitude rdf:type owl:DatatypeProperty ;
+    rdfs:label "longitude" ;
+    rdfs:domain nba:Arena ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The longitude coordinate of an arena" .
+
+nba:homeTeam rdf:type owl:ObjectProperty ;
+    rdfs:label "homeTeam" ; 
+    rdfs:domain nba:Arena ;
+    rdfs:range nba:Team ;
+    rdfs:comment "The home team of an arena" .
+
+
+# Participation PROPERTIES
+
+nba:player rdf:type owl:ObjectProperty ;
+    rdfs:label "playerParticipation" ;
+    rdfs:domain nba:Participation ;
+    rdfs:range nba:Player ;
+    rdfs:comment "A player's participation record" .
+
+nba:team rdf:type owl:ObjectProperty ;
+    rdfs:label "teamParticipation" ;
+    rdfs:domain nba:Participation ;
+    rdfs:range nba:Team ;
+    rdfs:comment "The team in a participation record" .
+
+nba:season rdf:type owl:ObjectProperty ;
+    rdfs:label "seasonParticipation" ;
+    rdfs:domain nba:Participation ;
+    rdfs:range nba:Season ;
+    rdfs:comment "The season of a participation record" .
+
+nba:seasonType rdf:type owl:ObjectProperty ;
+    rdfs:label "seasonTypeParticipation" ;
+    rdfs:domain nba:Participation ;
+    rdfs:range nba:SeasonType ;
+    rdfs:comment "The season type of a participation record" .
+
+
+# Conference PROPERTIES
+
+nba:conferenceName rdf:type owl:DatatypeProperty ;
+    rdfs:label "conferenceName" ;
+    rdfs:domain nba:Conference ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Conference's Name" .
+
+
+# Division PROPERTIES
+
+nba:divisionName rdf:type owl:DatatypeProperty ;
+    rdfs:label "divisionName" ;
+    rdfs:domain nba:Division ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Division's Name" .
+
+
+# State PROPERTIES
+
+nba:stateName rdf:type owl:DatatypeProperty ;
+    rdfs:label "stateName" ;
+    rdfs:domain nba:State ;
+    rdfs:range xsd:string ;
+    rdfs:comment "State's Name" .
+
+nba:Flag rdf:type owl:DatatypeProperty ;
+    rdfs:label "Flag" ;
+    rdfs:domain nba:State ;
+    rdfs:range xsd:anyURI ;
+    rdfs:comment "A state's flag" .
+
+# Position PROPERTIES
+
+nba:positionName rdf:type owl:DatatypeProperty ;
+    rdfs:label "positionName" ;
+    rdfs:domain nba:Position ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Position's Name" .
+
+
+# Season PROPERTIES
+
+nba:seasonLabel rdf:type owl:DatatypeProperty ;
+    rdfs:label "seasonLabel" ;
+    rdfs:domain nba:Season ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The label for a season (e.g., '2023-24')" .
+
+
+# Season Type PROPERTIES
+
+nba:seasonTypeName rdf:type owl:DatatypeProperty ;
+    rdfs:label "seasonTypeLabel" ;
+    rdfs:domain nba:SeasonType ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The name for a season type" .
+
+
+# RESTRICTIONS
+
+nba:Participation rdfs:subClassOf [
+  rdf:type owl:Restriction ;
+  owl:onProperty nba:player ;
+  owl:cardinality "1"^^xsd:nonNegativeInteger 
+] , [
+  rdf:type owl:Restriction ;
+  owl:onProperty nba:team ;
+  owl:cardinality "1"^^xsd:nonNegativeInteger 
+] .
+
+
+nba:Player owl:disjointWith nba:Participation .
+nba:Team owl:disjointWith nba:Participation .
+nba:Participation owl:disjointWith nba:Season .
+nba:Arena owl:disjointWith nba:State .
