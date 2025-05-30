@@ -2,13 +2,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix nba: <http://example.org/nba> .
-
-# Ontology
-
-<http://example.org/nba> a owl:Ontology ;
-    rdfs:label "NBA Basketball Ontology" ;
-    rdfs:comment "An ontology for NBA basketball data including players, teams, conferences, divisions, arenas, and participation records." .
+@prefix nba: <http://example.org/nba/> .
 
 
 # CLASSES
@@ -303,20 +297,10 @@ nba:seasonTypeName rdf:type owl:DatatypeProperty ;
     rdfs:comment "The name for a season type" .
 
 
-# RESTRICTIONS
-
-nba:Participation rdfs:subClassOf [
-  rdf:type owl:Restriction ;
-  owl:onProperty nba:player ;
-  owl:cardinality "1"^^xsd:nonNegativeInteger 
-] , [
-  rdf:type owl:Restriction ;
-  owl:onProperty nba:team ;
-  owl:cardinality "1"^^xsd:nonNegativeInteger 
-] .
-
 
 nba:Player owl:disjointWith nba:Participation .
 nba:Team owl:disjointWith nba:Participation .
 nba:Participation owl:disjointWith nba:Season .
 nba:Arena owl:disjointWith nba:State .
+nba:Team owl:disjointWith nba:Arena .
+nba:Team owl:disjointWith nba:Division .
