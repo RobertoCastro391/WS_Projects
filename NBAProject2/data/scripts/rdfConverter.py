@@ -89,7 +89,7 @@ for _, row in dfs["teams"].iterrows():
     if not pd.isna(row["StateId"]):
         state_uri = uri("state", row["StateId"])
         graph.add(t, f"{BASE}state", state_uri)
-        graph.add(t, f"{BASE}locatedIn", state_uri)
+        graph.add(t, f"{BASE}teamLocatedIn", state_uri)
 
     if not pd.isna(row["Seasons"]):
         for season in str(row["Seasons"]).split(","):
@@ -98,7 +98,7 @@ for _, row in dfs["teams"].iterrows():
 
 # Division → Conference relation
 for division_id, conference_id in division_conference_map.items():
-    graph.add(uri("division", division_id), f"{BASE}conference", uri("conference", conference_id))
+    graph.add(uri("division", division_id), f"{BASE}divisionConference", uri("conference", conference_id))
 
 # Arenas
 for _, row in dfs["arenas"].iterrows():
@@ -174,7 +174,7 @@ for _, row in dfs["stats"].iterrows():
 graph.save("nba_triples.csv")
 
 # Export N3 format
-with open("facts2.n3", "w", encoding="utf-8") as f:
+with open("facts3.n3", "w", encoding="utf-8") as f:
     f.write("@prefix ex: <http://example.org/nba/> .\n")
     f.write("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n\n")
     f.write("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n")

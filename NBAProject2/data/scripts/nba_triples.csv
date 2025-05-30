@@ -79,17 +79,17 @@ http://example.org/nba/state_WY,http://example.org/nba/stateName,Wyoming
 http://example.org/nba/conference_1,http://example.org/nba/conferenceName,Eastern Conference
 http://example.org/nba/conference_2,http://example.org/nba/conferenceName,Western Conference
 http://example.org/nba/division_1,http://example.org/nba/divisionName,Atlantic
-http://example.org/nba/division_1,http://example.org/nba/conference,http://example.org/nba/conference_1
+http://example.org/nba/division_1,http://example.org/nba/divisionConference,http://example.org/nba/conference_1
 http://example.org/nba/division_2,http://example.org/nba/divisionName,Central
-http://example.org/nba/division_2,http://example.org/nba/conference,http://example.org/nba/conference_1
+http://example.org/nba/division_2,http://example.org/nba/divisionConference,http://example.org/nba/conference_1
 http://example.org/nba/division_3,http://example.org/nba/divisionName,Northwest
-http://example.org/nba/division_3,http://example.org/nba/conference,http://example.org/nba/conference_2
+http://example.org/nba/division_3,http://example.org/nba/divisionConference,http://example.org/nba/conference_2
 http://example.org/nba/division_4,http://example.org/nba/divisionName,Pacific
-http://example.org/nba/division_4,http://example.org/nba/conference,http://example.org/nba/conference_2
+http://example.org/nba/division_4,http://example.org/nba/divisionConference,http://example.org/nba/conference_2
 http://example.org/nba/division_5,http://example.org/nba/divisionName,Southeast
-http://example.org/nba/division_5,http://example.org/nba/conference,http://example.org/nba/conference_1
+http://example.org/nba/division_5,http://example.org/nba/divisionConference,http://example.org/nba/conference_1
 http://example.org/nba/division_6,http://example.org/nba/divisionName,Southwest
-http://example.org/nba/division_6,http://example.org/nba/conference,http://example.org/nba/conference_2
+http://example.org/nba/division_6,http://example.org/nba/divisionConference,http://example.org/nba/conference_2
 http://example.org/nba/position_C,http://example.org/nba/positionName,Center
 http://example.org/nba/position_C-F,http://example.org/nba/positionName,Center-Forward
 http://example.org/nba/position_F,http://example.org/nba/positionName,Forward
@@ -173,10 +173,10 @@ http://example.org/nba/seasonType_1,http://example.org/nba/seasonTypeName,Regula
 http://example.org/nba/seasonType_2,http://example.org/nba/seasonTypeName,Playoffs
 http://example.org/nba/seasonType_3,http://example.org/nba/seasonTypeName,In-Season Tournament
 http://example.org/nba/team_1610612737,http://example.org/nba/teamName,Atlanta Hawks
-http://example.org/nba/team_1610612737,http://example.org/nba/teamName,Milwaukee Hawks
 http://example.org/nba/team_1610612737,http://example.org/nba/teamName,St. Louis Hawks
-http://example.org/nba/team_1610612737,http://example.org/nba/acronym,MIH
+http://example.org/nba/team_1610612737,http://example.org/nba/teamName,Milwaukee Hawks
 http://example.org/nba/team_1610612737,http://example.org/nba/acronym,STL
+http://example.org/nba/team_1610612737,http://example.org/nba/acronym,MIH
 http://example.org/nba/team_1610612737,http://example.org/nba/acronym,ATL
 http://example.org/nba/team_1610612737,http://example.org/nba/city,Milwaukee
 http://example.org/nba/team_1610612737,http://example.org/nba/city,nan
@@ -187,8 +187,8 @@ http://example.org/nba/team_1610612737,http://example.org/nba/conference,http://
 http://example.org/nba/team_1610612737,http://example.org/nba/division,http://example.org/nba/division_5
 http://example.org/nba/team_1610612737,http://example.org/nba/state,http://example.org/nba/state_WI
 http://example.org/nba/team_1610612737,http://example.org/nba/state,http://example.org/nba/state_TX
-http://example.org/nba/team_1610612737,http://example.org/nba/locatedIn,http://example.org/nba/state_WI
-http://example.org/nba/team_1610612737,http://example.org/nba/locatedIn,http://example.org/nba/state_TX
+http://example.org/nba/team_1610612737,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_WI
+http://example.org/nba/team_1610612737,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_TX
 http://example.org/nba/team_1610612737,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612737,http://example.org/nba/arena,http://example.org/nba/arena_5
 http://example.org/nba/team_1610610024,http://example.org/nba/teamName,Baltimore Bullets
@@ -199,35 +199,35 @@ http://example.org/nba/team_1610610024,http://example.org/nba/logo,https://uploa
 http://example.org/nba/team_1610610024,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610610024,http://example.org/nba/division,http://example.org/nba/division_5
 http://example.org/nba/team_1610610024,http://example.org/nba/state,http://example.org/nba/state_MD
-http://example.org/nba/team_1610610024,http://example.org/nba/locatedIn,http://example.org/nba/state_MD
+http://example.org/nba/team_1610610024,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_MD
 http://example.org/nba/team_1610610024,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612764,http://example.org/nba/teamName,Washington Wizards
+http://example.org/nba/team_1610612764,http://example.org/nba/teamName,Baltimore Bullets
 http://example.org/nba/team_1610612764,http://example.org/nba/teamName,Chicago Zephyrs
 http://example.org/nba/team_1610612764,http://example.org/nba/teamName,Chicago Packers
 http://example.org/nba/team_1610612764,http://example.org/nba/teamName,Capital Bullets
-http://example.org/nba/team_1610612764,http://example.org/nba/teamName,Baltimore Bullets
-http://example.org/nba/team_1610612764,http://example.org/nba/acronym,BLT
-http://example.org/nba/team_1610612764,http://example.org/nba/acronym,CHZ
 http://example.org/nba/team_1610612764,http://example.org/nba/acronym,CAP
-http://example.org/nba/team_1610612764,http://example.org/nba/acronym,WAS
 http://example.org/nba/team_1610612764,http://example.org/nba/acronym,CHP
-http://example.org/nba/team_1610612764,http://example.org/nba/city,Baltimore 
-http://example.org/nba/team_1610612764,http://example.org/nba/city,Chicago
+http://example.org/nba/team_1610612764,http://example.org/nba/acronym,CHZ
+http://example.org/nba/team_1610612764,http://example.org/nba/acronym,BLT
+http://example.org/nba/team_1610612764,http://example.org/nba/acronym,WAS
 http://example.org/nba/team_1610612764,http://example.org/nba/city,Washington
+http://example.org/nba/team_1610612764,http://example.org/nba/city,Chicago
+http://example.org/nba/team_1610612764,http://example.org/nba/city,Baltimore 
 http://example.org/nba/team_1610612764,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/The_logo_of_the_original_Baltimore_Bullets_from_the_postwar_era.gif/180px-The_logo_of_the_original_Baltimore_Bullets_from_the_postwar_era.gif
 http://example.org/nba/team_1610612764,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/thumb/0/02/Washington_Wizards_logo.svg/1200px-Washington_Wizards_logo.svg.png
 http://example.org/nba/team_1610612764,http://example.org/nba/logo,https://loodibee.com/wp-content/uploads/washington-bullets-1987-1997.png
-http://example.org/nba/team_1610612764,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612764,http://example.org/nba/conference,http://example.org/nba/conference_2
-http://example.org/nba/team_1610612764,http://example.org/nba/division,http://example.org/nba/division_1
+http://example.org/nba/team_1610612764,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612764,http://example.org/nba/division,http://example.org/nba/division_5
 http://example.org/nba/team_1610612764,http://example.org/nba/division,http://example.org/nba/division_2
-http://example.org/nba/team_1610612764,http://example.org/nba/state,http://example.org/nba/state_DC
+http://example.org/nba/team_1610612764,http://example.org/nba/division,http://example.org/nba/division_1
 http://example.org/nba/team_1610612764,http://example.org/nba/state,http://example.org/nba/state_MI
+http://example.org/nba/team_1610612764,http://example.org/nba/state,http://example.org/nba/state_DC
 http://example.org/nba/team_1610612764,http://example.org/nba/state,http://example.org/nba/state_MD
-http://example.org/nba/team_1610612764,http://example.org/nba/locatedIn,http://example.org/nba/state_DC
-http://example.org/nba/team_1610612764,http://example.org/nba/locatedIn,http://example.org/nba/state_MI
-http://example.org/nba/team_1610612764,http://example.org/nba/locatedIn,http://example.org/nba/state_MD
+http://example.org/nba/team_1610612764,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_MI
+http://example.org/nba/team_1610612764,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_DC
+http://example.org/nba/team_1610612764,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_MD
 http://example.org/nba/team_1610612764,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612764,http://example.org/nba/history,"The 1973–74 Capital Bullets season was the team's first in Washington, D.C. area, southeast from nearby Baltimore. Prior to the 1973–74 season, the Baltimore Bullets relocated to Landover, Maryland, a suburb east of Washington, and became the Capital Bullets.[1] It was also their only season under the Capital Bullets name.    The Bullets finished with a 47–35 record and won the Central Division. Wes Unseld was limited to 56 games due to injuries. In the playoffs, the Bullets fell to the New York Knicks for the fifth time in six years, eliminated in seven games. Following the season, the team was renamed as the Washington Bullets.    The new Capital Centre opened on December 2, 1973; the Bullets played their earlier home games this season at Cole Field House at the University of Maryland in College Park. They played several home games at Cole during their last seasons in Baltimore."
 http://example.org/nba/team_1610612764,http://example.org/nba/arena,http://example.org/nba/arena_30
@@ -238,26 +238,26 @@ http://example.org/nba/team_1610612738,http://example.org/nba/logo,https://cdn.n
 http://example.org/nba/team_1610612738,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612738,http://example.org/nba/division,http://example.org/nba/division_1
 http://example.org/nba/team_1610612738,http://example.org/nba/state,http://example.org/nba/state_MA
-http://example.org/nba/team_1610612738,http://example.org/nba/locatedIn,http://example.org/nba/state_MA
+http://example.org/nba/team_1610612738,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_MA
 http://example.org/nba/team_1610612738,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612738,http://example.org/nba/arena,http://example.org/nba/arena_6
+http://example.org/nba/team_1610612751,http://example.org/nba/teamName,Brooklyn Nets
 http://example.org/nba/team_1610612751,http://example.org/nba/teamName,New York Nets
 http://example.org/nba/team_1610612751,http://example.org/nba/teamName,New Jersey Nets
-http://example.org/nba/team_1610612751,http://example.org/nba/teamName,Brooklyn Nets
-http://example.org/nba/team_1610612751,http://example.org/nba/acronym,NJN
 http://example.org/nba/team_1610612751,http://example.org/nba/acronym,BKN
 http://example.org/nba/team_1610612751,http://example.org/nba/acronym,NYN
-http://example.org/nba/team_1610612751,http://example.org/nba/city,New York
+http://example.org/nba/team_1610612751,http://example.org/nba/acronym,NJN
 http://example.org/nba/team_1610612751,http://example.org/nba/city,New Jersey
+http://example.org/nba/team_1610612751,http://example.org/nba/city,New York
 http://example.org/nba/team_1610612751,http://example.org/nba/city,Brooklyn
 http://example.org/nba/team_1610612751,http://example.org/nba/history,"The Brooklyn Nets are an American professional basketball team based in the New York City borough of Brooklyn. The Nets compete in the National Basketball Association (NBA) as a member of the Atlantic Division of the Eastern Conference. The team plays its home games at Barclays Center. They are one of two NBA teams located in New York City; the other is the New York Knicks. The club was established in 1967 as a charter franchise of the NBA's rival league, the American Basketball Association (ABA). They played in New Jersey as the New Jersey Americans during their first season, before relocating to Long Island, New York, in 1968 and changing their name to the New York Nets. During this time, the Nets won two ABA championships (in 1974 and 1976). In 1976, the ABA merged with the NBA, and the Nets were absorbed into the NBA along with three other ABA teams (the San Antonio Spurs, Indiana Pacers, and Denver Nuggets), all of whom remain in the league to this day."
 http://example.org/nba/team_1610612751,http://example.org/nba/logo,https://s.yimg.com/cv/apiv2/default/nba/20181129/500x500/nets3_wbg.png
 http://example.org/nba/team_1610612751,http://example.org/nba/logo,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrNJ3vdgcTVmxjW_9ZNBx_nD0FZOYJkYm90ypDd_RnEQ&s
 http://example.org/nba/team_1610612751,http://example.org/nba/conference,http://example.org/nba/conference_1
-http://example.org/nba/team_1610612751,http://example.org/nba/division,http://example.org/nba/division_1
 http://example.org/nba/team_1610612751,http://example.org/nba/division,http://example.org/nba/division_4
+http://example.org/nba/team_1610612751,http://example.org/nba/division,http://example.org/nba/division_1
 http://example.org/nba/team_1610612751,http://example.org/nba/state,http://example.org/nba/state_NY
-http://example.org/nba/team_1610612751,http://example.org/nba/locatedIn,http://example.org/nba/state_NY
+http://example.org/nba/team_1610612751,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_NY
 http://example.org/nba/team_1610612751,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612751,http://example.org/nba/arena,http://example.org/nba/arena_17
 http://example.org/nba/team_1,http://example.org/nba/teamName,Bruh
@@ -268,29 +268,29 @@ http://example.org/nba/team_1,http://example.org/nba/logo,https://pa1.aminoapps.
 http://example.org/nba/team_1,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1,http://example.org/nba/division,http://example.org/nba/division_4
 http://example.org/nba/team_1,http://example.org/nba/state,http://example.org/nba/state_OH
-http://example.org/nba/team_1,http://example.org/nba/locatedIn,http://example.org/nba/state_OH
+http://example.org/nba/team_1,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_OH
 http://example.org/nba/team_1,http://example.org/nba/participatedIn,http://example.org/nba/season_0
-http://example.org/nba/team_1610612746,http://example.org/nba/teamName,Buffalo Braves
 http://example.org/nba/team_1610612746,http://example.org/nba/teamName,LA Clippers
 http://example.org/nba/team_1610612746,http://example.org/nba/teamName,San Diego Clippers
-http://example.org/nba/team_1610612746,http://example.org/nba/acronym,SDC
+http://example.org/nba/team_1610612746,http://example.org/nba/teamName,Buffalo Braves
 http://example.org/nba/team_1610612746,http://example.org/nba/acronym,BUF
 http://example.org/nba/team_1610612746,http://example.org/nba/acronym,LAC
+http://example.org/nba/team_1610612746,http://example.org/nba/acronym,SDC
+http://example.org/nba/team_1610612746,http://example.org/nba/city,San Diego
 http://example.org/nba/team_1610612746,http://example.org/nba/city,Los Angeles
 http://example.org/nba/team_1610612746,http://example.org/nba/city,Buffalo
-http://example.org/nba/team_1610612746,http://example.org/nba/city,San Diego
 http://example.org/nba/team_1610612746,http://example.org/nba/history,"The Buffalo Braves were an American professional basketball franchise based in Buffalo, New York. The Braves competed in the National Basketball Association (NBA) as a member club of the league's Eastern Conference Atlantic Division from 1970 until 1978. In 1978, Braves owner John Y. Brown Jr. swapped franchises with then-Boston Celtics owner Irv Levin, who then moved the team to San Diego, where it was renamed the San Diego Clippers. The franchise moved to Los Angeles in 1984, and is now known as the Los Angeles Clippers."
 http://example.org/nba/team_1610612746,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/5/59/Buffalo_Braves_logo.svg
-http://example.org/nba/team_1610612746,http://example.org/nba/logo,https://cdn.ssref.net/req/202308241/tlogo/bbr/SDC-1984.png
 http://example.org/nba/team_1610612746,http://example.org/nba/logo,https://cdn.nba.com/logos/nba/1610612746/global/L/logo.svg
-http://example.org/nba/team_1610612746,http://example.org/nba/conference,http://example.org/nba/conference_1
+http://example.org/nba/team_1610612746,http://example.org/nba/logo,https://cdn.ssref.net/req/202308241/tlogo/bbr/SDC-1984.png
 http://example.org/nba/team_1610612746,http://example.org/nba/conference,http://example.org/nba/conference_2
-http://example.org/nba/team_1610612746,http://example.org/nba/division,http://example.org/nba/division_1
+http://example.org/nba/team_1610612746,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612746,http://example.org/nba/division,http://example.org/nba/division_4
+http://example.org/nba/team_1610612746,http://example.org/nba/division,http://example.org/nba/division_1
 http://example.org/nba/team_1610612746,http://example.org/nba/state,http://example.org/nba/state_CA
 http://example.org/nba/team_1610612746,http://example.org/nba/state,http://example.org/nba/state_NY
-http://example.org/nba/team_1610612746,http://example.org/nba/locatedIn,http://example.org/nba/state_CA
-http://example.org/nba/team_1610612746,http://example.org/nba/locatedIn,http://example.org/nba/state_NY
+http://example.org/nba/team_1610612746,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_CA
+http://example.org/nba/team_1610612746,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_NY
 http://example.org/nba/team_1610612746,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612746,http://example.org/nba/arena,http://example.org/nba/arena_12
 http://example.org/nba/team_1610612766,http://example.org/nba/teamName,Charlotte Hornets
@@ -298,12 +298,12 @@ http://example.org/nba/team_1610612766,http://example.org/nba/teamName,Charlotte
 http://example.org/nba/team_1610612766,http://example.org/nba/acronym,CHA
 http://example.org/nba/team_1610612766,http://example.org/nba/acronym,CHH
 http://example.org/nba/team_1610612766,http://example.org/nba/city,Charlotte
-http://example.org/nba/team_1610612766,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/c/c4/Charlotte_Hornets_%282014%29.svg
 http://example.org/nba/team_1610612766,http://example.org/nba/logo,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVf31CN8MCpmRltT6N-GXW0LsZtNZIAjKbI8UA-1wxgg&s
+http://example.org/nba/team_1610612766,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/c/c4/Charlotte_Hornets_%282014%29.svg
 http://example.org/nba/team_1610612766,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612766,http://example.org/nba/division,http://example.org/nba/division_5
 http://example.org/nba/team_1610612766,http://example.org/nba/state,http://example.org/nba/state_NC
-http://example.org/nba/team_1610612766,http://example.org/nba/locatedIn,http://example.org/nba/state_NC
+http://example.org/nba/team_1610612766,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_NC
 http://example.org/nba/team_1610612766,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612766,http://example.org/nba/arena,http://example.org/nba/arena_32
 http://example.org/nba/team_1610612741,http://example.org/nba/teamName,Chicago Bulls
@@ -313,28 +313,28 @@ http://example.org/nba/team_1610612741,http://example.org/nba/logo,https://uploa
 http://example.org/nba/team_1610612741,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612741,http://example.org/nba/division,http://example.org/nba/division_2
 http://example.org/nba/team_1610612741,http://example.org/nba/state,http://example.org/nba/state_IL
-http://example.org/nba/team_1610612741,http://example.org/nba/locatedIn,http://example.org/nba/state_IL
+http://example.org/nba/team_1610612741,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_IL
 http://example.org/nba/team_1610612741,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612741,http://example.org/nba/arena,http://example.org/nba/arena_8
 http://example.org/nba/team_1610612758,http://example.org/nba/teamName,Cincinnati Royals
-http://example.org/nba/team_1610612758,http://example.org/nba/teamName,Kansas City Kings
 http://example.org/nba/team_1610612758,http://example.org/nba/teamName,Rochester Royals
 http://example.org/nba/team_1610612758,http://example.org/nba/teamName,Sacramento Kings
+http://example.org/nba/team_1610612758,http://example.org/nba/teamName,Kansas City Kings
 http://example.org/nba/team_1610612758,http://example.org/nba/acronym,SAC
-http://example.org/nba/team_1610612758,http://example.org/nba/acronym,CIN
 http://example.org/nba/team_1610612758,http://example.org/nba/acronym,KCK
+http://example.org/nba/team_1610612758,http://example.org/nba/acronym,CIN
 http://example.org/nba/team_1610612758,http://example.org/nba/acronym,ROC
 http://example.org/nba/team_1610612758,http://example.org/nba/city,nan
-http://example.org/nba/team_1610612758,http://example.org/nba/city,Sacramento
 http://example.org/nba/team_1610612758,http://example.org/nba/city,Kansas
 http://example.org/nba/team_1610612758,http://example.org/nba/city,Cincinnati
+http://example.org/nba/team_1610612758,http://example.org/nba/city,Sacramento
 http://example.org/nba/team_1610612758,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/a/ab/Cincinnati_Royals_logo.svg
 http://example.org/nba/team_1610612758,http://example.org/nba/logo,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDoVzWwtnlchVq1WOh0tgRH7pj1gFu6mSxARDbplXTvA&s
 http://example.org/nba/team_1610612758,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612758,http://example.org/nba/state,http://example.org/nba/state_OH
 http://example.org/nba/team_1610612758,http://example.org/nba/state,http://example.org/nba/state_KS
-http://example.org/nba/team_1610612758,http://example.org/nba/locatedIn,http://example.org/nba/state_OH
-http://example.org/nba/team_1610612758,http://example.org/nba/locatedIn,http://example.org/nba/state_KS
+http://example.org/nba/team_1610612758,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_OH
+http://example.org/nba/team_1610612758,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_KS
 http://example.org/nba/team_1610612758,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612758,http://example.org/nba/division,http://example.org/nba/division_4
 http://example.org/nba/team_1610612758,http://example.org/nba/arena,http://example.org/nba/arena_24
@@ -346,7 +346,7 @@ http://example.org/nba/team_1610612739,http://example.org/nba/logo,https://uploa
 http://example.org/nba/team_1610612739,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612739,http://example.org/nba/division,http://example.org/nba/division_2
 http://example.org/nba/team_1610612739,http://example.org/nba/state,http://example.org/nba/state_OH
-http://example.org/nba/team_1610612739,http://example.org/nba/locatedIn,http://example.org/nba/state_OH
+http://example.org/nba/team_1610612739,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_OH
 http://example.org/nba/team_1610612739,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612739,http://example.org/nba/arena,http://example.org/nba/arena_33
 http://example.org/nba/team_1610612742,http://example.org/nba/teamName,Dallas Mavericks
@@ -356,7 +356,7 @@ http://example.org/nba/team_1610612742,http://example.org/nba/logo,https://encry
 http://example.org/nba/team_1610612742,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612742,http://example.org/nba/division,http://example.org/nba/division_6
 http://example.org/nba/team_1610612742,http://example.org/nba/state,http://example.org/nba/state_TX
-http://example.org/nba/team_1610612742,http://example.org/nba/locatedIn,http://example.org/nba/state_TX
+http://example.org/nba/team_1610612742,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_TX
 http://example.org/nba/team_1610612742,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612742,http://example.org/nba/arena,http://example.org/nba/arena_3
 http://example.org/nba/team_1610612743,http://example.org/nba/teamName,Denver Nuggets
@@ -366,58 +366,58 @@ http://example.org/nba/team_1610612743,http://example.org/nba/logo,https://logos
 http://example.org/nba/team_1610612743,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612743,http://example.org/nba/division,http://example.org/nba/division_3
 http://example.org/nba/team_1610612743,http://example.org/nba/state,http://example.org/nba/state_CO
-http://example.org/nba/team_1610612743,http://example.org/nba/locatedIn,http://example.org/nba/state_CO
+http://example.org/nba/team_1610612743,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_CO
 http://example.org/nba/team_1610612743,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612743,http://example.org/nba/arena,http://example.org/nba/arena_10
-http://example.org/nba/team_1610612765,http://example.org/nba/teamName,Detroit Pistons
 http://example.org/nba/team_1610612765,http://example.org/nba/teamName,Fort Wayne Pistons
-http://example.org/nba/team_1610612765,http://example.org/nba/acronym,DET
+http://example.org/nba/team_1610612765,http://example.org/nba/teamName,Detroit Pistons
 http://example.org/nba/team_1610612765,http://example.org/nba/acronym,FTW
-http://example.org/nba/team_1610612765,http://example.org/nba/city,Fort Wayne
+http://example.org/nba/team_1610612765,http://example.org/nba/acronym,DET
 http://example.org/nba/team_1610612765,http://example.org/nba/city,Detroit
+http://example.org/nba/team_1610612765,http://example.org/nba/city,Fort Wayne
 http://example.org/nba/team_1610612765,http://example.org/nba/history,"The Detroit Pistons are an American professional basketball team based in Detroit. The Pistons compete in the National Basketball Association (NBA) as a member of the Central Division of the Eastern Conference. The team plays its home games at Little Caesars Arena, located in Midtown Detroit. Founded in Fort Wayne, Indiana as a semi-professional company basketball team called the Fort Wayne Zollner Pistons in 1937, they would turn pro in 1941 as a member of the National Basketball League (NBL), where they won two NBL championships: in 1944 and 1945. The Pistons later joined the Basketball Association of America (BAA) in 1948. The NBL and BAA merged to become the NBA in 1949, and the Pistons became part of the merged league.[1][8] In 1957, the franchise moved to Detroit. The Pistons have won three NBA championships: in 1989, 1990 and 2004."
 http://example.org/nba/team_1610612765,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/commons/c/c9/Logo_of_the_Detroit_Pistons.svg
 http://example.org/nba/team_1610612765,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612765,http://example.org/nba/division,http://example.org/nba/division_2
 http://example.org/nba/team_1610612765,http://example.org/nba/state,http://example.org/nba/state_IN
 http://example.org/nba/team_1610612765,http://example.org/nba/state,http://example.org/nba/state_MI
-http://example.org/nba/team_1610612765,http://example.org/nba/locatedIn,http://example.org/nba/state_IN
-http://example.org/nba/team_1610612765,http://example.org/nba/locatedIn,http://example.org/nba/state_MI
+http://example.org/nba/team_1610612765,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_IN
+http://example.org/nba/team_1610612765,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_MI
 http://example.org/nba/team_1610612765,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612765,http://example.org/nba/arena,http://example.org/nba/arena_31
-http://example.org/nba/team_1610612744,http://example.org/nba/teamName,Philadelphia Warriors
-http://example.org/nba/team_1610612744,http://example.org/nba/teamName,Golden State Warriors
 http://example.org/nba/team_1610612744,http://example.org/nba/teamName,San Francisco Warriors
-http://example.org/nba/team_1610612744,http://example.org/nba/acronym,PHW
-http://example.org/nba/team_1610612744,http://example.org/nba/acronym,GOS
+http://example.org/nba/team_1610612744,http://example.org/nba/teamName,Golden State Warriors
+http://example.org/nba/team_1610612744,http://example.org/nba/teamName,Philadelphia Warriors
 http://example.org/nba/team_1610612744,http://example.org/nba/acronym,GSW
+http://example.org/nba/team_1610612744,http://example.org/nba/acronym,PHW
 http://example.org/nba/team_1610612744,http://example.org/nba/acronym,SFW
+http://example.org/nba/team_1610612744,http://example.org/nba/acronym,GOS
 http://example.org/nba/team_1610612744,http://example.org/nba/city,nan
 http://example.org/nba/team_1610612744,http://example.org/nba/city,San Francisco
-http://example.org/nba/team_1610612744,http://example.org/nba/logo,https://cdn.nba.com/logos/nba/1610612744/global/D/logo.svg
 http://example.org/nba/team_1610612744,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/0/01/Golden_State_Warriors_logo.svg
+http://example.org/nba/team_1610612744,http://example.org/nba/logo,https://cdn.nba.com/logos/nba/1610612744/global/D/logo.svg
 http://example.org/nba/team_1610612744,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612744,http://example.org/nba/division,http://example.org/nba/division_4
 http://example.org/nba/team_1610612744,http://example.org/nba/state,http://example.org/nba/state_CA
-http://example.org/nba/team_1610612744,http://example.org/nba/locatedIn,http://example.org/nba/state_CA
+http://example.org/nba/team_1610612744,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_CA
 http://example.org/nba/team_1610612744,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612744,http://example.org/nba/history,"The Golden State Warriors are an American professional basketball team based in San Francisco. The Warriors compete in the National Basketball Association (NBA) as a member of the Pacific Division of the Western Conference. Founded in 1946 in Philadelphia, the Warriors moved to the San Francisco Bay Area in 1962 and took the city's name, before changing its geographic moniker to Golden State in 1971. The club plays its home games at the Chase Center.    The Warriors won the inaugural Basketball Association of America (BAA) championship in 1947, and won again in 1956, led by Hall of Fame trio Paul Arizin, Tom Gola, and Neil Johnston. After the trade of star Wilt Chamberlain in January 1965, the team finished the 1964–65 season with the NBA's worst record (17–63). Their rebuilding period was brief due in large part to the Warriors' drafting of Rick Barry four months after the trade. In 1975, star players Barry and Jamaal Wilkes powered the Warriors to their third championship, widely considered one of the biggest upsets in NBA history.    The team struggled in the 1980s, then became playoff regulars at the turn of the decade with stars Tim Hardaway, Mitch Richmond, and Chris Mullin, nicknamed ""Run TMC"". Led by Stephen Curry, Klay Thompson, and Draymond Green, the team returned to championship glory in 2015, with defensive swingman Andre Iguodala being named Finals MVP. In 2016, the Warriors set the record for best regular season record at 73-9 before losing the Finals to the Cleveland Cavaliers (against whom they played a record four straight finals) and becoming the first team to lose a series after leading 3–1 in the Finals. After signing former MVP Kevin Durant, the team won back-to-back championships in 2017 and 2018 (Durant winning both Finals MVPs). They lost the 2019 Finals to the Toronto Raptors, a series which saw Durant and Thompson suffer serious Achilles and ACL injuries, respectively; Durant left that off-season. After missing the playoffs the following two seasons, the Warriors returned to the playoffs with a healthy Thompson and a new supporting cast that included All-Star Andrew Wiggins and key scorer Jordan Poole; they defeated the Boston Celtics in the 2022 Finals, where Curry won his first Finals MVP. The Warriors' dynasty has seen the team win four titles in eight seasons, as well as reach five consecutive Finals from 2015 to 2019 (six Finals in eight years); Curry, Green, Thompson, and Iguodala were on all four 21st century championship teams, Shaun Livingston and Kevon Looney were on three each.    Nicknamed the ""Dubs"" as a shortening of ""W's"", the Warriors hold several NBA records: best regular season, most wins in a season (regular season and postseason combined), and best postseason run. Curry and Thompson are generally considered among the greatest backcourts of all time. The Warriors have the third most NBA championships and have the third most Finals appearances; only the Los Angeles Lakers and Boston Celtics have more. Wilt Chamberlain and Stephen Curry have been named the NBA's MVPs while playing for the Warriors, for a total of three MVP awards."
 http://example.org/nba/team_1610612744,http://example.org/nba/arena,http://example.org/nba/arena_34
 http://example.org/nba/team_1610612745,http://example.org/nba/teamName,Houston Rockets
 http://example.org/nba/team_1610612745,http://example.org/nba/teamName,San Diego Rockets
-http://example.org/nba/team_1610612745,http://example.org/nba/acronym,SDR
 http://example.org/nba/team_1610612745,http://example.org/nba/acronym,HOU
-http://example.org/nba/team_1610612745,http://example.org/nba/city,Houston
+http://example.org/nba/team_1610612745,http://example.org/nba/acronym,SDR
 http://example.org/nba/team_1610612745,http://example.org/nba/city,San Diego
+http://example.org/nba/team_1610612745,http://example.org/nba/city,Houston
 http://example.org/nba/team_1610612745,http://example.org/nba/history,"The Houston Rockets are an American professional basketball team based in Houston. The Rockets compete in the National Basketball Association (NBA) as a member of the Southwest Division of the Western Conference. The team plays its home games at the Toyota Center, located in Downtown Houston. Throughout its history, Houston has won two NBA championships and four Western Conference titles. It was established in 1967 as the San Diego Rockets, an expansion team originally based in San Diego. In 1971, the Rockets relocated to Houston.    The Rockets won only 15 games in their debut season as a franchise in 1967. In the 1968 NBA draft, the Rockets were awarded the first overall pick and selected power forward Elvin Hayes, who would lead the team to its first playoff appearance in his rookie season. The Rockets did not finish a season with a winning record for almost a decade until the 1976–77 season, when they traded for All-Star center Moses Malone from the American Basketball Association (ABA). Malone went on to win the NBA Most Valuable Player (MVP) award twice while playing with the Rockets and led Houston to the Eastern Conference Finals in his first year with the team. During the 1980–81 season, the Rockets finished the regular season with a 40–42 record but still made the playoffs. Led by Malone, the Rockets reached their first NBA Finals in 1981, becoming only the second team in NBA history to do so with a losing record. They would lose in six games to the 62–20 Boston Celtics, led by Larry Bird, Robert Parish, and future Rockets head coach Kevin McHale. As of 2023, the 1980–81 Rockets are the last team since the 1958–59 Minneapolis Lakers to make it all the way to the NBA Finals with a losing record.    In the 1984 NBA draft, once again with the first overall pick, the Rockets drafted center Hakeem Olajuwon, who would become the cornerstone of the most successful period in franchise history. Paired with 7-foot-4-inch (2.24 m) Ralph Sampson, they formed one of the tallest front courts in the NBA. Nicknamed the ""Twin Towers"", they led the team to the 1986 NBA Finals—the second NBA Finals appearance in franchise history—where Houston was again defeated by Larry Bird and the 67-win Boston Celtics. The Rockets continued to reach the playoffs throughout the 1980s, but failed to advance past the first round for several years following a second-round defeat to the Seattle SuperSonics in 1987. Rudy Tomjanovich took over as head coach midway through the 1991–92 season, ushering in the most successful period in franchise history. Led by Olajuwon, the Rockets dominated the 1993–94 season, setting a then-franchise record 58 wins and went to the 1994 NBA Finals—the third NBA Finals appearance in franchise history—and won the franchise's first championship against Patrick Ewing and the New York Knicks. During the following season, reinforced by another All-Star, Clyde Drexler, the Rockets—in their fourth NBA Finals appearance in franchise history—repeated as champions with a four-game sweep of the Orlando Magic, which was led by a young Shaquille O'Neal and Penny Hardaway. Houston, which finished the season with a 47–35 record and was seeded sixth in the Western Conference during the 1995 playoffs, became the lowest-seeded team in NBA history to win the title.    The Rockets acquired all-star power forward Charles Barkley in 1996, but the presence of three of the NBA's 50 greatest players of all-time (Olajuwon, Drexler, and Barkley) was not enough to propel Houston past the Western Conference Finals. Each one of the aging trio had left the team by 2001. The Rockets of the early 2000s, led by superstars Tracy McGrady and Yao Ming, followed the trend of consistent regular season respectability followed by playoff underachievement as both players struggled with injuries. After Yao's early retirement in 2011, the Rockets entered a period of rebuilding, completely dismantling and retooling their roster.    The acquisition of franchise player James Harden in 2012 launched the Rockets back into perennial championship contention throughout the rest of the 2010s, with no losing seasons in Harden's nine-season tenure with the team. Harden broke countless franchise and NBA records while on the team, winning three consecutive scoring titles between 2018 and 2020, and leading the team to two Western Conference Finals appearances (both times losing to the Golden State Warriors). Prior to the 2020–21 season, head coach Mike D'Antoni and general manager Daryl Morey left the organization, prompting Harden to seek a trade. He was traded to the Brooklyn Nets[A] which started a rebuilding period.    Moses Malone, Hakeem Olajuwon, and James Harden have been named the NBA's MVPs while playing for the Rockets, for a total of four MVP awards. The Rockets, when piloted by Morey, were renowned for popularizing the use of advanced statistical analytics (similar to sabermetrics in baseball) in player acquisitions and style of play."
-http://example.org/nba/team_1610612745,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/2/28/Houston_Rockets.svg
 http://example.org/nba/team_1610612745,http://example.org/nba/logo,https://cdn.ssref.net/req/202308241/tlogo/bbr/SDR-1969.png
+http://example.org/nba/team_1610612745,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/2/28/Houston_Rockets.svg
 http://example.org/nba/team_1610612745,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612745,http://example.org/nba/division,http://example.org/nba/division_6
 http://example.org/nba/team_1610612745,http://example.org/nba/state,http://example.org/nba/state_CA
 http://example.org/nba/team_1610612745,http://example.org/nba/state,http://example.org/nba/state_TX
-http://example.org/nba/team_1610612745,http://example.org/nba/locatedIn,http://example.org/nba/state_CA
-http://example.org/nba/team_1610612745,http://example.org/nba/locatedIn,http://example.org/nba/state_TX
+http://example.org/nba/team_1610612745,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_CA
+http://example.org/nba/team_1610612745,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_TX
 http://example.org/nba/team_1610612745,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612745,http://example.org/nba/arena,http://example.org/nba/arena_11
 http://example.org/nba/team_1610612754,http://example.org/nba/teamName,Indiana Pacers
@@ -427,17 +427,17 @@ http://example.org/nba/team_1610612754,http://example.org/nba/logo,https://uploa
 http://example.org/nba/team_1610612754,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612754,http://example.org/nba/division,http://example.org/nba/division_2
 http://example.org/nba/team_1610612754,http://example.org/nba/state,http://example.org/nba/state_IN
-http://example.org/nba/team_1610612754,http://example.org/nba/locatedIn,http://example.org/nba/state_IN
+http://example.org/nba/team_1610612754,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_IN
 http://example.org/nba/team_1610612754,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612754,http://example.org/nba/arena,http://example.org/nba/arena_20
 http://example.org/nba/team_1610610030,http://example.org/nba/teamName,Indianapolis Olympians
 http://example.org/nba/team_1610610030,http://example.org/nba/acronym,INO
 http://example.org/nba/team_1610610030,http://example.org/nba/city,Indianapolis
 http://example.org/nba/team_1610610030,http://example.org/nba/state,http://example.org/nba/state_IN
-http://example.org/nba/team_1610610030,http://example.org/nba/locatedIn,http://example.org/nba/state_IN
+http://example.org/nba/team_1610610030,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_IN
 http://example.org/nba/team_1610610030,http://example.org/nba/participatedIn,http://example.org/nba/season_0
-http://example.org/nba/team_1610612747,http://example.org/nba/teamName,Minneapolis Lakers
 http://example.org/nba/team_1610612747,http://example.org/nba/teamName,Los Angeles Lakers
+http://example.org/nba/team_1610612747,http://example.org/nba/teamName,Minneapolis Lakers
 http://example.org/nba/team_1610612747,http://example.org/nba/acronym,MNL
 http://example.org/nba/team_1610612747,http://example.org/nba/acronym,LAL
 http://example.org/nba/team_1610612747,http://example.org/nba/city,Los Angeles
@@ -448,26 +448,26 @@ http://example.org/nba/team_1610612747,http://example.org/nba/conference,http://
 http://example.org/nba/team_1610612747,http://example.org/nba/division,http://example.org/nba/division_4
 http://example.org/nba/team_1610612747,http://example.org/nba/state,http://example.org/nba/state_CA
 http://example.org/nba/team_1610612747,http://example.org/nba/state,http://example.org/nba/state_MN
-http://example.org/nba/team_1610612747,http://example.org/nba/locatedIn,http://example.org/nba/state_CA
-http://example.org/nba/team_1610612747,http://example.org/nba/locatedIn,http://example.org/nba/state_MN
+http://example.org/nba/team_1610612747,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_CA
+http://example.org/nba/team_1610612747,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_MN
 http://example.org/nba/team_1610612747,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612747,http://example.org/nba/arena,http://example.org/nba/arena_13
 http://example.org/nba/team_1610612763,http://example.org/nba/teamName,Vancouver Grizzlies
 http://example.org/nba/team_1610612763,http://example.org/nba/teamName,Memphis Grizzlies
 http://example.org/nba/team_1610612763,http://example.org/nba/acronym,MEM
 http://example.org/nba/team_1610612763,http://example.org/nba/acronym,VAN
-http://example.org/nba/team_1610612763,http://example.org/nba/city,"Vancouver, CA"
 http://example.org/nba/team_1610612763,http://example.org/nba/city,Memphis
-http://example.org/nba/team_1610612763,http://example.org/nba/history,"The Memphis Grizzlies (referred to locally as the Grizz) are an American professional basketball team based in Memphis, Tennessee. The Grizzlies compete in the National Basketball Association (NBA) as a member of the Southwest Division of the Western Conference. The Grizzlies play their home games at FedExForum. The Grizzlies are currently the only team in the major professional North American sports leagues based in the city of Memphis, and the only professional basketball team in the state of Tennessee.    The team was originally established as the Vancouver Grizzlies in the city of Vancouver, Canada, an expansion team that joined the NBA for the 1995–96 season. After the 2000–01 season concluded, the Grizzlies left Vancouver and moved to Memphis."
+http://example.org/nba/team_1610612763,http://example.org/nba/city,"Vancouver, CA"
 http://example.org/nba/team_1610612763,http://example.org/nba/history,"The Vancouver Grizzlies were a Canadian professional basketball team based in Vancouver. They were part of the Midwest Division of the Western Conference of the National Basketball Association (NBA). The team was established in 1995, along with the Toronto Raptors, as part of the NBA's expansion into Canada. Following the 2000–01 season, the team relocated to Memphis, Tennessee, United States and was renamed the Memphis Grizzlies. The Grizzlies played their home games at General Motors Place (now Rogers Arena) for all of their six seasons in Vancouver.    Like most expansion teams, the Grizzlies struggled in their early years. The team finished last in their division in five of its seasons, and never won more than 30% of its games in any of the team's seasons in Vancouver. In total, the team won 101 games, lost 359, and never qualified for the NBA playoffs. The two expansion teams were denied early draft picks in the first season, but the Grizzlies secured Shareef Abdur-Rahim in 1996 and Mike Bibby with the 2nd pick of the 1998 draft. The team continued to lose games despite high draft picks. After they selected Steve Francis as second pick in 1999, he refused to play in Vancouver and was traded away. After the 1998–99 lockout, lower attendance and a weak Canadian dollar caused the owner Orca Bay Sports and Entertainment to lose money on the franchise. After a failed attempt to sell the team to Bill Laurie, it was instead sold to Michael Heisley and subsequently moved to Memphis, Tennessee, for the 2001–02 season."
-http://example.org/nba/team_1610612763,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/f/f1/Memphis_Grizzlies.svg
+http://example.org/nba/team_1610612763,http://example.org/nba/history,"The Memphis Grizzlies (referred to locally as the Grizz) are an American professional basketball team based in Memphis, Tennessee. The Grizzlies compete in the National Basketball Association (NBA) as a member of the Southwest Division of the Western Conference. The Grizzlies play their home games at FedExForum. The Grizzlies are currently the only team in the major professional North American sports leagues based in the city of Memphis, and the only professional basketball team in the state of Tennessee.    The team was originally established as the Vancouver Grizzlies in the city of Vancouver, Canada, an expansion team that joined the NBA for the 1995–96 season. After the 2000–01 season concluded, the Grizzlies left Vancouver and moved to Memphis."
 http://example.org/nba/team_1610612763,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/1/1e/Vancouver_Grizzlies_logo.svg
+http://example.org/nba/team_1610612763,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/f/f1/Memphis_Grizzlies.svg
 http://example.org/nba/team_1610612763,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612763,http://example.org/nba/division,http://example.org/nba/division_6
-http://example.org/nba/team_1610612763,http://example.org/nba/state,http://example.org/nba/state_VN
 http://example.org/nba/team_1610612763,http://example.org/nba/state,http://example.org/nba/state_TN
-http://example.org/nba/team_1610612763,http://example.org/nba/locatedIn,http://example.org/nba/state_VN
-http://example.org/nba/team_1610612763,http://example.org/nba/locatedIn,http://example.org/nba/state_TN
+http://example.org/nba/team_1610612763,http://example.org/nba/state,http://example.org/nba/state_VN
+http://example.org/nba/team_1610612763,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_TN
+http://example.org/nba/team_1610612763,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_VN
 http://example.org/nba/team_1610612763,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612763,http://example.org/nba/arena,http://example.org/nba/arena_29
 http://example.org/nba/team_1610612748,http://example.org/nba/teamName,Miami Heat
@@ -477,7 +477,7 @@ http://example.org/nba/team_1610612748,http://example.org/nba/logo,https://cdn.n
 http://example.org/nba/team_1610612748,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612748,http://example.org/nba/division,http://example.org/nba/division_5
 http://example.org/nba/team_1610612748,http://example.org/nba/state,http://example.org/nba/state_FL
-http://example.org/nba/team_1610612748,http://example.org/nba/locatedIn,http://example.org/nba/state_FL
+http://example.org/nba/team_1610612748,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_FL
 http://example.org/nba/team_1610612748,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612748,http://example.org/nba/arena,http://example.org/nba/arena_14
 http://example.org/nba/team_1610612749,http://example.org/nba/teamName,Milwaukee Bucks
@@ -487,7 +487,7 @@ http://example.org/nba/team_1610612749,http://example.org/nba/logo,https://cdn.n
 http://example.org/nba/team_1610612749,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612749,http://example.org/nba/division,http://example.org/nba/division_2
 http://example.org/nba/team_1610612749,http://example.org/nba/state,http://example.org/nba/state_WI
-http://example.org/nba/team_1610612749,http://example.org/nba/locatedIn,http://example.org/nba/state_WI
+http://example.org/nba/team_1610612749,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_WI
 http://example.org/nba/team_1610612749,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612749,http://example.org/nba/arena,http://example.org/nba/arena_15
 http://example.org/nba/team_1610612750,http://example.org/nba/teamName,Minnesota Timberwolves
@@ -497,39 +497,39 @@ http://example.org/nba/team_1610612750,http://example.org/nba/logo,https://uploa
 http://example.org/nba/team_1610612750,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612750,http://example.org/nba/division,http://example.org/nba/division_3
 http://example.org/nba/team_1610612750,http://example.org/nba/state,http://example.org/nba/state_MN
-http://example.org/nba/team_1610612750,http://example.org/nba/locatedIn,http://example.org/nba/state_MN
+http://example.org/nba/team_1610612750,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_MN
 http://example.org/nba/team_1610612750,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612750,http://example.org/nba/arena,http://example.org/nba/arena_16
 http://example.org/nba/team_1610612740,http://example.org/nba/teamName,New Orleans Hornets
-http://example.org/nba/team_1610612740,http://example.org/nba/teamName,New Orleans Pelicans
 http://example.org/nba/team_1610612740,http://example.org/nba/teamName,Oklahoma City Hornets
-http://example.org/nba/team_1610612740,http://example.org/nba/acronym,NOK
-http://example.org/nba/team_1610612740,http://example.org/nba/acronym,NOH
+http://example.org/nba/team_1610612740,http://example.org/nba/teamName,New Orleans Pelicans
 http://example.org/nba/team_1610612740,http://example.org/nba/acronym,NOP
-http://example.org/nba/team_1610612740,http://example.org/nba/city,New Orleans
+http://example.org/nba/team_1610612740,http://example.org/nba/acronym,NOH
+http://example.org/nba/team_1610612740,http://example.org/nba/acronym,NOK
 http://example.org/nba/team_1610612740,http://example.org/nba/city,Oklahoma City
+http://example.org/nba/team_1610612740,http://example.org/nba/city,New Orleans
 http://example.org/nba/team_1610612740,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612740,http://example.org/nba/division,http://example.org/nba/division_5
 http://example.org/nba/team_1610612740,http://example.org/nba/division,http://example.org/nba/division_6
-http://example.org/nba/team_1610612740,http://example.org/nba/state,http://example.org/nba/state_OK
 http://example.org/nba/team_1610612740,http://example.org/nba/state,http://example.org/nba/state_LA
-http://example.org/nba/team_1610612740,http://example.org/nba/locatedIn,http://example.org/nba/state_OK
-http://example.org/nba/team_1610612740,http://example.org/nba/locatedIn,http://example.org/nba/state_LA
+http://example.org/nba/team_1610612740,http://example.org/nba/state,http://example.org/nba/state_OK
+http://example.org/nba/team_1610612740,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_LA
+http://example.org/nba/team_1610612740,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_OK
 http://example.org/nba/team_1610612740,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612740,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/0/0d/New_Orleans_Pelicans_logo.svg
 http://example.org/nba/team_1610612740,http://example.org/nba/arena,http://example.org/nba/arena_7
-http://example.org/nba/team_1610612762,http://example.org/nba/teamName,u
 http://example.org/nba/team_1610612762,http://example.org/nba/teamName,Utah Jazz
 http://example.org/nba/team_1610612762,http://example.org/nba/teamName,New Orleans Jazz
+http://example.org/nba/team_1610612762,http://example.org/nba/teamName,u
 http://example.org/nba/team_1610612762,http://example.org/nba/acronym,UTA
-http://example.org/nba/team_1610612762,http://example.org/nba/acronym,UTH
 http://example.org/nba/team_1610612762,http://example.org/nba/acronym,NOJ
-http://example.org/nba/team_1610612762,http://example.org/nba/city,New Orleans
+http://example.org/nba/team_1610612762,http://example.org/nba/acronym,UTH
 http://example.org/nba/team_1610612762,http://example.org/nba/city,nan
+http://example.org/nba/team_1610612762,http://example.org/nba/city,New Orleans
 http://example.org/nba/team_1610612762,http://example.org/nba/city,Utah
 http://example.org/nba/team_1610612762,http://example.org/nba/logo,https://content.sportslogos.net/logos/6/255/full/new_orleans_jazz_logo__9217.png
 http://example.org/nba/team_1610612762,http://example.org/nba/state,http://example.org/nba/state_LA
-http://example.org/nba/team_1610612762,http://example.org/nba/locatedIn,http://example.org/nba/state_LA
+http://example.org/nba/team_1610612762,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_LA
 http://example.org/nba/team_1610612762,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612762,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612762,http://example.org/nba/division,http://example.org/nba/division_3
@@ -541,20 +541,20 @@ http://example.org/nba/team_1610612752,http://example.org/nba/logo,https://uploa
 http://example.org/nba/team_1610612752,http://example.org/nba/conference,http://example.org/nba/conference_1
 http://example.org/nba/team_1610612752,http://example.org/nba/division,http://example.org/nba/division_1
 http://example.org/nba/team_1610612752,http://example.org/nba/state,http://example.org/nba/state_NY
-http://example.org/nba/team_1610612752,http://example.org/nba/locatedIn,http://example.org/nba/state_NY
+http://example.org/nba/team_1610612752,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_NY
 http://example.org/nba/team_1610612752,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612752,http://example.org/nba/arena,http://example.org/nba/arena_18
 http://example.org/nba/team_1610612760,http://example.org/nba/teamName,Seattle SuperSonics
 http://example.org/nba/team_1610612760,http://example.org/nba/teamName,Oklahoma City Thunder
-http://example.org/nba/team_1610612760,http://example.org/nba/acronym,OKC
 http://example.org/nba/team_1610612760,http://example.org/nba/acronym,SEA
-http://example.org/nba/team_1610612760,http://example.org/nba/city,nan
+http://example.org/nba/team_1610612760,http://example.org/nba/acronym,OKC
 http://example.org/nba/team_1610612760,http://example.org/nba/city,Oklahoma City
+http://example.org/nba/team_1610612760,http://example.org/nba/city,nan
 http://example.org/nba/team_1610612760,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Oklahoma_City_Thunder.svg/1200px-Oklahoma_City_Thunder.svg.png
 http://example.org/nba/team_1610612760,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612760,http://example.org/nba/division,http://example.org/nba/division_3
 http://example.org/nba/team_1610612760,http://example.org/nba/state,http://example.org/nba/state_OK
-http://example.org/nba/team_1610612760,http://example.org/nba/locatedIn,http://example.org/nba/state_OK
+http://example.org/nba/team_1610612760,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_OK
 http://example.org/nba/team_1610612760,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612760,http://example.org/nba/arena,http://example.org/nba/arena_26
 http://example.org/nba/team_1610612753,http://example.org/nba/teamName,Orlando Magic
@@ -576,7 +576,7 @@ http://example.org/nba/team_1610612755,http://example.org/nba/division,http://ex
 http://example.org/nba/team_1610612755,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612755,http://example.org/nba/logo,https://upload.wikimedia.org/wikipedia/commons/e/eb/Philadelphia-76ers-Logo-1977-1996.png
 http://example.org/nba/team_1610612755,http://example.org/nba/state,http://example.org/nba/state_PA
-http://example.org/nba/team_1610612755,http://example.org/nba/locatedIn,http://example.org/nba/state_PA
+http://example.org/nba/team_1610612755,http://example.org/nba/teamLocatedIn,http://example.org/nba/state_PA
 http://example.org/nba/team_1610612755,http://example.org/nba/arena,http://example.org/nba/arena_21
 http://example.org/nba/team_1610612756,http://example.org/nba/teamName,Phoenix Suns
 http://example.org/nba/team_1610612756,http://example.org/nba/acronym,PHX
@@ -592,12 +592,12 @@ http://example.org/nba/team_1610612757,http://example.org/nba/conference,http://
 http://example.org/nba/team_1610612757,http://example.org/nba/division,http://example.org/nba/division_3
 http://example.org/nba/team_1610612757,http://example.org/nba/participatedIn,http://example.org/nba/season_0
 http://example.org/nba/team_1610612757,http://example.org/nba/arena,http://example.org/nba/arena_23
-http://example.org/nba/team_1610612759,http://example.org/nba/teamName,San Antonio Spyrs
 http://example.org/nba/team_1610612759,http://example.org/nba/teamName,San Antonio Spurs
+http://example.org/nba/team_1610612759,http://example.org/nba/teamName,San Antonio Spyrs
 http://example.org/nba/team_1610612759,http://example.org/nba/acronym,SAN
 http://example.org/nba/team_1610612759,http://example.org/nba/acronym,SAS
-http://example.org/nba/team_1610612759,http://example.org/nba/city,San Antonio
 http://example.org/nba/team_1610612759,http://example.org/nba/city,nan
+http://example.org/nba/team_1610612759,http://example.org/nba/city,San Antonio
 http://example.org/nba/team_1610612759,http://example.org/nba/conference,http://example.org/nba/conference_2
 http://example.org/nba/team_1610612759,http://example.org/nba/division,http://example.org/nba/division_6
 http://example.org/nba/team_1610612759,http://example.org/nba/participatedIn,http://example.org/nba/season_0
