@@ -318,6 +318,101 @@ class DataComplementationService:
             print(f"Error querying DBpedia for arena info: {e}")
             return {}
 
+    def get_all_nba_coaches_from_wikidata(self) -> List[Dict[str, Any]]:
+        """
+        Get all NBA coaches from Wikidata
+        """
+        try:
+            query = """
+            PREFIX wd: <http://www.wikidata.org/entity/>
+            PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX p: <http://www.wikidata.org/prop/>
+            PREFIX ps: <http://www.wikidata.org/prop/statement/>
+            PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
+            
+            SELECT DISTINCT ?coach ?coachLabel ?image ?birthDate ?nationalityLabel ?teamLabel ?startTime ?endTime WHERE {
+              ?coach wdt:P106 wd:Q5137571 ;  # occupation: basketball coach
+                     rdfs:label ?coachLabel .
+              
+              # Filter for coaches who have coached NBA teams
+              ?coach p:P6087 ?coachStatement .
+              ?coachStatement ps:P6087 ?team .
+              ?team wdt:P31 wd:Q13393265 ;     # instance of basketball team
+                    wdt:P118 wd:Q155223 ;      # league: NBA
+                    rdfs:label ?teamLabel .
+              
+              OPTIONAL { ?coachStatement pq:P580 ?startTime . }
+              OPTIONAL { ?coachStatement pq:P582 ?endTime . }
+              OPTIONAL { ?coach wdt:P18 ?image . }
+              OPTIONAL { ?coach wdt:P569 ?birthDate . }
+              OPTIONAL { ?coach wdt:P27 ?nationality . 
+                        ?nationality rdfs:label ?nationalityLabel .
+                        FILTER(LANG(?nationalityLabel) = "en") }
+              
+              FILTER(LANG(?coachLabel) = "en")
+              FILTER(LANG(?teamLabel) = "en")
+              
+              SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }
+            }
+            ORDER BY ?coachLabel
+            LIMIT 200
+            """
+
+            self.wikidata_sparql.setQuery(query)
+            results = self.wikidata_sparql.query()
+
+            coaches_dict = {}
+            
+            for result in results.bindings:
+                coach_uri = result["coach"].value if "coach" in result else ""
+                coach_id = coach_uri.split('/')[-1] if coach_uri else ""
+                coach_name = result["coachLabel"].value if "coachLabel" in result else ""
+                coach_image = result["image"].value if "image" in result else None
+                birth_date = result["birthDate"].value if "birthDate" in result else ""
+                nationality = result["nationalityLabel"].value if "nationalityLabel" in result else ""
+                team_name = result["teamLabel"].value if "teamLabel" in result else ""
+                start_time = result["startTime"].value if "startTime" in result else ""
+                end_time = result["endTime"].value if "endTime" in result else ""
+                
+                # Group by coach to avoid duplicates and collect teams
+                if coach_id not in coaches_dict:
+                    coaches_dict[coach_id] = {
+                        'coach_id': coach_id,
+                        'name': coach_name,
+                        'image': coach_image,
+                        'birth_date': birth_date,
+                        'nationality': nationality,
+                        'teams': [],
+                        'source': 'wikidata'
+                    }
+                
+                # Add team information if not already present
+                if team_name:
+                    team_info = {
+                        'team_name': team_name,
+                        'start_year': start_time[:4] if start_time else None,
+                        'end_year': end_time[:4] if end_time else None
+                    }
+                    
+                    # Check if this team info is already added
+                    existing_team = next((t for t in coaches_dict[coach_id]['teams'] 
+                                        if t['team_name'] == team_name and 
+                                           t['start_year'] == team_info['start_year']), None)
+                    
+                    if not existing_team:
+                        coaches_dict[coach_id]['teams'].append(team_info)
+            
+            # Convert to list and sort
+            coaches_list = list(coaches_dict.values())
+            coaches_list.sort(key=lambda x: x['name'])
+            
+            return coaches_list
+            
+        except Exception as e:
+            print(f"Error querying Wikidata for all NBA coaches: {e}")
+            return []
+
 
 # Instantiate the service
 data_service = DataComplementationService()
@@ -423,4 +518,23 @@ def get_arena_details(request):
     except Exception as e:
         return JsonResponse({
             "error": f"Error retrieving arena information: {str(e)}"
+        }, status=500)
+
+
+def get_all_coaches(request):
+    """
+    API endpoint to get all NBA coaches from Wikidata
+    """
+    try:
+        coaches = data_service.get_all_nba_coaches_from_wikidata()
+        
+        return JsonResponse({
+            "coaches": coaches,
+            "total_coaches": len(coaches),
+            "source": "wikidata"
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            "error": f"Error retrieving coaches: {str(e)}"
         }, status=500)

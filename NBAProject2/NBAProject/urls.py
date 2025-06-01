@@ -83,8 +83,10 @@ urlpatterns = [
     path('api/complementation/coach/<str:coach_entity_id>/', data_complementation.get_coach_info, name='coach_info'),
     path('api/complementation/player/awards/', data_complementation.get_player_awards, name='player_awards'),
     path('api/complementation/arena/details/', data_complementation.get_arena_details, name='arena_details'),
+    path('api/complementation/coaches/all/', data_complementation.get_all_coaches, name='all_coaches'),
     
-    # Coach page
+    # Coach pages
+    path('coaches/', views.coaches_page, name='coaches_page'),
     path('coach/<str:coach_id>/', views.pagina_coach, name='coach_page'),
     path('api/complementation/coach/<str:coach_entity_id>/', data_complementation.get_coach_info, name='coach_info'),
 ]

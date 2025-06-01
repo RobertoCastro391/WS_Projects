@@ -2087,3 +2087,10 @@ def pagina_coach(request, coach_id):
             'error': f'Error loading coach information: {str(e)}',
             'coach_id': coach_id
         })
+
+
+def coaches_page(request):
+    """
+    Coaches listing page
+    """
+    return render(request, 'coaches.html')
