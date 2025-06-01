@@ -40,6 +40,90 @@ class DataComplementationService:
         }
         return replacements.get(team_name, team_name)
 
+    def _clean_construction_cost(self, cost_value: str) -> str:
+        """
+        Clean and format construction cost values from DBpedia
+        """
+        print(f"DEBUG _clean_construction_cost: Input value: '{cost_value}' (type: {type(cost_value)})")
+        
+        if not cost_value or cost_value.strip() == '':
+            print("DEBUG _clean_construction_cost: Empty or None value, returning empty string")
+            return ""
+        
+        try:
+            # Remove language tags like "@en"
+            cost_str = cost_value.split('@')[0].strip('"')
+            print(f"DEBUG _clean_construction_cost: After removing @lang: '{cost_str}'")
+            
+            # Handle scientific notation with datatype URIs
+            # Example: "1.4E9"^^<http://dbpedia.org/datatype/usDollar>
+            if '^^' in cost_str:
+                cost_str = cost_str.split('^^')[0].strip('"')
+                print(f"DEBUG _clean_construction_cost: After removing ^^datatype: '{cost_str}'")
+            
+            # Handle scientific notation (e.g., "1.4E9")
+            if 'E' in cost_str.upper():
+                print(f"DEBUG _clean_construction_cost: Found scientific notation: '{cost_str}'")
+                try:
+                    # Convert scientific notation to float
+                    cost_float = float(cost_str)
+                    print(f"DEBUG _clean_construction_cost: Converted to float: {cost_float}")
+                    
+                    # Format based on magnitude
+                    if cost_float >= 1e9:
+                        result = f"${cost_float / 1e9:.1f} billion"
+                        print(f"DEBUG _clean_construction_cost: Formatted as billion: '{result}'")
+                        return result
+                    elif cost_float >= 1e6:
+                        result = f"${cost_float / 1e6:.1f} million"
+                        print(f"DEBUG _clean_construction_cost: Formatted as million: '{result}'")
+                        return result
+                    elif cost_float >= 1e3:
+                        result = f"${cost_float / 1e3:.1f} thousand"
+                        print(f"DEBUG _clean_construction_cost: Formatted as thousand: '{result}'")
+                        return result
+                    else:
+                        result = f"${cost_float:,.0f}"
+                        print(f"DEBUG _clean_construction_cost: Formatted as dollars: '{result}'")
+                        return result
+                except ValueError as ve:
+                    print(f"DEBUG _clean_construction_cost: ValueError converting scientific notation: {ve}")
+                    pass
+            
+            # Handle regular numeric values
+            # Remove any non-numeric characters except decimal points
+            numeric_str = re.sub(r'[^\d.]', '', cost_str)
+            print(f"DEBUG _clean_construction_cost: Extracted numeric string: '{numeric_str}'")
+            
+            if numeric_str:
+                try:
+                    cost_float = float(numeric_str)
+                    print(f"DEBUG _clean_construction_cost: Converted numeric to float: {cost_float}")
+                    
+                    if cost_float >= 1e6:
+                        result = f"${cost_float / 1e6:.1f} million"
+                        print(f"DEBUG _clean_construction_cost: Formatted numeric as million: '{result}'")
+                        return result
+                    elif cost_float >= 1e3:
+                        result = f"${cost_float / 1e3:.1f} thousand"
+                        print(f"DEBUG _clean_construction_cost: Formatted numeric as thousand: '{result}'")
+                        return result
+                    else:
+                        result = f"${cost_float:,.0f}"
+                        print(f"DEBUG _clean_construction_cost: Formatted numeric as dollars: '{result}'")
+                        return result
+                except ValueError as ve:
+                    print(f"DEBUG _clean_construction_cost: ValueError converting numeric: {ve}")
+                    pass
+            
+            # If all else fails, return the cleaned string
+            print(f"DEBUG _clean_construction_cost: Fallback, returning cleaned string: '{cost_str}'")
+            return cost_str if cost_str else ""
+            
+        except Exception as e:
+            print(f"ERROR _clean_construction_cost: Exception cleaning construction cost '{cost_value}': {e}")
+            return cost_value
+
     def get_team_coaches_from_wikidata(self, team_name: str) -> List[Dict[str, Any]]:
         """
         Get historical coaches for an NBA team from Wikidata
@@ -250,7 +334,7 @@ class DataComplementationService:
         """
         try:
             # Clean arena name for better matching
-            clean_name = arena_name.replace(" Arena", "").replace(" Center", "").strip()
+            clean_name = arena_name.strip()
 
             query = f"""
             PREFIX dbo: <http://dbpedia.org/ontology/>
@@ -284,22 +368,41 @@ class DataComplementationService:
 
             arena_info = {}
             architects = []
+            best_cost = ""
 
-            for result in results.bindings:
-                # Build basic arena info (only once)
+            for i, result in enumerate(results.bindings):
+                print(f"DEBUG: Processing result {i}: {dict(result)}")
+                
+                # Build basic arena info from the first result, but keep updating cost if we find better ones
                 if not arena_info:
                     arena_info = {
-                        "name": result.get("label", {}).get("value", ""),
-                        "construction_cost": result.get("constructionCost", {}).get("value", ""),
-                        "opening_date": result.get("openingDate", {}).get("value", ""),
-                        "building_start_date": result.get("buildingStartDate", {}).get("value", ""),
+                        "name": result["label"].value if "label" in result else "",
+                        "construction_cost": "",  # We'll update this as we find valid costs
+                        "opening_date": result["openingDate"].value if "openingDate" in result else "",
+                        "building_start_date": result["buildingStartDate"].value if "buildingStartDate" in result else "",
                         "source": "dbpedia"
                     }
+                
+                # Process construction cost from any result that has it
+                if "constructionCost" in result:
+                    raw_cost = result["constructionCost"].value
+                    print(f"DEBUG: Raw construction cost from result {i}: '{raw_cost}' (type: {type(raw_cost)})")
+                    
+                    if raw_cost and raw_cost.strip() != '':  # Only process non-empty costs
+                        cleaned_cost = self._clean_construction_cost(raw_cost)
+                        print(f"DEBUG: Cleaned construction cost from result {i}: '{cleaned_cost}'")
+                        
+                        if cleaned_cost and not best_cost:  # Use the first valid cost we find
+                            best_cost = cleaned_cost
+                            arena_info["construction_cost"] = cleaned_cost
+                            print(f"DEBUG: Using cost from result {i}: '{cleaned_cost}'")
+                    else:
+                        print(f"DEBUG: Skipping empty cost from result {i}")
 
                 # Collect architect information
-                architect_uri = result.get("architect", {}).get("value", "")
-                architect_name = result.get("architectName", {}).get("value", "")
-                architect_thumbnail = result.get("architectThumbnail", {}).get("value", "")
+                architect_uri = result["architect"].value if "architect" in result else ""
+                architect_name = result["architectName"].value if "architectName" in result else ""
+                architect_thumbnail = result["architectThumbnail"].value if "architectThumbnail" in result else ""
 
                 if architect_uri and architect_name:
                     # Check if this architect is already in our list
