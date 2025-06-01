@@ -16,7 +16,6 @@ Including another URLconf
 """
 from app import views
 from app import data_complementation
-from app import simple_complementation
 from django.contrib import admin
 from django.urls import path
 

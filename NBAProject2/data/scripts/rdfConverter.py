@@ -174,7 +174,7 @@ for _, row in dfs["stats"].iterrows():
 graph.save("nba_triples.csv")
 
 # Export N3 format
-with open("facts3.n3", "w", encoding="utf-8") as f:
+with open("facts.n3", "w", encoding="utf-8") as f:
     f.write("@prefix ex: <http://example.org/nba/> .\n")
     f.write("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n\n")
     f.write("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n")

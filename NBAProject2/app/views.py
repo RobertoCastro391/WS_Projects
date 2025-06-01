@@ -109,7 +109,7 @@ def list_jogadores(request):
 
         SELECT DISTINCT ?player ?playerName WHERE {
             ?p nba:player ?player .
-            ?player nba:name ?playerName .
+            ?player nba:personName ?playerName .
         }
         ORDER BY ?playerName
     """)
@@ -134,7 +134,7 @@ def get_all_teams():
         SELECT DISTINCT ?team ?actualName ?name ?acronym ?logo WHERE {
             ?team a nba:Team ;
                   nba:actualName ?actualName ;
-            OPTIONAL { ?team nba:name ?name . }
+            OPTIONAL { ?team nba:teamName ?name . }
             OPTIONAL { ?team nba:acronym ?acronym . }
             OPTIONAL { ?team nba:logo ?logo . }
         }
@@ -348,17 +348,17 @@ def filter_players(request):
         SELECT DISTINCT ?id ?nome ?position ?height ?weight ?draftYear ?birthdate ?bornIn ?school ?photo ?teamId ?teamName
         WHERE {
             ?id rdf:type nba:Player ;
-                nba:name ?nome .
+                nba:personName ?nome .
             
             OPTIONAL { ?id nba:position ?posObj . 
-                        ?posObj nba:name ?position . }
+                        ?posObj nba:positionName ?position . }
             OPTIONAL { ?id nba:height ?height . }
             OPTIONAL { ?id nba:weight ?weight . }
             OPTIONAL { ?id nba:draftYear ?draftYear . }
             OPTIONAL { ?id nba:birthdate ?birthdate . }
             OPTIONAL { ?id nba:bornIn ?bornIn . }
             OPTIONAL { ?id nba:school ?school . }
-            OPTIONAL { ?id nba:photo ?photo . }
+            OPTIONAL { ?id nba:playerPhoto ?photo . }
 
             OPTIONAL {
                 ?participation nba:player ?id ;
@@ -483,18 +483,18 @@ def pagina_jogador(request, id):
 
         SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo WHERE {{
             ?player a nba:Player ;
-                    nba:name ?name .
+                    nba:personName ?name .
             FILTER(STR(?player) = "{jogador_uri}")
         
             OPTIONAL {{ ?player nba:position ?posObj.
-                        ?posObj nba:name ?position. }}
+                        ?posObj nba:positionName ?position. }}
             OPTIONAL {{ ?player nba:birthdate ?birthdate. }}
             OPTIONAL {{ ?player nba:bornIn ?bornIn. }}
             OPTIONAL {{ ?player nba:draftYear ?draftYear. }}
             OPTIONAL {{ ?player nba:height ?height. }}
             OPTIONAL {{ ?player nba:weight ?weight. }}
             OPTIONAL {{ ?player nba:school ?school. }}
-            OPTIONAL {{ ?player nba:photo ?photo. }}
+            OPTIONAL {{ ?player nba:playerPhoto ?photo. }}
         }}
     """)
 
@@ -550,18 +550,18 @@ def pagina_equipa(request, id):
         SELECT ?name ?actualName ?acronym ?logo ?city ?statename ?conference ?conferencename ?divison ?divisionname ?arena ?arenaname WHERE {{
             ?team a nba:Team ;
                   nba:actualName ?actualName ;
-            OPTIONAL {{ ?team nba:name ?name . }}
+            OPTIONAL {{ ?team nba:teamName ?name . }}
             OPTIONAL {{ ?team nba:acronym ?acronym . }}
             OPTIONAL {{ ?team nba:logo ?logo . }}
             OPTIONAL {{ ?team nba:city ?city . }}
             OPTIONAL {{ ?team nba:state ?state . }}
-            OPTIONAL {{ ?state nba:name ?statename . }}
+            OPTIONAL {{ ?state nba:stateName ?statename . }}
             OPTIONAL {{ ?team nba:conference ?conference . }}
-            OPTIONAL {{ ?conference nba:name ?conferencename . }}
+            OPTIONAL {{ ?conference nba:conferenceName ?conferencename . }}
             OPTIONAL {{ ?team nba:division ?division . }}
-            OPTIONAL {{ ?division nba:name ?divisionname . }}
+            OPTIONAL {{ ?division nba:divisionName ?divisionname . }}
             OPTIONAL {{ ?team nba:arena ?arena . }}
-            OPTIONAL {{ ?arena nba:name ?arenaname . }}
+            OPTIONAL {{ ?arena nba:arenaName ?arenaname . }}
             FILTER(STR(?team) = "{team_uri}")
         }}
     """)
@@ -622,7 +622,7 @@ def pagina_equipa(request, id):
                nba:player ?player ;
                nba:season ?season ;
                nba:seasonType ?seasonType .
-            ?player nba:name ?playerName .
+            ?player nba:personName ?playerName .
             FILTER(STR(?team) = "{team_uri}")
         }}
         ORDER BY ?season
@@ -666,7 +666,7 @@ def pagina_temporada(request, ano):
                nba:player ?player ;
                nba:seasonType ?seasonType .
             ?team nba:actualName ?teamName .
-            ?player nba:name ?playerName .
+            ?player nba:personName ?playerName .
             FILTER(STR(?season) = "{season_uri}")
         }}
         ORDER BY ?team ?player
@@ -732,8 +732,8 @@ def list_arenas(request):
 
         SELECT DISTINCT ?arena ?name ?photo ?location ?opened ?capacity ?homeTeam ?homeTeamName WHERE {
         ?arena a nba:Arena ;
-                nba:name ?name .
-        OPTIONAL { ?arena nba:photo ?photo . }
+                nba:arenaName ?name .
+        OPTIONAL { ?arena nba:arenaPhoto ?photo . }
         OPTIONAL { ?arena nba:location ?location . }
         OPTIONAL { ?arena nba:capacity ?capacity . }
         OPTIONAL { 
@@ -796,14 +796,14 @@ def pagina_arena(request, id):
 
         SELECT ?name ?location ?opened ?capacity ?latitude ?longitude ?photo ?homeTeam ?homeTeamName WHERE {{
             <{arena_uri}> a nba:Arena ;
-                          nba:name ?name ;
+                          nba:arenaName ?name ;
                           nba:location ?location ;
                           nba:homeTeam ?homeTeam .
             OPTIONAL {{ <{arena_uri}> nba:opened ?opened. }}
             OPTIONAL {{ <{arena_uri}> nba:capacity ?capacity. }}
             OPTIONAL {{ <{arena_uri}> nba:latitude ?latitude. }}
             OPTIONAL {{ <{arena_uri}> nba:longitude ?longitude. }}
-            OPTIONAL {{ <{arena_uri}> nba:photo ?photo. }}
+            OPTIONAL {{ <{arena_uri}> nba:arenaPhoto ?photo. }}
             OPTIONAL {{ ?homeTeam nba:actualName ?homeTeamName. }}
         }}
     """)
@@ -837,10 +837,10 @@ def mapa_arenas(request):
 
         SELECT ?arena ?name ?latitude ?longitude ?photo WHERE {
             ?arena a nba:Arena ;
-                   nba:name ?name ;
+                   nba:arenaName ?name ;
                    nba:latitude ?latitude ;
                    nba:longitude ?longitude .
-            OPTIONAL { ?arena nba:photo ?photo . }
+            OPTIONAL { ?arena nba:arenaPhoto ?photo . }
         }
     """)
     sparql.setReturnFormat(JSON)
@@ -875,7 +875,7 @@ def timeline_jogador(request, id):
                nba:seasonType ?seasonType .
             ?team nba:actualName ?teamName .
             OPTIONAL {{ ?team nba:logo ?teamLogo . }}
-            OPTIONAL {{ ?season nba:label ?seasonLabel . }}
+            OPTIONAL {{ ?season nba:seasonLabel ?seasonLabel . }}
             FILTER(STR(?player) = "{player_uri}")
         }}
         ORDER BY ?season
@@ -923,7 +923,7 @@ def grafo_jogador(request, id):
         PREFIX nba: <http://example.org/nba/>
 
         SELECT ?name WHERE {{
-            <{player_uri}> nba:name ?name .
+            <{player_uri}> nba:personName ?name .
         }}
     """)
     sparql.setReturnFormat(JSON)
@@ -944,7 +944,7 @@ def grafo_jogador(request, id):
                nba:season ?season .
             ?team nba:actualName ?teamName ;
                     nba:logo ?teamPhoto .
-            OPTIONAL {{ ?season nba:label ?seasonLabel . }}
+            OPTIONAL {{ ?season nba:seasonLabel ?seasonLabel . }}
         }}
         ORDER BY ?season
     """)
@@ -967,8 +967,8 @@ def grafo_jogador(request, id):
                 nba:season ?season .
             
             # Get teammate name and team name
-            ?teammate nba:name ?teammateName .
-            OPTIONAL {{ ?teammate nba:photo ?teammatePhoto . }}
+            ?teammate nba:personName ?teammateName .
+            OPTIONAL {{ ?teammate nba:playerPhoto ?teammatePhoto . }}
             ?team nba:actualName ?teamName .
             
             # Exclude the player themselves
@@ -1095,11 +1095,11 @@ def companheiros_jogador(request, id):
             OPTIONAL {{ ?team nba:logo ?teamLogo . }}
             
             # Get companion information
-            ?companion nba:name ?companionName .
-            OPTIONAL {{ ?companion nba:photo ?companionPhoto . }}
+            ?companion nba:personName ?companionName .
+            OPTIONAL {{ ?companion nba:playerPhoto ?companionPhoto . }}
             
             # Get season label if available
-            OPTIONAL {{ ?season nba:label ?seasonLabel . }}
+            OPTIONAL {{ ?season nba:seasonLabel ?seasonLabel . }}
             
             # Exclude the player themselves
             FILTER(?companion != <{player_uri}>)
@@ -1201,7 +1201,7 @@ def comparar_jogadores(request):
             PREFIX nba: <http://example.org/nba/>
             SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?positionName ?height ?weight ?school ?photo WHERE {{
                 ?player a nba:Player ;
-                        nba:name ?name ;
+                        nba:personName ?name ;
                         nba:birthdate ?birthdate ;
                         nba:bornIn ?bornIn ;
                         nba:draftYear ?draftYear ;
@@ -1209,8 +1209,8 @@ def comparar_jogadores(request):
                         nba:height ?height ;
                         nba:weight ?weight ;
                         nba:school ?school ;
-                        nba:photo ?photo .
-                ?position nba:name ?positionName .
+                        nba:playerPhoto ?photo .
+                ?position nba:positionName ?positionName .
                 FILTER(STR(?player) = "{jogador_uri}")
             }}
         """)
@@ -1279,7 +1279,7 @@ def comparar_jogadores_template(request):
 
         SELECT DISTINCT ?player ?playerName WHERE {
             ?p nba:player ?player .
-            ?player nba:name ?playerName .
+            ?player nba:personName ?playerName .
         }
         ORDER BY ?playerName
     """)
@@ -1323,7 +1323,7 @@ def rede_jogadores(request):
                nba:player ?player ;
                nba:team ?team ;
                nba:season ?season .
-            ?player nba:name ?playerName .
+            ?player nba:personName ?playerName .
             FILTER(?season = <{full_season_uri}>)
         }}
         LIMIT 50
@@ -1371,7 +1371,7 @@ def expandir_jogador(request, player_id):
                nba:player ?player ;
                nba:team ?team ;
                nba:season ?season .
-            ?player nba:name ?playerName .
+            ?player nba:personName ?playerName .
             FILTER EXISTS {{
                 ?p2 nba:player <{player_id}> ;
                      nba:team ?team ;
@@ -1434,7 +1434,7 @@ def stats(request):
         SELECT ?team_id ?team_name (COUNT(DISTINCT ?player) AS ?total) WHERE {
             ?p nba:team ?team ;
                nba:player ?player .
-            ?team nba:name ?team_name .
+            ?team nba:teamName ?team_name .
             BIND(STRAFTER(STR(?team), "_") AS ?team_id)
         } GROUP BY ?team_id ?team_name
     """)
@@ -1456,7 +1456,7 @@ def stats(request):
         SELECT ?player ?name (COUNT(DISTINCT ?season) AS ?total) WHERE {
             ?p nba:player ?player ;
                nba:season ?season .
-            ?player nba:name ?name .
+            ?player nba:personName ?name .
         } GROUP BY ?player ?name ORDER BY DESC(?total) LIMIT 10
     """)
     result = sparql.query().convert()["results"]["bindings"]
@@ -1574,9 +1574,9 @@ def quiz_questions(request):
             ?p nba:player ?player ;
                nba:team ?team ;
                nba:season ?season .
-            ?player nba:name ?playerName .
+            ?player nba:personName ?playerName .
             ?team nba:actualName ?teamName .
-            ?season nba:label ?seasonLabel .
+            ?season nba:seasonLabel ?seasonLabel .
         } LIMIT 300
     """)
     results = sparql.query().convert()["results"]["bindings"]
@@ -1602,7 +1602,7 @@ def quiz_questions(request):
         PREFIX nba: <http://example.org/nba/>
         SELECT DISTINCT ?arenaName ?teamName WHERE {
             ?arena a nba:Arena ;
-                   nba:name ?arenaName ;
+                   nba:arenaName ?arenaName ;
                    nba:homeTeam ?team .
             ?team nba:actualName ?teamName .
         } LIMIT 100
@@ -1679,9 +1679,9 @@ def check_answer(request):
             sparql.setQuery(f"""
                 PREFIX nba: <http://example.org/nba/>
                 ASK {{
-                    ?player nba:name "{player_name}" .
+                    ?player nba:personName "{player_name}" .
                     ?team nba:actualName "{selected}" .
-                    ?season nba:label "{season}" .
+                    ?season nba:seasonLabel "{season}" .
                     ?p nba:player ?player ;
                        nba:team ?team ;
                        nba:season ?season .
@@ -1700,7 +1700,7 @@ def check_answer(request):
             sparql.setQuery(f"""
                 PREFIX nba: <http://example.org/nba/>
                 ASK {{
-                    ?arena nba:name "{arena_name}" ;
+                    ?arena nba:arenaName "{arena_name}" ;
                            nba:homeTeam ?team .
                     ?team nba:actualName "{selected}" .
                 }}
@@ -1744,9 +1744,9 @@ def check_correct_answer(request):
                 sparql.setQuery(f"""
                     PREFIX nba: <http://example.org/nba/>
                     ASK {{
-                        ?player nba:name "{player_name}" .
+                        ?player nba:personName "{player_name}" .
                         ?team nba:actualName "{selected}" .
-                        ?season nba:label "{season}" .
+                        ?season nba:seasonLabel "{season}" .
                         ?p nba:player ?player ;
                            nba:team ?team ;
                            nba:season ?season .
@@ -1767,7 +1767,7 @@ def check_correct_answer(request):
                 sparql.setQuery(f"""
                     PREFIX nba: <http://example.org/nba/>
                     ASK {{
-                        ?arena nba:name "{arena_name}" ;
+                        ?arena nba:arenaName "{arena_name}" ;
                                nba:homeTeam ?team .
                         ?team nba:actualName "{selected}" .
                     }}
@@ -1855,7 +1855,7 @@ def add_player(request):
             
             INSERT DATA {{
                 nba:{player_id} rdf:type nba:Player ;
-                    nba:name "{data.get('name')}" .
+                    nba:personName "{data.get('name')}" .
         """
         
         # Add optional fields if they are provided
@@ -1881,7 +1881,7 @@ def add_player(request):
             query += f'nba:{player_id} nba:school "{data.get("school")}" .\n'
         
         if data.get('photo'):
-            query += f'nba:{player_id} nba:photo <{data.get("photo")}> .\n'
+            query += f'nba:{player_id} nba:playerPhoto <{data.get("photo")}> .\n'
         
         # Close the query
         query += "}"
@@ -1990,7 +1990,7 @@ def update_player(request):
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             
             INSERT DATA {{
-                {player_uri} nba:name "{data.get('name')}" .
+                {player_uri} nba:personName "{data.get('name')}" .
         """
         
         # Add optional fields if they are provided
@@ -2016,7 +2016,7 @@ def update_player(request):
             insert_query += f'{player_uri} nba:school "{data.get("school")}" .\n'
         
         if data.get('photo'):
-            insert_query += f'{player_uri} nba:photo <{data.get("photo")}> .\n'
+            insert_query += f'{player_uri} nba:playerPhoto <{data.get("photo")}> .\n'
         
         # Close the query
         insert_query += "}"
