@@ -38,11 +38,11 @@
 <h2 class="text-center mb-4">NBA Seasons</h2>
 
 <!-- Cards -->
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" prefix="nba: http://example.org/">
     {% for temporada in temporadas %}
     <div class="col season-card-container animate-on-scroll" data-season="{{ temporada }}">
-      <a href="/temporada/{{ temporada|cut:'http://example.org/nba/season_' }}" class="text-decoration-none">
-        <div class="season-card h-100">
+      <a href="/temporada/{{ temporada|cut:'http://example.org/nba/season_' }}" class="text-decoration-none" typeof="nba:Season" resource="nba:season/">
+        <div class="season-card h-100" property="nba:seasonLabel">
           {{ temporada|cut:"http://example.org/nba/season_" }}
         </div>
       </a>

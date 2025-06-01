@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container" typeof="nba:Player" resource="nba:player/{{ id }}" prefix="nba: http://example.org/">
   <div class="player-profile">
     <div class="row">
       <div class="col-md-4">
@@ -24,8 +24,8 @@
       <div class="col-md-8 player-info">
         <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
-                <h1 class="mb-1">{{ name }}</h1>
-                <span class="position-badge">{{ position|default:"Unknown" }}</span>
+                <h1 class="mb-1" property="nba:personName">{{ name }}</h1>
+                <span class="position-badge" property="nba:position">{{ position|default:"Unknown" }}</span>
             </div> 
           
           {% if teamName %}
@@ -46,22 +46,22 @@
               
               <div class="player-data-row">
                 <span class="player-data-label">Born</span>
-                <span class="player-data-value">{{ birthdate|default:"Unknown" }}</span>
+                <span class="player-data-value" property="nba:birthdate">{{ birthdate|default:"Unknown" }}</span>
               </div>
               
               <div class="player-data-row">
                 <span class="player-data-label">Country</span>
-                <span class="player-data-value">{{ bornIn|default:"Unknown" }}</span>
+                <span class="player-data-value" property="nba:bornIn">{{ bornIn|default:"Unknown" }}</span>
               </div>
               
               <div class="player-data-row">
                 <span class="player-data-label">School</span>
-                <span class="player-data-value">{{ school|default:"Unknown" }}</span>
+                <span class="player-data-value" property="nba:school">{{ school|default:"Unknown" }}</span>
               </div>
               
               <div class="player-data-row">
                 <span class="player-data-label">Draft Year</span>
-                <span class="player-data-value">{{ draftYear|default:"Unknown" }}</span>
+                <span class="player-data-value" property="nba:draftYear">{{ draftYear|default:"Unknown" }}</span>
               </div>
             </div>
           </div>
@@ -73,12 +73,12 @@
               
               <div class="player-data-row">
                 <span class="player-data-label">Height</span>
-                <span class="player-data-value">{{ height|default:"Unknown" }}</span>
+                <span class="player-data-value" property="nba:height">{{ height|default:"Unknown" }}</span>
               </div>
               
               <div class="player-data-row">
                 <span class="player-data-label">Weight</span>
-                <span class="player-data-value">{% if weight %}{{ weight }} lbs{% else %}Unknown{% endif %}</span>
+                <span class="player-data-value" property="nba:weight">{% if weight %}{{ weight }} lbs{% else %}Unknown{% endif %}</span>
               </div>
             </div>
           </div>
