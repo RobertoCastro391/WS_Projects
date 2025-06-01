@@ -80,7 +80,11 @@ urlpatterns = [
 
     # Data Complementation Endpoints (Wikidata & DBpedia)
     path('api/complementation/team/coaches/', data_complementation.get_team_coaches, name='team_coaches'),
+    path('api/complementation/coach/<str:coach_entity_id>/', data_complementation.get_coach_info, name='coach_info'),
     path('api/complementation/player/awards/', data_complementation.get_player_awards, name='player_awards'),
     path('api/complementation/arena/details/', data_complementation.get_arena_details, name='arena_details'),
+    
+    # Coach page
+    path('coach/<str:coach_id>/', views.pagina_coach, name='coach_page'),
     path('api/complementation/coach/<str:coach_entity_id>/', data_complementation.get_coach_info, name='coach_info'),
 ]

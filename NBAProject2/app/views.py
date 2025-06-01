@@ -14,6 +14,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from SPARQLWrapper import JSON, POST, SPARQLWrapper
+from app.data_complementation import data_service
 
 
 def home_page(request):
@@ -2034,3 +2035,55 @@ def update_player(request):
     except Exception as e:
         print(f"Error updating player: {str(e)}")
         return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
+
+
+def pagina_coach(request, coach_id):
+    """
+    Coach detail page using Wikidata information
+    """
+    try:
+        # Get detailed coach information from Wikidata
+        coach_info = data_service.get_coach_info_from_wikidata(coach_id)
+        
+        if not coach_info or not coach_info.get('name'):
+            return render(request, 'coach.html', {
+                'error': 'Coach not found or no information available',
+                'coach_id': coach_id
+            })
+        
+        # Process the coach data for better display
+        processed_coach = {
+            'id': coach_id,
+            'name': coach_info.get('name', ''),
+            'wikidata_link': coach_info.get('coach_link', ''),
+            'image': coach_info.get('image', ''),
+            'date_of_birth': coach_info.get('date_of_birth', ''),
+            'place_of_birth': coach_info.get('place_of_birth', ''),
+            'gender': coach_info.get('gender', ''),
+            'citizenship': coach_info.get('citizenship', ''),
+            'native_language': coach_info.get('native_language', ''),
+            'position': coach_info.get('position', ''),
+            'educated_at': coach_info.get('educated_at', []),
+            'trained_by': coach_info.get('trained_by', []),
+            'teams': coach_info.get('teams', []),
+            'source': coach_info.get('source', 'wikidata')
+        }
+        
+        # Format birth date for better display
+        if processed_coach['date_of_birth']:
+            try:
+                date_obj = datetime.strptime(processed_coach['date_of_birth'][:10], '%Y-%m-%d')
+                processed_coach['formatted_birth_date'] = date_obj.strftime('%B %d, %Y')
+            except:
+                processed_coach['formatted_birth_date'] = processed_coach['date_of_birth']
+        
+        return render(request, 'coach.html', {
+            'coach': processed_coach
+        })
+        
+    except Exception as e:
+        print(f"Error loading coach page: {e}")
+        return render(request, 'coach.html', {
+            'error': f'Error loading coach information: {str(e)}',
+            'coach_id': coach_id
+        })

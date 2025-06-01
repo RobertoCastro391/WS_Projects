@@ -52,14 +52,19 @@ class DataComplementationService:
             PREFIX wdt: <http://www.wikidata.org/prop/direct/>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             
-            SELECT DISTINCT ?coach ?coachLabel ?teamLabel WHERE {{
+            SELECT DISTINCT ?coach ?coachLabel ?teamLabel ?image ?start_date ?end_date WHERE {{
                 ?team wdt:P31 wd:Q13393265 ;  # instance of basketball team
                     wdt:P118 wd:Q155223 ;    # league: National Basketball Association
                     rdfs:label ?teamLabel .
                 
-                ?coach wdt:P106 wd:Q5137571 ;  # occupation: basketball coach
-                       wdt:P54 ?team ;         # member of sports team
-                       rdfs:label ?coachLabel .
+                ?coach p:P6087 ?statement .      # statement where coach coached a team
+                  ?statement ps:P6087 ?team .      # the actual team coached
+                  OPTIONAL {{ ?statement pq:P580 ?start_date . }}  # start time
+                  OPTIONAL {{ ?statement pq:P582 ?end_date . }}    # end time
+                
+                  ?coach wdt:P106 wd:Q5137571 ;    # occupation: basketball coach
+                         rdfs:label ?coachLabel .
+                  OPTIONAL {{ ?coach wdt:P18 ?image . }}            # image
                 
                 FILTER(LANG(?teamLabel) = "en")
                 FILTER(LANG(?coachLabel) = "en") 
@@ -67,7 +72,6 @@ class DataComplementationService:
                 
                 SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en" . }}
             }}
-            LIMIT 20
             """
 
             self.wikidata_sparql.setQuery(query)
@@ -76,8 +80,11 @@ class DataComplementationService:
             coaches = []
             for result in results.bindings:
                 coach_data = {
-                    "coach_id": result.get("coach", {}).get("value", "").split("/")[-1],
-                    "name": result.get("coachLabel", {}).get("value", ""),
+                    "coach_id": result["coach"].value.split("/")[-1] if "coach" in result else "",
+                    "name": result["coachLabel"].value if "coachLabel" in result else "",
+                    "image": result["image"].value if "image" in result else "",
+                    "start_date": result["start_date"].value if "start_date" in result else "",
+                    "end_date": result["end_date"].value if "end_date" in result else "",
                     "source": "wikidata"
                 }
                 coaches.append(coach_data)
@@ -98,6 +105,9 @@ class DataComplementationService:
             PREFIX wd: <http://www.wikidata.org/entity/>
             PREFIX wdt: <http://www.wikidata.org/prop/direct/>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX p: <http://www.wikidata.org/prop/>
+            PREFIX ps: <http://www.wikidata.org/prop/statement/>
+            PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
 
             SELECT ?coachLabel ?dob ?pobLabel ?genderLabel ?citizenshipLabel ?languageLabel
                    ?positionLabel ?image ?givenNameLabel ?familyNameLabel
@@ -119,12 +129,12 @@ class DataComplementationService:
                 OPTIONAL {{ wd:{coach_entity_id} wdt:P1066 ?trainer . }}
 
                 OPTIONAL {{
-                    wd:{coach_entity_id} wdt:P54 ?team .
-                    OPTIONAL {{ wd:{coach_entity_id} p:P54 ?teamStatement .
-                               ?teamStatement ps:P54 ?team ;
-                                              pq:P2031 ?start ;
-                                              pq:P2032 ?end .
-                    }}
+                    wd:{coach_entity_id} p:P6087 ?coachStatement .
+                    ?coachStatement ps:P6087 ?team ;
+                                   pq:P580 ?start ;
+                                   pq:P582 ?end .
+                    ?team rdfs:label ?teamLabel .
+                    FILTER(LANG(?teamLabel) = "en")
                 }}
                 SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en" . }}
             }}
@@ -150,27 +160,27 @@ class DataComplementationService:
             }
 
             for result in results.bindings:
-                coach_info["name"] = result.get("coachLabel", {}).get("value", coach_info["name"])
-                coach_info["date_of_birth"] = result.get("dob", {}).get("value", coach_info["date_of_birth"])
-                coach_info["place_of_birth"] = result.get("pobLabel", {}).get("value", coach_info["place_of_birth"])
-                coach_info["gender"] = result.get("genderLabel", {}).get("value", coach_info["gender"])
-                coach_info["citizenship"] = result.get("citizenshipLabel", {}).get("value", coach_info["citizenship"])
-                coach_info["native_language"] = result.get("languageLabel", {}).get("value",
-                                                                                    coach_info["native_language"])
-                coach_info["position"] = result.get("positionLabel", {}).get("value", coach_info["position"])
-                coach_info["image"] = result.get("image", {}).get("value", coach_info["image"])
+                # Access Value objects properly using .value attribute
+                coach_info["name"] = result["coachLabel"].value if "coachLabel" in result else coach_info["name"]
+                coach_info["date_of_birth"] = result["dob"].value if "dob" in result else coach_info["date_of_birth"]
+                coach_info["place_of_birth"] = result["pobLabel"].value if "pobLabel" in result else coach_info["place_of_birth"]
+                coach_info["gender"] = result["genderLabel"].value if "genderLabel" in result else coach_info["gender"]
+                coach_info["citizenship"] = result["citizenshipLabel"].value if "citizenshipLabel" in result else coach_info["citizenship"]
+                coach_info["native_language"] = result["languageLabel"].value if "languageLabel" in result else coach_info["native_language"]
+                coach_info["position"] = result["positionLabel"].value if "positionLabel" in result else coach_info["position"]
+                coach_info["image"] = result["image"].value if "image" in result else coach_info["image"]
 
                 if "schoolLabel" in result:
-                    coach_info["educated_at"].add(result["schoolLabel"]["value"])
+                    coach_info["educated_at"].add(result["schoolLabel"].value)
                 if "trainerLabel" in result:
-                    coach_info["trained_by"].add(result["trainerLabel"]["value"])
+                    coach_info["trained_by"].add(result["trainerLabel"].value)
 
                 # Add teams with optional period
                 if "teamLabel" in result:
                     team = {
-                        "name": result["teamLabel"]["value"],
-                        "start": result.get("start", {}).get("value", ""),
-                        "end": result.get("end", {}).get("value", "")
+                        "name": result["teamLabel"].value,
+                        "start": result["start"].value if "start" in result else "",
+                        "end": result["end"].value if "end" in result else ""
                     }
                     if team not in coach_info["teams"]:
                         coach_info["teams"].append(team)
