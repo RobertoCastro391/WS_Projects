@@ -200,6 +200,9 @@ class DataComplementationService:
         Get awards and achievements for an NBA player from Wikidata
         """
         try:
+            # Clean and prepare the player name for the query
+            clean_player_name = player_name.strip()
+            
             query = f"""
             PREFIX wd: <http://www.wikidata.org/entity/>
             PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -207,7 +210,7 @@ class DataComplementationService:
             
             SELECT DISTINCT ?player ?playerLabel ?award ?awardLabel WHERE {{
                 ?player wdt:P106 wd:Q3665646 ;      # occupation: basketball player
-                        wdt:P118 wd:Q5372 ;         # league: NBA
+                        wdt:P118 wd:Q155223 ;       # league: NBA
                         rdfs:label ?playerLabel ;
                         wdt:P166 ?award .           # award received
                 
@@ -215,11 +218,11 @@ class DataComplementationService:
                 
                 FILTER(LANG(?playerLabel) = "en")
                 FILTER(LANG(?awardLabel) = "en")
-                FILTER(CONTAINS(LCASE(?playerLabel), LCASE("{player_name}")))
+                FILTER(CONTAINS(LCASE(?playerLabel), LCASE("{clean_player_name}")))
                 
                 SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en" . }}
             }}
-            LIMIT 15
+            LIMIT 50
             """
             
             self.wikidata_sparql.setQuery(query)
@@ -228,9 +231,9 @@ class DataComplementationService:
             awards = []
             for result in results.bindings:
                 award_data = {
-                    "player": result.get("playerLabel", {}).get("value", ""),
-                    "award": result.get("awardLabel", {}).get("value", ""),
-                    "award_link": result.get("award", {}).get("value", ""),
+                    "player": result["playerLabel"].value if "playerLabel" in result else "",
+                    "award": result["awardLabel"].value if "awardLabel" in result else "",
+                    "award_link": result["award"].value if "award" in result else "",
                     "source": "wikidata"
                 }
                 awards.append(award_data)
@@ -274,7 +277,6 @@ class DataComplementationService:
                 FILTER(CONTAINS(LCASE(?label), LCASE("{clean_name}")))
                 FILTER(REGEX(?label, "(Arena|Center|Stadium)", "i"))
             }}
-            LIMIT 20
             """
 
             self.dbpedia_sparql.setQuery(query)
@@ -356,7 +358,6 @@ class DataComplementationService:
               SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }
             }
             ORDER BY ?coachLabel
-            LIMIT 200
             """
 
             self.wikidata_sparql.setQuery(query)
