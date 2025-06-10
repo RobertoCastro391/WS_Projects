@@ -29,7 +29,7 @@
             <http://www.ontotext.com/config/graphdb#query-timeout> "0";
             <http://www.ontotext.com/config/graphdb#read-only> "false";
             <http://www.ontotext.com/config/graphdb#repository-type> "file-repository";
-            <http://www.ontotext.com/config/graphdb#ruleset> "rdfs";
+            <http://www.ontotext.com/config/graphdb#ruleset> "owl2-rl";
             <http://www.ontotext.com/config/graphdb#storage-folder> "storage";
             <http://www.ontotext.com/config/graphdb#throw-QueryEvaluationException-on-timeout>
             "false";
