@@ -106,19 +106,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" typeof="nba:Player" resource="nba:player/{{ id }}" prefix="nba: http://example.org/">
+<div class="container h-card" typeof="nba:Player" resource="nba:player/{{ id }}" prefix="nba: http://example.org/">
   <div class="player-profile">
     <div class="row">
       <div class="col-md-4">
         <div class="player-image-container">
-          <img src="{{ photo }}" alt="{{ name }}" class="player-image" onerror="this.src='/app/static/img/player-placeholder.png'">
+          <img src="{{ photo }}" alt="{{ name }}" class="player-image u-photo" onerror="this.src='/app/static/img/player-placeholder.png'">
         </div>
       </div>
       
       <div class="col-md-8 player-info">
         <div class="d-flex justify-content-between align-items-start mb-2">
-            <div>
-                <h1 class="mb-1" property="nba:personName">{{ name }}</h1>
+            <div>                         
+                <h1 class="mb-1 p-name" property="nba:personName">{{ name }}</h1>
                 <span class="position-badge" property="nba:position">{{ position|default:"Unknown" }}</span>
             </div> 
           
@@ -127,7 +127,7 @@
               <span class="team-label">Last Team</span>
               <div class="current-team">
               <img src="{{ teamLogo }}" alt="Team logo" onerror="this.src='/app/static/img/team-placeholder.png'">
-              <span class="current-team-name">{{ teamName }}</span>
+              <span class="current-team-name p-org">{{ teamName }}</span>
               </div>
           </div>
           {% endif %}
@@ -140,22 +140,22 @@
               
               <div class="player-data-row">
                 <span class="player-data-label">Born</span>
-                <span class="player-data-value" property="nba:birthdate">{{ birthdate|default:"Unknown" }}</span>
+                <span class="player-data-value bday" property="nba:birthdate">{{ birthdate|default:"Unknown" }}</span>
               </div>
               
               <div class="player-data-row">
                 <span class="player-data-label">Country</span>
-                <span class="player-data-value" property="nba:bornIn">{{ bornIn|default:"Unknown" }}</span>
+                <span class="player-data-value p-country-name" property="nba:bornIn">{{ bornIn|default:"Unknown" }}</span>
               </div>
               
               <div class="player-data-row">
                 <span class="player-data-label">School</span>
-                <span class="player-data-value" property="nba:school">{{ school|default:"Unknown" }}</span>
+                <span class="player-data-value p-note" property="nba:school">{{ school|default:"Unknown" }}</span>
               </div>
               
               <div class="player-data-row">
                 <span class="player-data-label">Draft Year</span>
-                <span class="player-data-value" property="nba:draftYear">{{ draftYear|default:"Unknown" }}</span>
+                <span class="player-data-value dt-start" property="nba:draftYear">{{ draftYear|default:"Unknown" }}</span>
               </div>
             </div>
           </div>
