@@ -76,9 +76,9 @@ for _, row in dfs["teams"].iterrows():
     if not pd.isna(row["Logo"]):
         graph.add(t, f"{BASE}logo", row["Logo"])
 
-    if not pd.isna(row["ConferenceId"]):
-        conf_uri = uri("conference", int(row["ConferenceId"]))
-        graph.add(t, f"{BASE}conference", conf_uri)
+    # if not pd.isna(row["ConferenceId"]):
+    #     conf_uri = uri("conference", int(row["ConferenceId"]))
+    #     graph.add(t, f"{BASE}conference", conf_uri)
 
     if not pd.isna(row["DivisionId"]):
         div_uri = uri("division", int(row["DivisionId"]))
@@ -91,10 +91,10 @@ for _, row in dfs["teams"].iterrows():
         graph.add(t, f"{BASE}state", state_uri)
         graph.add(t, f"{BASE}teamLocatedIn", state_uri)
 
-    if not pd.isna(row["Seasons"]):
-        for season in str(row["Seasons"]).split(","):
-            if season.strip().isdigit():
-                graph.add(t, f"{BASE}participatedIn", uri("season", season.strip()))
+    # if not pd.isna(row["Seasons"]):
+    #     for season in str(row["Seasons"]).split(","):
+    #         if season.strip().isdigit():
+    #             graph.add(t, f"{BASE}participatedIn", uri("season", season.strip()))
 
 # Division → Conference relation
 for division_id, conference_id in division_conference_map.items():
@@ -108,7 +108,7 @@ for _, row in dfs["arenas"].iterrows():
     if not pd.isna(row["Opened"]):
         graph.add(a, f"{BASE}opened", str(int(row["Opened"])))
     if not pd.isna(row["Capacity"]):
-        graph.add(a, f"{BASE}capacity", str(int(row["Capacity"])))
+        graph.add(a, f"{BASE}capacity", int(row["Capacity"]))
     if not pd.isna(row["StateId"]):
         graph.add(a, f"{BASE}locatedIn", uri("state", row["StateId"]))
     
@@ -138,7 +138,7 @@ for _, row in dfs["players"].iterrows():
         graph.add(p, f"{BASE}bornIn", row["CountryName"])
     
     if not pd.isna(row["DraftYear"]):
-        graph.add(p, f"{BASE}draftYear", str(int(row["DraftYear"])))
+        graph.add(p, f"{BASE}draftYear", int(row["DraftYear"]))
 
     if not pd.isna(row["PositionId"]):
         graph.add(p, f"{BASE}position", uri("position", row["PositionId"]))
@@ -175,18 +175,18 @@ graph.save("nba_triples.csv")
 
 # Export N3 format
 with open("facts.n3", "w", encoding="utf-8") as f:
-    f.write("@prefix ex: <http://example.org/nba/> .\n")
+    f.write("@prefix nba: <http://example.org/nba/> .\n")
     f.write("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n\n")
     f.write("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n")
     
     grouped = defaultdict(list)
     for s, p, o in graph.triples(None, None, None):
-        subj = s.replace(BASE, "ex:") if isinstance(s, str) and s.startswith(BASE) else f'<{s}>'
-        pred = p.replace(BASE, "ex:").replace(RDF, "rdf:") if isinstance(p, str) and (p.startswith(BASE) or p.startswith(RDF)) else f'<{p}>'
+        subj = s.replace(BASE, "nba:") if isinstance(s, str) and s.startswith(BASE) else f'<{s}>'
+        pred = p.replace(BASE, "nba:").replace(RDF, "rdf:") if isinstance(p, str) and (p.startswith(BASE) or p.startswith(RDF)) else f'<{p}>'
 
         if isinstance(o, str):
             if o.startswith(BASE):
-                obj = o.replace(BASE, "ex:")
+                obj = o.replace(BASE, "nba:")
             elif o.startswith(RDF):
                 obj = o.replace(RDF, "rdf:")
             elif o.startswith("http"):
