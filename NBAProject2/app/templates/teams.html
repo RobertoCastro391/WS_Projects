@@ -60,54 +60,54 @@
     opacity: 1;
     transform: translateY(0);
   }
-
 </style>
 {% endblock %}
 
 {% block content %}
-<h2 class="text-center mb-4">NBA Teams</h2>
-<div class="mb-4 text-center">
-  <input id="searchInput" type="text" class="form-control form-control-lg w-50 mx-auto"
-         placeholder="🔍 Search for a team..." onkeyup="filterTeams()">
-</div>
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-  {% for team in equipas %}
-  <div class="col team-card-container animate-on-scroll" data-name="{{ team.name }}">
-    <a href="/equipa/{{ team.id|cut:'http://example.org/nba/team_' }}" class="text-decoration-none">
-      <div class="team-card h-100">
-        {% if team.logo %}
-          <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo mb-3">
-        {% endif %}
-        <div class="team-name">{{ team.name }}</div>
+<div prefix="nba: http://example.org/nba#">
+  <h2 class="text-center mb-4">NBA Teams</h2>
+  <div class="mb-4 text-center">
+    <input id="searchInput" type="text" class="form-control form-control-lg w-50 mx-auto"
+      placeholder="🔍 Search for a team..." onkeyup="filterTeams()">
+  </div>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for team in equipas %}
+    <div class="col team-card-container animate-on-scroll" data-name="{{ team.name }}">
+      <a href="/equipa/{{ team.id|cut:'http://example.org/nba/team_' }}" class="text-decoration-none">
+        <div class="team-card h-100" typeof="nba:Team" about="{{ team.id }}">
+          {% if team.logo %}
+          <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo mb-3" property="nba:logo">
+          {% endif %}
+          <div class="team-name" property="nba:name">{{ team.name }}</div>
 
-        {% if team.acronym %}
+          {% if team.acronym %}
           <div class="team-acronym">
-            <span class="badge bg-secondary">{{ team.acronym }}</span>
+            <span class="badge bg-secondary" property="nba:acronym">{{ team.acronym }}</span>
           </div>
-        {% endif %}
+          {% endif %}
 
-        {% if team.other_acronyms %}
+          {% if team.other_acronyms %}
           <div class="mt-2">
             {% for acr in team.other_acronyms %}
-              <span class="badge bg-light text-dark border">{{ acr }}</span>
+            <span class="badge bg-light text-dark border" property="nba:altAcronym">{{ acr }}</span>
             {% endfor %}
           </div>
-        {% endif %}
+          {% endif %}
 
-        {% if team.other_names %}
+          {% if team.other_names %}
           <div class="mt-2 text-muted small">
             {% for n in team.other_names %}
-              {{ n }}{% if not forloop.last %}, {% endif %}
+            <span property="nba:altName">{{ n }}</span>{% if not forloop.last %}, {% endif %}
             {% endfor %}
           </div>
-        {% endif %}
-      </div>
-    </a>
+          {% endif %}
+        </div>
+      </a>
+    </div>
+    {% endfor %}
   </div>
-{% endfor %}
+  {% endblock %}
 </div>
-{% endblock %}
-
 
 {% block extra_script %}
 <script>
@@ -131,7 +131,7 @@
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add("visible");
-          observer.unobserve(entry.target); 
+          observer.unobserve(entry.target);
         }
       });
     });

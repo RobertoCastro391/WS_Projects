@@ -514,12 +514,15 @@
           const playerId = player.player.split('_').pop();
           
           teammatesHTML += `
-            <a href="/jogador/${playerId}/" class="teammate-card">
+            <a href="/jogador/${playerId}/" 
+              class="teammate-card h-card" 
+              typeof="nba:Player" 
+              resource="nba:player/${playerId}" 
+              property="nba:hasTeammate">
               <div class="teammate-photo-container">
-                <img src="${player.playerPhoto}" alt="${player.playerName}" class="teammate-photo" 
-                     onerror="this.src='/app/static/img/player-placeholder.png'">
+                <img src="${player.playerPhoto}" alt="${player.playerName}" class="teammate-photo u-photo">
               </div>
-              <div class="teammate-name">${player.playerName}</div>
+              <div class="teammate-name p-name" property="nba:personName">${player.playerName}</div>
             </a>
           `;
         });
@@ -605,13 +608,13 @@
       const awardIcon = getAwardIcon(award.name);
       
       awardsHTML += `
-        <div class="award-card">
+        <div class="award-card h-card" typeof="nba:Award" resource="nba:award/{{ award.name|slugify }}" property="nba:receivedAward">
           <div class="award-icon">
             <i class="bi ${awardIcon}"></i>
           </div>
           <div class="award-content">
-            <div class="award-name">${award.name} ${countBadge}</div>
-            <div class="award-source">
+            <div class="award-name p-name" property="nba:awardName">${award.name} ${countBadge}</div>
+            <div class="award-source" property="rdfs:seeAlso">
               <i class="bi bi-link-45deg"></i>
               <a href="${award.link}" target="_blank" rel="noopener noreferrer">${award.source}</a>
             </div>
@@ -759,13 +762,13 @@
           <div class="timeline-item${teamIndex === 0 ? ' first' : ''}">
             <div class="timeline-marker"></div>
             <div class="timeline-content">
-              <div class="timeline-card team-card">
+              <div class="timeline-card team-card" typeof="nba:Team" resource="nba:team/{{ teamId }}">
                 <div class="timeline-team">
-                  <img src="${teamLogo}" alt="${teamData.teamName} logo" class="timeline-team-logo" 
+                  <img src="${teamLogo}" alt="${teamData.teamName} logo" class="timeline-team-logo u-photo" 
                        onerror="this.src='/app/static/img/team-placeholder.png'">
                   <div class="timeline-team-info">
-                    <span class="timeline-team-name">${teamData.teamName}</span>
-                    <span class="timeline-seasons-list">${seasonsText}</span>
+                    <span class="timeline-team-name p-name">${teamData.teamName}</span>
+                    <span class="timeline-seasons-list dt-start">${seasonsText}</span>
                     <span class="timeline-seasons-count">${sortedSeasons.length} season${sortedSeasons.length > 1 ? 's' : ''}</span>
                   </div>
                 </div>
