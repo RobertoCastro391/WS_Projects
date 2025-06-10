@@ -252,12 +252,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="team-header text-center" data-team-id="{{ team.id|cut:'http://example.org/nba/team_' }}" data-team-name="{{ team.name }}">
+<div class="team-header text-center h-card" data-team-id="{{ team.id|cut:'http://example.org/nba/team_' }}" data-team-name="{{ team.name }}">
   {% if team.logo %}
-  <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo">
+  <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo u-logo">
   {% endif %}
 
-  <h2 class="mb-2">{{ team.name }}</h2>
+  <h2 class="mb-2 p-name">{{ team.name }}</h2>
 
   <button class="favorite-btn btn btn-link p-0 mt-2" title="Toggle favorite">
     <i class="fa-solid fa-heart fs-3 text-danger d-none"></i>
@@ -265,15 +265,22 @@
   </button>
 
   {% if team.acronym %}
-  <h5 class="text-muted">{{ team.acronym }}</h5>
+  <h5 class="text-muted p-org">{{ team.acronym }}</h5>
   {% endif %}
 
-  <p class="mb-1">{{ team.city }}</p>
-  <p class="mb-1">Conference: <strong>{{ team.conference }}</strong> | Division: <strong>{{ team.division }}</strong></p>
+  <p class="mb-1 p-locality">{{ team.city }}</p>
+  <p class="mb-1">
+    Conference: <strong class="p-category">{{ team.conference }}</strong> |
+    Division: <strong class="p-category">{{ team.division }}</strong>
+  </p>
 
   {% if team.arena %}
-  <p class="mb-0">🏟 Arena: <a href="/arena/{{ team.arena |cut:'http://example.org/nba/arena_' }}/"
-      class="text-primary">{{ team.arenaName }}</a></p>
+  <p class="mb-0">
+    🏟 Arena:
+    <a href="/arena/{{ team.arena |cut:'http://example.org/nba/arena_' }}/" class="u-url text-primary">
+      {{ team.arenaName }}
+    </a>
+  </p>
   {% endif %}
 </div>
 
@@ -284,7 +291,7 @@
   {% if team.other_names %}
   <p class="mb-1"><strong>Other Names:</strong>
     {% for name in team.other_names %}
-    {{ name }}{% if not forloop.last %}, {% endif %}
+      <span class="p-nickname">{{ name }}</span>{% if not forloop.last %}, {% endif %}
     {% endfor %}
   </p>
   {% endif %}
@@ -292,7 +299,7 @@
   {% if team.other_acronyms %}
   <p class="mb-1"><strong>Other Acronyms:</strong>
     {% for acronym in team.other_acronyms %}
-    {{ acronym }}{% if not forloop.last %}, {% endif %}
+      <span class="p-nickname">{{ acronym }}</span>{% if not forloop.last %}, {% endif %}
     {% endfor %}
   </p>
   {% endif %}
@@ -301,7 +308,7 @@
   <p class="mb-1"><strong>Other Logos:</strong></p>
   <div class="d-flex justify-content-center flex-wrap">
     {% for logo in team.other_logos %}
-    <img src="{{ logo }}" alt="Logo histórico" class="logo-thumb mb-2">
+      <img src="{{ logo }}" alt="Logo histórico" class="logo-thumb mb-2 u-photo">
     {% endfor %}
   </div>
   {% endif %}
@@ -333,10 +340,16 @@
   <div id="players-container" class="row justify-content-center">
     {% for season, data in team.seasons.items %}
       {% for player in data.players %}
-        <div class="col-md-3 col-sm-6 mb-3 player-wrapper" data-season="{{ season }}" {% if not forloop.parentloop.first %}style="display: none;"{% endif %}>
-          <a href="/jogador/{{ player.player|cut:'http://example.org/nba/player_' }}/" class="text-decoration-none">
+        <div class="col-md-3 col-sm-6 mb-3 player-wrapper h-card" data-season="{{ season }}" {% if not forloop.parentloop.first %}style="display: none;"{% endif %}>
+          <a href="/jogador/{{ player.player|cut:'http://example.org/nba/player_' }}/" class="text-decoration-none u-url">
             <div class="player-card h-100">
-              <h5 class="text-dark" style="text-align: center">{{ player.playerName }}</h5>
+              <h5 class="text-dark p-name" style="text-align: center">
+                {{ player.playerName }}
+              </h5>
+              <div class="text-center small text-muted">
+                <span class="p-category">Season {{ data.seasonName }}</span>
+                <time class="dt-start" datetime="{{ data.seasonName }}-10-01">{{ data.seasonName }}</time>
+              </div>
             </div>
           </a>
         </div>
