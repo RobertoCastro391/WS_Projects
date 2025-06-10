@@ -9,7 +9,8 @@ USERNAME = "admin"
 PASSWORD = "admin"
 
 REPO_CONFIG_PATH = os.path.join('data', 'nba-config.ttl')
-RDF_FILE_PATH = os.path.join('data', 'nba_triples.n3')
+RDF_FILE_PATH = os.path.join('data', 'facts.n3')
+ONTOLOGY_FILE_PATH = os.path.join('data', 'nba_ontology.n3')
 
 def wait_for_graphdb():
     print("Waiting for GraphDB to start...")
@@ -51,12 +52,21 @@ def load_rdf():
             headers=headers,
             auth=(USERNAME, PASSWORD)
         )
+    print("Importing ontology...")
+    with open(ONTOLOGY_FILE_PATH, 'rb') as ontology_file:
+        headers2 = {'Content-Type': 'application/x-turtle'}
+        response2 = requests.post(
+            f"{GRAPHDB_BASE_URL}/repositories/{REPO_ID}/statements",
+            data=ontology_file,
+            headers=headers2,
+            auth=(USERNAME, PASSWORD)
+        )
 
-    if response.status_code in [200, 201, 204]:
-        print("RDF data imported successfully.")
+    if response.status_code and response2.status_code in [200, 201, 204]:
+        print("RDF and ontology data imported successfully.")
         return True
     else:
-        print(f"RDF import failed: {response.status_code}, {response.text}")
+        print(f"RDF or ontology import failed: {response.status_code}, {response.text} / {response2.status_code}, {response2.text}")
         return False
 
 def setup_graphdb():
@@ -74,6 +84,6 @@ def setup_graphdb():
             return
     
         if load_rdf():
-            print("RDF data imported successfully.")
+            print("RDF and ontology data imported successfully.")
         else:
-            print("RDF import failed.")
+            print("RDF or ontology import failed.")

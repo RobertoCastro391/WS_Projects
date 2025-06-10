@@ -1,0 +1,367 @@
+{% extends "layout.html" %}
+
+{% block title %}NBA | {% if coach %}Coach {{ coach.name }}{% else %}Coach{% endif %}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .coach-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 240, 240, 0.9));
+    border-radius: 16px;
+    padding: 2rem;
+    color: #141414;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .coach-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #17408A;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .coach-placeholder {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6c757d, #495057);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    border: 4px solid #17408A;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .coach-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #17408A;
+    margin-bottom: 0.5rem;
+  }
+
+  .coach-subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+  }
+
+  .info-section {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .info-section h4 {
+    color: #17408A;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(248, 249, 250, 0.7);
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+
+  .info-item:hover {
+    background: rgba(233, 236, 239, 0.9);
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: #495057;
+    min-width: 140px;
+    margin-right: 1rem;
+  }
+
+  .info-value {
+    color: #212529;
+    flex: 1;
+  }
+
+  .teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .team-card {
+    background: linear-gradient(135deg, #fff, #f8f9fa);
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .team-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .team-name {
+    font-weight: 600;
+    color: #17408A;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .team-period {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .list-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .list-item {
+    background: #17408A;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .source-link {
+    display: inline-flex;
+    align-items: center;
+    color: #17408A;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .source-link:hover {
+    color: #0d2d5f;
+    text-decoration: none;
+  }
+
+  .error-container {
+    text-align: center;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    margin: 2rem 0;
+  }
+
+  .error-icon {
+    font-size: 4rem;
+    color: #dc3545;
+    margin-bottom: 1rem;
+  }
+
+  .no-data {
+    color: #6c757d;
+    font-style: italic;
+    padding: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .coach-name {
+      font-size: 2rem;
+    }
+
+    .coach-image, .coach-placeholder {
+      width: 120px;
+      height: 120px;
+    }
+
+    .info-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .info-label {
+      min-width: auto;
+      margin-bottom: 0.3rem;
+    }
+
+    .teams-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if error %}
+<div class="error-container">
+  <i class="fas fa-exclamation-triangle error-icon"></i>
+  <h3>Coach Information Not Available</h3>
+  <p class="text-muted">{{ error }}</p>
+  <a href="javascript:history.back()" class="btn btn-primary mt-3">
+    <i class="fas fa-arrow-left me-2"></i>Go Back
+  </a>
+</div>
+{% else %}
+<!-- Coach Header -->
+<div class="coach-header text-center">
+  {% if coach.image %}
+    <img src="{{ coach.image }}" alt="{{ coach.name }}" class="coach-image">
+  {% else %}
+    <div class="coach-placeholder mx-auto">
+      <i class="fas fa-user fa-4x text-white"></i>
+    </div>
+  {% endif %}
+
+  <h1 class="coach-name">{{ coach.name }}</h1>
+
+  {% if coach.wikidata_link %}
+    <a href="{{ coach.wikidata_link }}" target="_blank" class="source-link mt-2">
+      <i class="fas fa-external-link-alt me-2"></i>View on Wikidata
+    </a>
+  {% endif %}
+</div>
+
+<!-- Personal Information -->
+<div class="info-section">
+  <h4><i class="fas fa-user me-2"></i>Personal Information</h4>
+  
+  {% if coach.date_of_birth %}
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-birthday-cake me-2"></i>Born:</span>
+      <span class="info-value">
+        {% if coach.formatted_birth_date %}{{ coach.formatted_birth_date }}{% else %}{{ coach.date_of_birth }}{% endif %}
+        {% if coach.place_of_birth %} in {{ coach.place_of_birth }}{% endif %}
+      </span>
+    </div>
+  {% elif coach.place_of_birth %}
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-map-marker-alt me-2"></i>Born in:</span>
+      <span class="info-value">{{ coach.place_of_birth }}</span>
+    </div>
+  {% endif %}
+
+  {% if coach.citizenship %}
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-flag me-2"></i>Citizenship:</span>
+      <span class="info-value">{{ coach.citizenship }}</span>
+    </div>
+  {% endif %}
+
+  {% if coach.native_language %}
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-language me-2"></i>Native Language:</span>
+      <span class="info-value">{{ coach.native_language }}</span>
+    </div>
+  {% endif %}
+
+  {% if coach.gender %}
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-venus-mars me-2"></i>Gender:</span>
+      <span class="info-value">{{ coach.gender }}</span>
+    </div>
+  {% endif %}
+
+    {% if coach.position %}
+        <div class="info-item">
+      <span class="info-label"><i class="fas fa-basketball-ball me-2"></i>Position Played on Team:</span>
+      <span class="info-value">{{ coach.position }}</span>
+    </div>
+    {% endif %}
+
+  {% if not coach.date_of_birth and not coach.place_of_birth and not coach.citizenship and not coach.native_language and not coach.gender %}
+    <p class="no-data">No personal information available</p>
+  {% endif %}
+</div>
+
+<!-- Education & Training -->
+{% if coach.educated_at or coach.trained_by %}
+<div class="info-section">
+  <h4><i class="fas fa-graduation-cap me-2"></i>Education & Training</h4>
+  
+  {% if coach.educated_at %}
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-school me-2"></i>Educated at:</span>
+      <div class="info-value">
+        <div class="list-items">
+          {% for school in coach.educated_at %}
+            <span class="list-item">{{ school }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if coach.trained_by %}
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-chalkboard-teacher me-2"></i>Trained by:</span>
+      <div class="info-value">
+        <div class="list-items">
+          {% for trainer in coach.trained_by %}
+            <span class="list-item">{{ trainer }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Coaching Career -->
+{% if coach.teams %}
+<div class="info-section">
+  <h4><i class="fas fa-basketball-ball me-2"></i>Coaching Career</h4>
+  
+  <div class="teams-grid">
+    {% for team in coach.teams %}
+      <div class="team-card">
+        <div class="team-name">{{ team.name }}</div>
+        {% if team.start or team.end %}
+          <div class="team-period">
+            <i class="fas fa-calendar me-1"></i>
+            {% if team.start %}{{ team.start|slice:":4" }}{% else %}Unknown{% endif %} - 
+            {% if team.end %}{{ team.end|slice:":4" }}{% else %}Present{% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth animations to cards
+    const cards = document.querySelectorAll('.team-card, .info-item');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    });
+
+    cards.forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(card);
+    });
+  });
+</script>
+{% endblock %}

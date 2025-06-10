@@ -3,3 +3,4 @@ SPARQLWrapper>=1.8.5
 requests
 rdflib
 python-dotenv
+pandas

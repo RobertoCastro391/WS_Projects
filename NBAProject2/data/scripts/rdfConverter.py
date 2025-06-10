@@ -29,8 +29,7 @@ dfs = {
 # States
 for _, row in dfs["states"].iterrows():
     s = uri("state", row["Id"])
-    graph.add(s, f"{RDF}type", f"{BASE}State")
-    graph.add(s, f"{BASE}name", row["Name"])
+    graph.add(s, f"{BASE}stateName", row["Name"])
 
     if not pd.isna(row["Flag"]):
         graph.add(s, f"{BASE}Flag", row["Flag"])
@@ -38,41 +37,35 @@ for _, row in dfs["states"].iterrows():
 # Conferences
 for _, row in dfs["conferences"].iterrows():
     c = uri("conference", row["Id"])
-    graph.add(c, f"{RDF}type", f"{BASE}Conference")
-    graph.add(c, f"{BASE}name", row["Name"])
+    graph.add(c, f"{BASE}conferenceName", row["Name"])
 
 # Divisions
 for _, row in dfs["divisions"].iterrows():
     d = uri("division", row["Id"])
-    graph.add(d, f"{RDF}type", f"{BASE}Division")
-    graph.add(d, f"{BASE}name", row["Name"])
+    graph.add(d, f"{BASE}divisionName", row["Name"])
 
 # Positions
 for _, row in dfs["positions"].iterrows():
     p = uri("position", row["Id"])
-    graph.add(p, f"{RDF}type", f"{BASE}Position")
-    graph.add(p, f"{BASE}name", row["Name"])
+    graph.add(p, f"{BASE}positionName", row["Name"])
     if not pd.isna(row["Description"]):
         graph.add(p, f"{BASE}description", row["Description"])
 
 # Seasons
 for _, row in dfs["seasons"].iterrows():
     s = uri("season", row["Id"])
-    graph.add(s, f"{RDF}type", f"{BASE}Season")
-    graph.add(s, f"{BASE}label", row["Season"])
+    graph.add(s, f"{BASE}seasonLabel", row["Season"])
 
 # Season types
 for _, row in dfs["seasonTypes"].iterrows():
     st = uri("seasonType", row["Id"])
-    graph.add(st, f"{RDF}type", f"{BASE}SeasonType")
-    graph.add(st, f"{BASE}name", row["Name"])
+    graph.add(st, f"{BASE}seasonTypeName", row["Name"])
 
 # Teams
 division_conference_map = {}
 for _, row in dfs["teams"].iterrows():
     t = uri("team", row["Id"])
-    graph.add(t, f"{RDF}type", f"{BASE}Team")
-    graph.add(t, f"{BASE}name", row["Name"])
+    graph.add(t, f"{BASE}teamName", row["Name"])
     graph.add(t, f"{BASE}acronym", row["Acronym"])
     graph.add(t, f"{BASE}city", row["City"])
 
@@ -96,7 +89,7 @@ for _, row in dfs["teams"].iterrows():
     if not pd.isna(row["StateId"]):
         state_uri = uri("state", row["StateId"])
         graph.add(t, f"{BASE}state", state_uri)
-        graph.add(t, f"{BASE}locatedIn", state_uri)
+        graph.add(t, f"{BASE}teamLocatedIn", state_uri)
 
     if not pd.isna(row["Seasons"]):
         for season in str(row["Seasons"]).split(","):
@@ -105,13 +98,12 @@ for _, row in dfs["teams"].iterrows():
 
 # Division → Conference relation
 for division_id, conference_id in division_conference_map.items():
-    graph.add(uri("division", division_id), f"{BASE}conference", uri("conference", conference_id))
+    graph.add(uri("division", division_id), f"{BASE}divisionConference", uri("conference", conference_id))
 
 # Arenas
 for _, row in dfs["arenas"].iterrows():
     a = uri("arena", row["Id"])
-    graph.add(a, f"{RDF}type", f"{BASE}Arena")
-    graph.add(a, f"{BASE}name", row["Name"])
+    graph.add(a, f"{BASE}arenaName", row["Name"])
     graph.add(a, f"{BASE}location", row["Location"])
     if not pd.isna(row["Opened"]):
         graph.add(a, f"{BASE}opened", str(int(row["Opened"])))
@@ -121,7 +113,7 @@ for _, row in dfs["arenas"].iterrows():
         graph.add(a, f"{BASE}locatedIn", uri("state", row["StateId"]))
     
     if not pd.isna(row['Photo']):
-        graph.add(a, f"{BASE}photo", row["Photo"])
+        graph.add(a, f"{BASE}arenaPhoto", row["Photo"])
 
     if not pd.isna(row["Lat"]):
         graph.add(a, f"{BASE}latitude", str(float(row["Lat"])))
@@ -137,8 +129,7 @@ for _, row in dfs["arenas"].iterrows():
 # Players
 for _, row in dfs["players"].iterrows():
     p = uri("player", row["Id"])
-    graph.add(p, f"{RDF}type", f"{BASE}Player")
-    graph.add(p, f"{BASE}name", row["Name"])
+    graph.add(p, f"{BASE}personName", row["Name"])
 
     if not pd.isna(row["Birthdate"]):
         graph.add(p, f"{BASE}birthdate", row["Birthdate"][:10])
@@ -162,7 +153,7 @@ for _, row in dfs["players"].iterrows():
         graph.add(p, f"{BASE}school", row["School"])
 
     if not pd.isna(row['Photo']):
-        graph.add(p, f"{BASE}photo", row["Photo"])
+        graph.add(p, f"{BASE}playerPhoto", row["Photo"])
 
     if not pd.isna(row["Biography"]):
         clean_biography = str(row["Biography"]).replace("\n", " ").replace("\r", " ").strip()
@@ -174,7 +165,6 @@ for _, row in dfs["stats"].iterrows():
     for player in players:
         participation_uri = uri("participation", f"{player['Id']}_{row['TeamId']}_{row['SeasonId']}_{row['SeasonType']}")
         
-        graph.add(participation_uri, f"{RDF}type", f"{BASE}Participation")
         graph.add(participation_uri, f"{BASE}player", uri("player", player["Id"]))
         graph.add(participation_uri, f"{BASE}team", uri("team", row["TeamId"]))
         graph.add(participation_uri, f"{BASE}season", uri("season", row["SeasonId"]))
@@ -184,10 +174,11 @@ for _, row in dfs["stats"].iterrows():
 graph.save("nba_triples.csv")
 
 # Export N3 format
-with open("nba_triples.n3", "w", encoding="utf-8") as f:
+with open("facts.n3", "w", encoding="utf-8") as f:
     f.write("@prefix ex: <http://example.org/nba/> .\n")
     f.write("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n\n")
-
+    f.write("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n")
+    
     grouped = defaultdict(list)
     for s, p, o in graph.triples(None, None, None):
         subj = s.replace(BASE, "ex:") if isinstance(s, str) and s.startswith(BASE) else f'<{s}>'
@@ -199,7 +190,7 @@ with open("nba_triples.n3", "w", encoding="utf-8") as f:
             elif o.startswith(RDF):
                 obj = o.replace(RDF, "rdf:")
             elif o.startswith("http"):
-                obj = f'<{o}>'
+                obj = f'"{o}"^^xsd:anyURI'
             elif "\n" in o or '"' in o or len(o) > 200:
                 escaped = o.replace('"""', '\\"\\"\\"')
                 obj = f'"""{escaped}"""'
