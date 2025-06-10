@@ -169,35 +169,35 @@
 
 {% block content %}
 <div class="container">
-  <div class="arena-profile">
+  <div class="arena-profile h-card" vocab="http://example.org/nba/" typeof="nba:Arena" about="http://example.org/nba/arena_{{ arena.id }}">
     <div class="row mb-4">
       <div class="col-md-12 text-center">
-        <h1 class="fw-bold mb-1">{{ arena.name }}</h1>
-        <p class="text-muted">{{ arena.location }}</p>
+        <h1 class="fw-bold mb-1 p-name" property="nba:arenaName">{{ arena.name }}</h1>
+        <p class="text-muted p-locality" property="nba:location">{{ arena.location }}</p>
       </div>
     </div>
 
     <div class="row mb-5">
       {% if arena.photo %}
         <div class="col-md-6">
-          <img src="{{ arena.photo }}" alt="{{ arena.name }}" class="img-fluid arena-image mb-3">
+          <img src="{{ arena.photo }}" alt="{{ arena.name }}" class="img-fluid arena-image mb-3 u-photo" property="nba:arenaPhoto">
         </div>
       {% endif %}
       <div class="col-md-6">
         <div class="arena-info-card">
           <h4>Basic Information</h4>
-          <div class="detail-item">
+          <div class="detail-item h-adr">
             <span class="detail-label">
               <i class="bi bi-geo-alt"></i> Location
             </span>
-            <span class="detail-value">{{ arena.location }}</span>
+            <span class="detail-value p-locality" property="nba:location">{{ arena.location }}</span>
           </div>
           {% if arena.opened %}
           <div class="detail-item">
             <span class="detail-label">
               <i class="bi bi-calendar-event"></i> Opened
             </span>
-            <span class="detail-value">{{ arena.opened }}</span>
+            <span class="detail-value dt-start" property="nba:opened">{{ arena.opened }}</span>
           </div>
           {% endif %}
           {% if arena.capacity %}
@@ -205,7 +205,7 @@
             <span class="detail-label">
               <i class="bi bi-people"></i> Capacity
             </span>
-            <span class="detail-value">{{ arena.capacity }}</span>
+            <span class="detail-value" property="nba:capacity">{{ arena.capacity }}</span>
           </div>
           {% endif %}
           {% if arena.latitude and arena.longitude %}
@@ -213,7 +213,10 @@
             <span class="detail-label">
               <i class="bi bi-globe"></i> Coordinates
             </span>
-            <span class="detail-value">{{ arena.latitude }}, {{ arena.longitude }}</span>
+            <span class="detail-value h-geo">
+              <span class="p-latitude" property="nba:latitude">{{ arena.latitude }}</span>,
+              <span class="p-longitude" property="nba:longitude">{{ arena.longitude }}</span>
+            </span>
           </div>
           {% endif %}
           {% if arena.homeTeam %}
@@ -222,7 +225,7 @@
               <i class="bi bi-house"></i> Home Team
             </span>
             <span class="detail-value">
-              <a href="/equipa/{{ arena.homeTeam|cut:'http://example.org/nba/team_' }}" class="text-decoration-none">
+              <a href="/equipa/{{ arena.homeTeam|cut:'http://example.org/nba/team_' }}" class="text-decoration-none p-org" property="nba:homeTeam" typeof="nba:Team" resource="{{ arena.homeTeam }}">
                 {{ arena.homeTeamName }}
               </a>
             </span>
@@ -333,7 +336,7 @@
     }
 
     let detailsHTML = `
-      <div id="arena-details-data">
+      <div id="arena-details-data" vocab="http://schema.org/" typeof="Place" about="http://example.org/nba/arena_{{ arena.id }}">
         <h4 class="detail-header">
           <i class="bi bi-building"></i> Construction & Architecture Details
         </h4>
@@ -354,7 +357,7 @@
             <span class="detail-label">
               <i class="bi bi-currency-dollar"></i> Construction Cost
             </span>
-            <span class="detail-value">${formatCost(arenaInfo.construction_cost)}</span>
+            <span class="detail-value p-price" property="schema:cost">${formatCost(arenaInfo.construction_cost)}</span>
           </div>
         `;
       }
@@ -365,7 +368,7 @@
             <span class="detail-label">
               <i class="bi bi-calendar-plus"></i> Construction Started
             </span>
-            <span class="detail-value">${formatDate(arenaInfo.building_start_date)}</span>
+            <time class="detail-value dt-start" datetime="${arenaInfo.building_start_date}" property="schema:startDate">${formatDate(arenaInfo.building_start_date)}</time>
           </div>
         `;
       }
@@ -376,7 +379,7 @@
             <span class="detail-label">
               <i class="bi bi-calendar-check"></i> Official Opening
             </span>
-            <span class="detail-value">${formatDate(arenaInfo.opening_date)}</span>
+            <time class="detail-value dt-end" datetime="${arenaInfo.opening_date}" property="schema:openingDate">${formatDate(arenaInfo.opening_date)}</time>
           </div>
         `;
       }
@@ -397,15 +400,15 @@
       arenaInfo.architects.forEach(architect => {
         detailsHTML += `
           <div class="col-md-6 mb-3">
-            <div class="architect-card">
+            <div class="architect-card h-card" typeof="foaf:Person">
               ${architect.thumbnail ? 
-                `<img src="${architect.thumbnail}" alt="${architect.name}" class="architect-thumbnail" onerror="this.style.display='none'">` : 
+                `<img src="${architect.thumbnail}" alt="${architect.name}" class="architect-thumbnail u-photo" property="foaf:img">` : 
                 `<div class="architect-thumbnail" style="background: linear-gradient(135deg, #17408B, #2563eb); display: flex; align-items: center; justify-content: center;">
                    <i class="bi bi-person" style="color: white; font-size: 1.5rem;"></i>
                  </div>`
               }
               <div class="architect-info">
-                <div class="architect-name">${architect.name}</div>
+                <div class="architect-name p-name" property="foaf:name">${architect.name}</div>
                 <div class="architect-role">Architect / Designer</div>
               </div>
             </div>
