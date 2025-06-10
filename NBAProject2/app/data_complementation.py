@@ -12,6 +12,9 @@ import re
 from typing import Dict, List, Optional, Any
 from django.http import JsonResponse
 from SPARQLWrapper import SPARQLWrapper2, JSON
+import hashlib
+from django.core.cache import cache
+from django.conf import settings
 
 
 class DataComplementationService:
@@ -29,6 +32,55 @@ class DataComplementationService:
         # Set timeouts
         self.wikidata_sparql.setTimeout(30)
         self.dbpedia_sparql.setTimeout(30)
+        
+        # Cache timeout settings (in seconds)
+        self.cache_timeouts = {
+            'team_coaches': 43200,        # 12 hours
+            'coach_info': 43200,      
+            'player_awards': 43200,    
+            'arena_details': 43200,   
+            'all_coaches': 43200, 
+        }
+        
+    def _generate_cache_key(self, prefix: str, *args) -> str:
+        """Generate a unique cache key based on prefix and arguments"""
+        # Normalize arguments to strings and join them
+        normalized_args = [str(arg).lower().strip() for arg in args]
+        key_base = f"{prefix}:{'_'.join(normalized_args)}"
+        
+        # Create a hash to ensure key uniqueness and avoid length issues
+        key_hash = hashlib.md5(key_base.encode('utf-8')).hexdigest()
+        return f"nba_data:{prefix}:{key_hash}"
+
+    def _get_from_cache_or_fetch(self, cache_key: str, fetch_function, timeout: int, *args, **kwargs):
+        """Generic method to get data from cache or fetch if not available"""
+        try:
+            # Try to get from cache first
+            cached_data = cache.get(cache_key)
+            if cached_data is not None:
+                print(f"DEBUG: Cache HIT for key: {cache_key}")
+                return cached_data
+            
+            print(f"DEBUG: Cache MISS for key: {cache_key}")
+            
+            # If not in cache, fetch the data
+            fresh_data = fetch_function(*args, **kwargs)
+            
+            # Store in cache for future use
+            if fresh_data:  # Only cache non-empty results
+                cache.set(cache_key, fresh_data, timeout)
+                print(f"DEBUG: Cached data for key: {cache_key} (timeout: {timeout}s)")
+            
+            return fresh_data
+            
+        except Exception as e:
+            print(f"ERROR: Cache operation failed for key {cache_key}: {e}")
+            # Fallback to direct fetch if cache fails
+            try:
+                return fetch_function(*args, **kwargs)
+            except Exception as fetch_error:
+                print(f"ERROR: Fetch operation also failed: {fetch_error}")
+                return [] if hasattr(fetch_function, '__name__') and 'get_' in fetch_function.__name__ else {}
 
     def _clean_team_name(self, team_name: str) -> str:
         """Clean and normalize team names for better matching.
@@ -124,7 +176,7 @@ class DataComplementationService:
             print(f"ERROR _clean_construction_cost: Exception cleaning construction cost '{cost_value}': {e}")
             return cost_value
 
-    def get_team_coaches_from_wikidata(self, team_name: str) -> List[Dict[str, Any]]:
+    def _fetch_team_coaches_from_wikidata(self, team_name: str) -> List[Dict[str, Any]]:
         """
         Get historical coaches for an NBA team from Wikidata
         """
@@ -178,8 +230,20 @@ class DataComplementationService:
         except Exception as e:
             print(f"Error querying Wikidata for coaches: {e}")
             return []
+            
+    def get_team_coaches_from_wikidata(self, team_name: str) -> List[Dict[str, Any]]:
+        """
+        Get historical coaches for an NBA team from Wikidata (with caching)
+        """
+        cache_key = self._generate_cache_key('team_coaches', team_name)
+        return self._get_from_cache_or_fetch(
+            cache_key, 
+            self._fetch_team_coaches_from_wikidata, 
+            self.cache_timeouts['team_coaches'],
+            team_name
+        )
 
-    def get_coach_info_from_wikidata(self, coach_entity_id: str) -> Dict[str, Any]:
+    def _fetch_coach_info_from_wikidata(self, coach_entity_id: str) -> Dict[str, Any]:
         """
         Get detailed information about a basketball coach from Wikidata using their entity ID.
         Includes biography, career info, education, and affiliations.
@@ -278,8 +342,20 @@ class DataComplementationService:
         except Exception as e:
             print(f"Error querying Wikidata for coach info: {e}")
             return {}
+            
+    def get_coach_info_from_wikidata(self, coach_entity_id: str) -> Dict[str, Any]:
+        """
+        Get detailed information about a basketball coach from Wikidata (with caching)
+        """
+        cache_key = self._generate_cache_key('coach_info', coach_entity_id)
+        return self._get_from_cache_or_fetch(
+            cache_key, 
+            self._fetch_coach_info_from_wikidata, 
+            self.cache_timeouts['coach_info'],
+            coach_entity_id
+        )
 
-    def get_player_awards_from_wikidata(self, player_name: str) -> List[Dict[str, Any]]:
+    def _fetch_player_awards_from_wikidata(self, player_name: str) -> List[Dict[str, Any]]:
         """
         Get awards and achievements for an NBA player from Wikidata
         """
@@ -327,8 +403,20 @@ class DataComplementationService:
         except Exception as e:
             print(f"Error querying Wikidata for player awards: {e}")
             return []
+            
+    def get_player_awards_from_wikidata(self, player_name: str) -> List[Dict[str, Any]]:
+        """
+        Get awards and achievements for an NBA player from Wikidata (with caching)
+        """
+        cache_key = self._generate_cache_key('player_awards', player_name)
+        return self._get_from_cache_or_fetch(
+            cache_key, 
+            self._fetch_player_awards_from_wikidata, 
+            self.cache_timeouts['player_awards'],
+            player_name
+        )
 
-    def get_arena_information_from_dbpedia(self, arena_name: str) -> Dict[str, Any]:
+    def _fetch_arena_information_from_dbpedia(self, arena_name: str) -> Dict[str, Any]:
         """
         Get additional arena information from DBpedia
         """
@@ -422,8 +510,20 @@ class DataComplementationService:
         except Exception as e:
             print(f"Error querying DBpedia for arena info: {e}")
             return {}
+            
+    def get_arena_information_from_dbpedia(self, arena_name: str) -> Dict[str, Any]:
+        """
+        Get additional arena information from DBpedia (with caching)
+        """
+        cache_key = self._generate_cache_key('arena_details', arena_name)
+        return self._get_from_cache_or_fetch(
+            cache_key, 
+            self._fetch_arena_information_from_dbpedia, 
+            self.cache_timeouts['arena_details'],
+            arena_name
+        )
 
-    def get_all_nba_coaches_from_wikidata(self) -> List[Dict[str, Any]]:
+    def _fetch_all_nba_coaches_from_wikidata(self) -> List[Dict[str, Any]]:
         """
         Get all NBA coaches from Wikidata
         """
@@ -516,6 +616,17 @@ class DataComplementationService:
         except Exception as e:
             print(f"Error querying Wikidata for all NBA coaches: {e}")
             return []
+            
+    def get_all_nba_coaches_from_wikidata(self) -> List[Dict[str, Any]]:
+        """
+        Get all NBA coaches from Wikidata (with caching)
+        """
+        cache_key = self._generate_cache_key('all_coaches')
+        return self._get_from_cache_or_fetch(
+            cache_key, 
+            self._fetch_all_nba_coaches_from_wikidata, 
+            self.cache_timeouts['all_coaches']
+        )
 
 
 # Instantiate the service

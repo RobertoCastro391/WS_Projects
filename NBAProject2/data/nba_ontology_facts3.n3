@@ -138,7 +138,7 @@ nba:division rdf:type owl:ObjectProperty ;
 nba:participatedIn rdf:type owl:ObjectProperty ;
     rdfs:label "participatedIn" ;
     rdfs:domain nba:Team ;
-    rdfs:range nba:Participation ;
+    rdfs:range nba:Season ;
     rdfs:comment "Participation identifier for a team" .
 
 nba:arena rdf:type owl:ObjectProperty ;

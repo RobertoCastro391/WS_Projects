@@ -132,6 +132,21 @@ if ENV == "prod_docker":
 else:
     SPARQL_ENDPOINT = "http://localhost:7200/repositories/NBA_G4"
     SPARQL_ENDPOINT_UPDATE = "http://localhost:7200/repositories/NBA_G4/statements"
+    
+    
+# Cache
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'nba-data-cache',
+        'TIMEOUT': 86400,  # Default timeout of 24 hours
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+            'CULL_FREQUENCY': 3,
+        }
+    }
+}
 
 
 
