@@ -138,7 +138,7 @@ nba:division rdf:type owl:ObjectProperty ;
 nba:participatedIn rdf:type owl:ObjectProperty ;
     rdfs:label "participatedIn" ;
     rdfs:domain nba:Team ;
-    rdfs:range nba:Participation ;
+    rdfs:range nba:Season ;
     rdfs:comment "Participation identifier for a team" .
 
 nba:arena rdf:type owl:ObjectProperty ;
@@ -153,7 +153,7 @@ nba:state rdf:type owl:ObjectProperty ;
     rdfs:range nba:State ;
     rdfs:comment "The state of the team's home arena" .
 
-nba:locatedIn rdf:type owl:ObjectProperty ;
+nba:teamLocatedIn rdf:type owl:ObjectProperty ;
     rdfs:label "TeamlocatedIn" ;
     rdfs:domain nba:Team ;
     rdfs:range nba:State ;
@@ -261,7 +261,7 @@ nba:divisionName rdf:type owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     rdfs:comment "Division's Name" .
 
-nba:conference rdf:type owl:ObjectProperty ;
+nba:divisionConference rdf:type owl:ObjectProperty ;
     rdfs:label "conference" ;
     rdfs:domain nba:Division ;
     rdfs:range nba:Conference ;
