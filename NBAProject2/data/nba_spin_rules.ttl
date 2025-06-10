@@ -74,14 +74,15 @@ WHERE {
 # =============================================================================
 
 PREFIX nba: <http://example.org/nba>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 CONSTRUCT {
     ?player nba:draftAge ?age .
 }
 WHERE {
     ?player nba:birthdate ?birthdate .
     ?player nba:draftYear ?draftYear .
-    FILTER(?draftYear != "Undrafted")
-    BIND(xsd:integer(?draftYear) - YEAR(?birthdate) AS ?age)
+    FILTER(STRLEN(?draftYear) = 4)  # Ensure it's a 4-digit year
+    BIND(xsd:integer(?draftYear) - YEAR(xsd:date(?birthdate)) AS ?age)
     FILTER(?age >= 18 && ?age <= 35)
     FILTER NOT EXISTS { ?player nba:draftAge ?age }
 }

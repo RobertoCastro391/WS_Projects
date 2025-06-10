@@ -496,32 +496,35 @@
 
   <template id="player-card-template">
     <div class="col-md-3 mb-4">
-      <div class="player-card">
+      <div class="player-card" typeof="nba:Player">
         <div class="player-img-container">
-          <img src="/placeholder.svg" alt="" class="player-img">
-          <span class="position-badge"></span>
-          <span class="nationality-badge player-nationality"></span>
+          <img src="/placeholder.svg" alt="" class="player-img" property="nba:photo">
+          <span class="position-badge" property="nba:position"></span>
+          <span class="nationality-badge player-nationality" property="nba:bornIn"></span>
         </div>
         <div class="player-info">
-          <h5 class="player-name"></h5>
-          <p class="player-team"></p>
+          <h5 class="player-name" property="nba:name"></h5>
+          <p class="player-team">
+            <span rel="nba:playsFor" resource="" class="team-link">
+              <span property="nba:teamName"></span>
+            </span>
+          </p>
           <div class="player-stats">
             <div>
-              <span class="player-height"></span> | <span class="player-weight"></span>
+              <span class="player-height" property="nba:height"></span> |
+              <span class="player-weight" property="nba:weight"></span>
             </div>
             <div>
-              <span class="player-draft"></span>
+              <span class="player-draft" property="nba:draftYear"></span>
             </div>
           </div>
         </div>
         <div class="card-footer">
-          <a href="#" class="view-profile-btn">
-            View Profile <i class="bi bi-chevron-right"></i>
-          </a>
+          <a href="#" class="view-profile-btn" rel="rdfs:seeAlso">View Profile <i class="bi bi-chevron-right"></i></a>
         </div>
       </div>
     </div>
-  </template>
+</template>
 {% endblock %}
 
 {% block extra_scripts %}

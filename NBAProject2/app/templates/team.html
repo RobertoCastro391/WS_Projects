@@ -45,6 +45,45 @@
     border-radius: 8px;
   }
 
+  /* Tab System Styles */
+  .main-tabs {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  .main-tab-button {
+    border: none;
+    background: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: white;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    margin: 0 1rem;
+  }
+
+  .main-tab-button:hover {
+    color: #17408A;
+  }
+
+  .main-tab-button.active {
+    color: #c0c0c0;
+    border-bottom: 3px solid #17408A;
+    font-weight: 600;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
   .season-selector {
     display: flex;
     overflow-x: auto;
@@ -105,34 +144,146 @@
   .player-card:hover {
     transform: scale(1.03);
   }
+
+  /* Coach Styles */
+  #coaches-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  }
+
+
+  .coach-card {
+      background-color: #fff;
+      color: #000;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      transition: transform 0.2s ease;
+      flex: 1 1 280px;
+      max-width: 300px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+
+  .coach-card:hover {
+    transform: scale(1.02);
+  }
+
+  .coach-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+
+  .coach-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+  }
+
+  .coach-info h5 {
+    margin-bottom: 0.5rem;
+    color: #17408A;
+    font-size: 1.1rem;
+  }
+
+  .coach-dates {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .coach-source {
+    font-size: 0.8rem;
+    color: #999;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    #coaches-container {
+      justify-content: space-around;
+    }
+
+    .coach-card {
+      flex: 0 1 45%;
+      min-width: 250px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #coaches-container {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .coach-card {
+      max-width: 100%;
+      width: 90%;
+      flex: none;
+    }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: #999;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="team-header text-center" data-team-id="{{ team.id|cut:'http://example.org/nba/team_' }}" >
+<div class="team-header text-center h-card" data-team-id="{{ team.id|cut:'http://example.org/nba/team_' }}" data-team-name="{{ team.name }}">
   {% if team.logo %}
-  <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo">
+  <img src="{{ team.logo }}" alt="Logo {{ team.name }}" class="team-logo u-logo">
   {% endif %}
 
-  <h2 class="mb-2">{{ team.name }}</h2>
+  <h2 class="mb-2 p-name">{{ team.name }}</h2>
 
   <button class="favorite-btn btn btn-link p-0 mt-2" title="Toggle favorite">
     <i class="fa-solid fa-heart fs-3 text-danger d-none"></i>
     <i class="fa-regular fa-heart fs-3 text-secondary"></i>
   </button>
 
-
   {% if team.acronym %}
-  <h5 class="text-muted">{{ team.acronym }}</h5>
+  <h5 class="text-muted p-org">{{ team.acronym }}</h5>
   {% endif %}
 
-  <p class="mb-1">{{ team.city }}</p>
-  <p class="mb-1">Conference: <strong>{{ team.conference }}</strong> | Division: <strong>{{ team.division }}</strong>
+  <div class"h-adr">
+    <p class="mb-1 p-locality">{{ team.city }}</p>
+  </div>
+  
+  <p class="mb-1">
+    Conference: <strong class="p-category">{{ team.conference }}</strong> |
+    Division: <strong class="p-category">{{ team.division }}</strong>
   </p>
 
   {% if team.arena %}
-  <p class="mb-0">🏟 Arena: <a href="/arena/{{ team.arena |cut:'http://example.org/nba/arena_' }}/"
-      class="text-primary">{{ team.arenaName }}</a></p>
+  <p class="mb-0">
+    🏟 Arena:
+    <a href="/arena/{{ team.arena |cut:'http://example.org/nba/arena_' }}/" class="u-url text-primary">
+      {{ team.arenaName }}
+    </a>
+  </p>
   {% endif %}
 </div>
 
@@ -143,7 +294,7 @@
   {% if team.other_names %}
   <p class="mb-1"><strong>Other Names:</strong>
     {% for name in team.other_names %}
-    {{ name }}{% if not forloop.last %}, {% endif %}
+      <span class="p-nickname">{{ name }}</span>{% if not forloop.last %}, {% endif %}
     {% endfor %}
   </p>
   {% endif %}
@@ -151,7 +302,7 @@
   {% if team.other_acronyms %}
   <p class="mb-1"><strong>Other Acronyms:</strong>
     {% for acronym in team.other_acronyms %}
-    {{ acronym }}{% if not forloop.last %}, {% endif %}
+      <span class="p-nickname">{{ acronym }}</span>{% if not forloop.last %}, {% endif %}
     {% endfor %}
   </p>
   {% endif %}
@@ -160,35 +311,74 @@
   <p class="mb-1"><strong>Other Logos:</strong></p>
   <div class="d-flex justify-content-center flex-wrap">
     {% for logo in team.other_logos %}
-    <img src="{{ logo }}" alt="Logo histórico" class="logo-thumb mb-2">
+      <img src="{{ logo }}" alt="Logo histórico" class="logo-thumb mb-2 u-photo">
     {% endfor %}
   </div>
   {% endif %}
 </div>
 {% endif %}
 
-<h4 class="mb-4 mt-5 text-center">Players by Season</h4>
-
-<div class="season-selector">
-  {% for season, data in team.seasons.items %}
-  <button class="season-button {% if forloop.first %}active{% endif %}" data-season="{{ season }}">
-    {{ data.seasonName }}
+<!-- Main Tab Navigation -->
+<div class="main-tabs">
+  <button class="main-tab-button active" data-tab="players">
+    <i class="fas fa-users me-2"></i>Players by Season
   </button>
-  {% endfor %}
+  <button class="main-tab-button" data-tab="coaches">
+    <i class="fas fa-chalkboard-teacher me-2"></i>Coaches
+  </button>
 </div>
 
-<div id="players-container" class="row justify-content-center">
-  {% for season, data in team.seasons.items %}
-    {% for player in data.players %}
-      <div class="col-md-3 col-sm-6 mb-3 player-wrapper" data-season="{{ season }}" {% if not forloop.parentloop.first %}style="display: none;"{% endif %}>
-        <a href="/jogador/{{ player.player|cut:'http://example.org/nba/player_' }}/" class="text-decoration-none">
-          <div class="player-card h-100">
-            <h5 class="text-dark" style="text-align: center">{{ player.playerName }}</h5>
-          </div>
-        </a>
-      </div>
+<!-- Players Tab Content -->
+<div id="players-tab" class="tab-content active">
+  <h4 class="mb-4 text-center">Players by Season</h4>
+
+  <div class="season-selector">
+    {% for season, data in team.seasons.items %}
+    <button class="season-button {% if forloop.first %}active{% endif %}" data-season="{{ season }}">
+      {{ data.seasonName }}
+    </button>
     {% endfor %}
-  {% endfor %}
+  </div>
+
+  <div id="players-container" class="row justify-content-center">
+    {% for season, data in team.seasons.items %}
+      {% for player in data.players %}
+        <div class="col-md-3 col-sm-6 mb-3 player-wrapper h-card" data-season="{{ season }}" {% if not forloop.parentloop.first %}style="display: none;"{% endif %}>
+          <a href="/jogador/{{ player.player|cut:'http://example.org/nba/player_' }}/" class="text-decoration-none u-url">
+            <div class="player-card h-100">
+              <h5 class="text-dark p-name" style="text-align: center">
+                {{ player.playerName }}
+              </h5>
+              <div class="text-center small text-muted">
+                <span class="p-category">Season {{ data.seasonName }}</span>
+                <time class="dt-start" datetime="{{ data.seasonName }}-10-01">{{ data.seasonName }}</time>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Coaches Tab Content -->
+<div id="coaches-tab" class="tab-content">
+  <h4 class="mb-4 text-center">Team Coaches</h4>
+  
+  <div id="coaches-loading" class="loading">
+    <i class="fas fa-spinner fa-spin fa-2x"></i>
+    <p class="mt-2">Loading coaches information...</p>
+  </div>
+
+  <div id="coaches-container" style="display: none;">
+    <!-- Coaches will be loaded here via JavaScript -->
+  </div>
+
+  <div id="coaches-no-data" class="no-data" style="display: none;">
+    <i class="fas fa-info-circle fa-2x mb-2"></i>
+    <p>No coaches information found for this team in our external sources.</p>
+    <small>Data is sourced from Wikidata and may not be complete for all teams.</small>
+  </div>
 </div>
 
 {% endblock %}
@@ -196,6 +386,31 @@
 {% block extra_script %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    // Tab switching functionality
+    const mainTabButtons = document.querySelectorAll('.main-tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    mainTabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Remove active class from all buttons and contents
+        mainTabButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked button
+        btn.classList.add('active');
+
+        // Show corresponding content
+        const tabId = btn.dataset.tab + '-tab';
+        document.getElementById(tabId).classList.add('active');
+
+        // Load coaches data if coaches tab is clicked and not loaded yet
+        if (btn.dataset.tab === 'coaches' && !window.coachesLoaded) {
+          loadCoachesData();
+        }
+      });
+    });
+
+    // Season switching functionality for players
     const seasonButtons = document.querySelectorAll('.season-button');
     const allPlayerWrappers = document.querySelectorAll('.player-wrapper');
 
@@ -211,9 +426,96 @@
         });
       });
     });
+
+    // Coaches data loading functionality
+    window.coachesLoaded = false;
+
+    function loadCoachesData() {
+      const teamName = document.querySelector('.team-header').dataset.teamName;
+      const loadingDiv = document.getElementById('coaches-loading');
+      const containerDiv = document.getElementById('coaches-container');
+      const noDataDiv = document.getElementById('coaches-no-data');
+
+      loadingDiv.style.display = 'block';
+      containerDiv.style.display = 'none';
+      noDataDiv.style.display = 'none';
+
+      fetch(`/api/complementation/team/coaches/?team_name=${encodeURIComponent(teamName)}`)
+        .then(response => response.json())
+        .then(data => {
+          loadingDiv.style.display = 'none';
+          
+          if (data.coaches && data.coaches.length > 0) {
+            containerDiv.style.display = '';
+            displayCoaches(data.coaches);
+          } else {
+            noDataDiv.style.display = 'block';
+          }
+          
+          window.coachesLoaded = true;
+        })
+        .catch(error => {
+          console.error('Error loading coaches:', error);
+          loadingDiv.style.display = 'none';
+          noDataDiv.style.display = 'block';
+          noDataDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle fa-2x mb-2 text-warning"></i>
+            <p>Error loading coaches information.</p>
+            <small>Please try again later.</small>
+          `;
+          window.coachesLoaded = true;
+        });
+    }
+
+    function displayCoaches(coaches) {
+      const container = document.getElementById('coaches-container');
+      container.innerHTML = '';
+
+      coaches.forEach(coach => {
+        const coachCard = document.createElement('div');
+        coachCard.className = 'coach-card';
+        coachCard.style.cursor = 'pointer';
+
+        const startDate = coach.start_date ? new Date(coach.start_date).getFullYear() : 'Unknown';
+        const endDate = coach.end_date ? new Date(coach.end_date).getFullYear() : 'Present';
+        
+        coachCard.innerHTML = `
+          ${coach.image ?
+            `<img src="${coach.image}" alt="${coach.name}" class="coach-image">` :
+            `<div class="coach-placeholder">
+              <i class="fas fa-user fa-2x text-white"></i>
+            </div>`
+          }
+          <div class="coach-info">
+            <h5>${coach.name}</h5>
+            ${coach.start_date || coach.end_date ?
+              `<div class="coach-dates">
+                <i class="fas fa-calendar me-1"></i>
+                ${startDate} - ${endDate}
+              </div>` : ''
+            }
+            <div class="coach-source">
+              <i class="fas fa-external-link-alt me-1"></i>
+              Source: <span class="text-primary">Wikidata</span>
+            </div>
+          </div>
+        `;
+        
+        // Add click event to navigate to coach page
+        if (coach.coach_id) {
+          coachCard.addEventListener('click', () => {
+            window.location.href = `/coach/${coach.coach_id}/`;
+          });
+        }
+        
+        container.appendChild(coachCard);
+      });
+    }
   });
 </script>
+
 <script>
+  // Favorites functionality
   document.addEventListener('DOMContentLoaded', () => {
     const favBtn = document.querySelector('.favorite-btn');
     const teamId = document.querySelector('.team-header').dataset.teamId;

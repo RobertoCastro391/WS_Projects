@@ -33,7 +33,7 @@
     }
 </style>
 {% endblock %}
-
+<div prefix="nba: http://example.org/nba#"></div>
 {% block content %}
 <h2 class="text-center mb-4">NBA Seasons</h2>
 
@@ -41,21 +41,23 @@
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" prefix="nba: http://example.org/">
     {% for temporada in temporadas %}
     <div class="col season-card-container animate-on-scroll" data-season="{{ temporada }}">
-      <a href="/temporada/{{ temporada|cut:'http://example.org/nba/season_' }}" class="text-decoration-none" typeof="nba:Season" resource="nba:season/">
-        <div class="season-card h-100" property="nba:seasonLabel">
-          {{ temporada|cut:"http://example.org/nba/season_" }}
-        </div>
-      </a>
+        <a href="/temporada/{{ temporada|cut:'http://example.org/nba/season_' }}" class="text-decoration-none">
+            <div class="season-card h-100" typeof="nba:Season" about="{{ temporada }}">
+                <span property="nba:seasonLabel">
+                    {{ temporada|cut:"http://example.org/nba/season_" }}
+                </span>
+            </div>
+        </a>
     </div>
     {% endfor %}
-  </div>
-  
-  <!-- Pagination -->
-  <nav class="mt-5">
-    <ul id="pagination" class="pagination justify-content-center"></ul>
-  </nav>
-{% endblock %}
+</div>
 
+<!-- Pagination -->
+<nav class="mt-5">
+    <ul id="pagination" class="pagination justify-content-center"></ul>
+</nav>
+{% endblock %}
+</div>
 {% block extra_script %}
 <script>
     function paginate(page) {
