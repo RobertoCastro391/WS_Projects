@@ -214,19 +214,19 @@
 </div>
 {% else %}
 <!-- Coach Header -->
-<div class="coach-header text-center">
+<div class="coach-header text-center  h-card" itemscope itemtype="http://schema.org/Person">
   {% if coach.image %}
-    <img src="{{ coach.image }}" alt="{{ coach.name }}" class="coach-image">
+    <img src="{{ coach.image }}" alt="{{ coach.name }}" class="coach-image u-photo">
   {% else %}
     <div class="coach-placeholder mx-auto">
       <i class="fas fa-user fa-4x text-white"></i>
     </div>
   {% endif %}
 
-  <h1 class="coach-name">{{ coach.name }}</h1>
+  <h1 class="coach-name p-name">{{ coach.name }}</h1>
 
   {% if coach.wikidata_link %}
-    <a href="{{ coach.wikidata_link }}" target="_blank" class="source-link mt-2">
+    <a href="{{ coach.wikidata_link }}" target="_blank" class="source-link mt-2  u-url">
       <i class="fas fa-external-link-alt me-2"></i>View on Wikidata
     </a>
   {% endif %}
@@ -239,7 +239,7 @@
   {% if coach.date_of_birth %}
     <div class="info-item">
       <span class="info-label"><i class="fas fa-birthday-cake me-2"></i>Born:</span>
-      <span class="info-value">
+      <span class="info-value dt-bday">
         {% if coach.formatted_birth_date %}{{ coach.formatted_birth_date }}{% else %}{{ coach.date_of_birth }}{% endif %}
         {% if coach.place_of_birth %} in {{ coach.place_of_birth }}{% endif %}
       </span>
@@ -247,28 +247,28 @@
   {% elif coach.place_of_birth %}
     <div class="info-item">
       <span class="info-label"><i class="fas fa-map-marker-alt me-2"></i>Born in:</span>
-      <span class="info-value">{{ coach.place_of_birth }}</span>
+      <span class="info-value p-adr">{{ coach.place_of_birth }}</span>
     </div>
   {% endif %}
 
   {% if coach.citizenship %}
     <div class="info-item">
       <span class="info-label"><i class="fas fa-flag me-2"></i>Citizenship:</span>
-      <span class="info-value">{{ coach.citizenship }}</span>
+      <span class="info-value p-country-name">{{ coach.citizenship }}</span>
     </div>
   {% endif %}
 
   {% if coach.native_language %}
     <div class="info-item">
       <span class="info-label"><i class="fas fa-language me-2"></i>Native Language:</span>
-      <span class="info-value">{{ coach.native_language }}</span>
+      <span class="info-value p-note">{{ coach.native_language }}</span>
     </div>
   {% endif %}
 
   {% if coach.gender %}
     <div class="info-item">
       <span class="info-label"><i class="fas fa-venus-mars me-2"></i>Gender:</span>
-      <span class="info-value">{{ coach.gender }}</span>
+      <span class="info-value p-gender">{{ coach.gender }}</span>
     </div>
   {% endif %}
 
@@ -293,9 +293,9 @@
     <div class="info-item">
       <span class="info-label"><i class="fas fa-school me-2"></i>Educated at:</span>
       <div class="info-value">
-        <div class="list-items">
+        <div class="list-items h-card p-org">
           {% for school in coach.educated_at %}
-            <span class="list-item">{{ school }}</span>
+            <span class="list-item p-org">{{ school }}</span>
           {% endfor %}
         </div>
       </div>
@@ -308,7 +308,7 @@
       <div class="info-value">
         <div class="list-items">
           {% for trainer in coach.trained_by %}
-            <span class="list-item">{{ trainer }}</span>
+            <span class="list-item p-name">{{ trainer }}</span>
           {% endfor %}
         </div>
       </div>
@@ -324,8 +324,8 @@
   
   <div class="teams-grid">
     {% for team in coach.teams %}
-      <div class="team-card">
-        <div class="team-name">{{ team.name }}</div>
+      <div class="team-card h-card">
+        <div class="team-name p-org">{{ team.name }}</div>
         {% if team.start or team.end %}
           <div class="team-period">
             <i class="fas fa-calendar me-1"></i>
