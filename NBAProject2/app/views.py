@@ -474,19 +474,21 @@ def filter_players(request):
     
     return JsonResponse({"jogadores": jogadores})
 
+
 def pagina_jogador(request, id):
     jogador_uri = f"http://example.org/nba/player_{id}"
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 
-    # Data Player Query
+    # Data Player Query - now includes lastTeam information directly
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo WHERE {{
+        SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo 
+               ?teamId ?teamName ?teamLogo WHERE {{
             ?player a nba:Player ;
                     nba:personName ?name .
             FILTER(STR(?player) = "{jogador_uri}")
-        
+
             OPTIONAL {{ ?player nba:position ?posObj.
                         ?posObj nba:positionName ?position. }}
             OPTIONAL {{ ?player nba:birthdate ?birthdate. }}
@@ -496,44 +498,24 @@ def pagina_jogador(request, id):
             OPTIONAL {{ ?player nba:weight ?weight. }}
             OPTIONAL {{ ?player nba:school ?school. }}
             OPTIONAL {{ ?player nba:playerPhoto ?photo. }}
+
+            # Use the inferred lastTeam property
+            OPTIONAL {{ 
+                ?player nba:lastTeam ?teamId .
+                ?teamId nba:actualName ?teamName ;
+                        nba:logo ?teamLogo .
+            }}
         }}
     """)
 
     sparql.setReturnFormat(JSON)
-    profile_data = sparql.query().convert()["results"]["bindings"]
+    result_data = sparql.query().convert()["results"]["bindings"]
 
-    if not profile_data:
+    if not result_data:
         return JsonResponse({"erro": "Jogador não encontrado"}, status=404)
 
-    player_info = profile_data[0]
+    player_info = result_data[0]
     dados = {k: player_info[k]["value"] for k in player_info}
-
-    # Get the last team and season
-    sparql.setQuery(f"""
-        PREFIX nba: <http://example.org/nba/>
-
-        SELECT ?team ?teamName ?teamLogo ?season ?seasonType WHERE {{
-            ?p nba:player ?player ;
-               nba:team ?team ;
-               nba:season ?season ;
-               nba:seasonType ?seasonType .
-            ?team nba:actualName ?teamName ;
-                    nba:logo ?teamLogo .
-            FILTER(STR(?player) = "{jogador_uri}")
-        }}
-        ORDER BY DESC(?season)
-        LIMIT 1
-    """)
-    sparql.setReturnFormat(JSON)
-    team_data = sparql.query().convert()["results"]["bindings"]
-
-    # Add team data to player info if available
-    if team_data:
-        dados["teamId"] = team_data[0]["team"]["value"]
-        dados["teamName"] = team_data[0]["teamName"]["value"]
-        dados["teamLogo"] = team_data[0]["teamLogo"]["value"]
-        dados["lastSeason"] = team_data[0]["season"]["value"].split("_")[-1]
-
     dados["id"] = id
 
     return render(request, "player.html", dados)

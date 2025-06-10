@@ -2,6 +2,23 @@
 import os
 import requests
 import time
+import django
+from django.conf import settings
+
+# Import the SPIN rules functions
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from data.spin_rules import rule_1_conference_from_division, rule_2_last_team_from_latest_participation
+
+endpoint_update = settings.SPARQL_ENDPOINT_UPDATE
+
+# Configure Django settings if not already configured
+if not settings.configured:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'NBAProject.settings')
+    django.setup()
 
 GRAPHDB_BASE_URL = "http://localhost:7200"
 REPO_ID = "NBA_G4"
@@ -69,6 +86,29 @@ def load_rdf():
         print(f"RDF or ontology import failed: {response.status_code}, {response.text} / {response2.status_code}, {response2.text}")
         return False
 
+
+def load_spin_rules():
+    """Load and execute SPARQL SPIN rules to infer new data."""
+    try:
+        print("Loading SPIN rules...")
+        
+        # Execute Rule 1: Infer team conferences from divisions
+        print("Executing Rule 1: Conference from Division...")
+        rule_1_conference_from_division(endpoint_update)
+        print("Rule 1 completed successfully.")
+        
+        # Execute Rule 2: Infer player's last team from latest participation
+        print("Executing Rule 2: Last Team from Latest Participation...")
+        rule_2_last_team_from_latest_participation(endpoint_update)
+        print("Rule 2 completed successfully.")
+        
+        print("SPIN rules loaded and executed successfully.")
+        return True
+        
+    except Exception as e:
+        print(f"Error loading SPIN rules: {str(e)}")
+        return False
+
 def setup_graphdb():
     
     wait_for_graphdb()
@@ -87,3 +127,8 @@ def setup_graphdb():
             print("RDF and ontology data imported successfully.")
         else:
             print("RDF or ontology import failed.")
+
+        if load_spin_rules():
+            print("SPIN rules loaded successfully.")
+        else:
+            print("Error loading SPIN rules.")
