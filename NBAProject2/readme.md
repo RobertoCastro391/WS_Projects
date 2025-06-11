@@ -33,7 +33,7 @@ NBAProject/
 When running the project, you'll need to:
 
 #### Create a Virtual Environment
-First, create and activate a Python virtual environment (make sure you are on `../NBAProject2` folder):
+First, create and activate a Python virtual environment (make sure you are on `./NBAProject2` folder):
 ```bash
 # Create virtual environment
 python3 -m venv venv
