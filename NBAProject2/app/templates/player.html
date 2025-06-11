@@ -216,6 +216,11 @@
                 <span class="player-data-label">Draft Year</span>
                 <span class="player-data-value dt-start" property="nba:draftYear">{{ draftYear|default:"Unknown" }}</span>
               </div>
+              
+              <div class="player-data-row" id="draftAgeRow" style="display: none;">
+                <span class="player-data-label">Age at Draft</span>
+                <span class="player-data-value" id="draftAge"></span>
+              </div>
             </div>
           </div>
           
@@ -234,14 +239,6 @@
                 <span class="player-data-value" property="nba:weight">{% if weight %}{{ weight }} lbs{% else %}Unknown{% endif %}</span>
               </div>
             </div>
-            <div class="text-center mt-1 mb-2">
-              <button class="btn btn-outline-primary btn-sm" id="inferAgeDraftedBtn">
-                <i class="bi bi-lightbulb"></i> Infer Age When Drafted
-              </button>
-              <button class="btn btn-outline-primary btn-sm" id="inferCareerSpanBtn">
-                <i class="bi bi-lightbulb"></i> Infer Career Span
-              </button>
-            </div>
             <div id="careerSpanCard" class="player-stats-card d-none">
               <h4>Career Span</h4>
                 <div class="player-data-row d-flex justify-content-start gap-1">
@@ -250,6 +247,14 @@
                   <span class="player-data-label">  To:</span>
                   <span class="player-data-value" id="careerEnd"></span>
               </div>
+            </div>
+            <div class="text-center mt-1 mb-2">
+              <button class="btn btn-outline-primary btn-sm" id="inferAgeDraftedBtn">
+                <i class="bi bi-lightbulb"></i> Infer Age When Drafted
+              </button>
+              <button class="btn btn-outline-primary btn-sm" id="inferCareerSpanBtn">
+                <i class="bi bi-lightbulb"></i> Infer Career Span
+              </button>
             </div>
 
           </div>
@@ -1499,6 +1504,58 @@ document.addEventListener("DOMContentLoaded", function () {
           })
           .finally(() => {
             inferBtn.disabled = false;
+          });
+      }
+    });
+  }
+
+  // Add functionality for "Infer Age When Drafted" button
+  const inferAgeDraftedBtn = document.getElementById("inferAgeDraftedBtn");
+  const draftAgeRow = document.getElementById("draftAgeRow");
+  
+  if (inferAgeDraftedBtn && draftAgeRow) {
+    inferAgeDraftedBtn.addEventListener("click", () => {
+      const isVisible = draftAgeRow.style.display !== "none";
+
+      if (isVisible) {
+        // Hide the draft age row
+        draftAgeRow.style.display = "none";
+        inferAgeDraftedBtn.innerHTML = `<i class="bi bi-lightbulb"></i> Infer Age When Drafted`;
+        inferAgeDraftedBtn.classList.remove("btn-secondary");
+        inferAgeDraftedBtn.classList.add("btn-outline-primary");
+      } else {
+        // Start inference
+        inferAgeDraftedBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Inferring...`;
+        inferAgeDraftedBtn.disabled = true;
+
+        fetch(`/jogador/{{ id }}/infer-draft-age/`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              if (data.age && data.age !== "Unknown") {
+                // Display the inferred age
+                document.getElementById("draftAge").textContent = `${data.age} years old`;
+                draftAgeRow.style.display = "flex";
+                
+                inferAgeDraftedBtn.innerHTML = `<i class="bi bi-eye-slash"></i> Hide Age When Drafted`;
+                inferAgeDraftedBtn.classList.remove("btn-outline-primary");
+                inferAgeDraftedBtn.classList.add("btn-secondary");
+              } else {
+                alert("Draft age could not be determined for this player.");
+                inferAgeDraftedBtn.innerHTML = `<i class="bi bi-lightbulb"></i> Infer Age When Drafted`;
+              }
+            } else {
+              alert("Error: " + (data.error || "Could not infer draft age."));
+              inferAgeDraftedBtn.innerHTML = `<i class="bi bi-lightbulb"></i> Infer Age When Drafted`;
+            }
+          })
+          .catch(err => {
+            alert("Server error occurred while inferring draft age.");
+            console.error(err);
+            inferAgeDraftedBtn.innerHTML = `<i class="bi bi-lightbulb"></i> Infer Age When Drafted`;
+          })
+          .finally(() => {
+            inferAgeDraftedBtn.disabled = false;
           });
       }
     });
