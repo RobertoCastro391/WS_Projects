@@ -206,7 +206,7 @@ padding: 16px 12px;
 
 <section class="cards row justify-content-center">
   {% for arena in arenas %}
-    <article  class="card card--1 col-md-4 h-card"
+    <article  class="card card--1 col-md-4"
               typeof="nba:Arena"
               resource="{{ arena.id }}"
               data-location="{{ arena.location|default:'' }}"
@@ -220,12 +220,12 @@ padding: 16px 12px;
       <div class="card__img"></div>
       <a href="/arena/{{ arena.id|cut:'http://example.org/nba/arena_' }}" class="card_link">
         <div class="card__img--hover" style="background-image: url('{{ arena.photo }}');">
-          <img src="{{ arena.photo }}" alt="Photo of {{ arena.name }}" class="u-photo d-none" property="nba:arenaPhoto">
+          <img src="{{ arena.photo }}" alt="Photo of {{ arena.name }}" class="d-none" property="nba:arenaPhoto">
         </div>
       </a>
       <div class="card__info">
-        <h3 class="card__title p-name" property="nba:arenaName">{{ arena.name }}</h3>
-        <div class="card__by p-locality" property="nba:location">{{ arena.location }}</div>
+        <h3 class="card__title" property="nba:arenaName">{{ arena.name }}</h3>
+        <div class="card__by" property="nba:location">{{ arena.location }}</div>
       </div>
     </article>
   {% endfor %}
