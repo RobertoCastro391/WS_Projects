@@ -57,6 +57,7 @@ urlpatterns = [
     path('jogador/<str:id>/timeline/', views.timeline_jogador),  # Linha do tempo da carreira do jogador
     path('grafo/jogador/<str:id>/', views.grafo_jogador),  # Grafo: Jogador → Equipas → Temporadas
     path('jogador/<str:id>/companheiros/', views.companheiros_jogador),  # Companheiros na mesma época
+    path('jogador/<str:id>/draft-classmates/', views.jogadores_draft_ano),  # Players drafted in same year
 
     #Funcionalidades Avançadas
     path('comparar/', views.comparar_jogadores),  # Comparação entre dois jogadores

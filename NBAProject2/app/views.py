@@ -474,19 +474,21 @@ def filter_players(request):
     
     return JsonResponse({"jogadores": jogadores})
 
+
 def pagina_jogador(request, id):
     jogador_uri = f"http://example.org/nba/player_{id}"
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 
-    # Data Player Query
+    # Data Player Query - now includes lastTeam information directly
     sparql.setQuery(f"""
         PREFIX nba: <http://example.org/nba/>
 
-        SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo WHERE {{
+        SELECT ?name ?birthdate ?bornIn ?draftYear ?position ?height ?weight ?school ?photo 
+               ?teamId ?teamName ?teamLogo WHERE {{
             ?player a nba:Player ;
                     nba:personName ?name .
             FILTER(STR(?player) = "{jogador_uri}")
-        
+
             OPTIONAL {{ ?player nba:position ?posObj.
                         ?posObj nba:positionName ?position. }}
             OPTIONAL {{ ?player nba:birthdate ?birthdate. }}
@@ -496,44 +498,24 @@ def pagina_jogador(request, id):
             OPTIONAL {{ ?player nba:weight ?weight. }}
             OPTIONAL {{ ?player nba:school ?school. }}
             OPTIONAL {{ ?player nba:playerPhoto ?photo. }}
+
+            # Use the inferred lastTeam property
+            OPTIONAL {{ 
+                ?player nba:lastTeam ?teamId .
+                ?teamId nba:actualName ?teamName ;
+                        nba:logo ?teamLogo .
+            }}
         }}
     """)
 
     sparql.setReturnFormat(JSON)
-    profile_data = sparql.query().convert()["results"]["bindings"]
+    result_data = sparql.query().convert()["results"]["bindings"]
 
-    if not profile_data:
+    if not result_data:
         return JsonResponse({"erro": "Jogador não encontrado"}, status=404)
 
-    player_info = profile_data[0]
+    player_info = result_data[0]
     dados = {k: player_info[k]["value"] for k in player_info}
-
-    # Get the last team and season
-    sparql.setQuery(f"""
-        PREFIX nba: <http://example.org/nba/>
-
-        SELECT ?team ?teamName ?teamLogo ?season ?seasonType WHERE {{
-            ?p nba:player ?player ;
-               nba:team ?team ;
-               nba:season ?season ;
-               nba:seasonType ?seasonType .
-            ?team nba:actualName ?teamName ;
-                    nba:logo ?teamLogo .
-            FILTER(STR(?player) = "{jogador_uri}")
-        }}
-        ORDER BY DESC(?season)
-        LIMIT 1
-    """)
-    sparql.setReturnFormat(JSON)
-    team_data = sparql.query().convert()["results"]["bindings"]
-
-    # Add team data to player info if available
-    if team_data:
-        dados["teamId"] = team_data[0]["team"]["value"]
-        dados["teamName"] = team_data[0]["teamName"]["value"]
-        dados["teamLogo"] = team_data[0]["teamLogo"]["value"]
-        dados["lastSeason"] = team_data[0]["season"]["value"].split("_")[-1]
-
     dados["id"] = id
 
     return render(request, "player.html", dados)
@@ -2087,6 +2069,68 @@ def pagina_coach(request, coach_id):
             'error': f'Error loading coach information: {str(e)}',
             'coach_id': coach_id
         })
+
+
+def jogadores_draft_ano(request, id):
+    """
+    Get list of players drafted in the same year as the given player
+    """
+    try:
+        rule_5_draft_classmates(settings.SPARQL_ENDPOINT_UPDATE)
+
+        # Query for player info and draft classmates in a single query
+        player_uri = f"http://example.org/nba/player_{id}"
+        sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+
+        sparql.setQuery(f"""
+           PREFIX nba: <http://example.org/nba/>
+
+           SELECT ?playerName ?draftYear ?draftmate ?draftmateName ?draftmatePhoto ?position WHERE {{
+               <{player_uri}> nba:personName ?playerName ;
+                             nba:draftYear ?draftYear ;
+                             nba:draftedInSameYearAs ?draftmate .
+               ?draftmate nba:personName ?draftmateName .
+               OPTIONAL {{ ?draftmate nba:playerPhoto ?draftmatePhoto . }}
+               OPTIONAL {{ 
+                   ?draftmate nba:position ?posObj .
+                   ?posObj nba:positionName ?position .
+               }}
+           }}
+           ORDER BY ?draftmateName
+       """)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()["results"]["bindings"]
+
+        if not results:
+            return JsonResponse({"error": "Player not found or no draft classmates available"}, status=404)
+
+        # Extract player info from first result
+        player_name = results[0]["playerName"]["value"]
+        draft_year = results[0]["draftYear"]["value"]
+
+        # Process all draft classmates
+        draftmates = []
+        for result in results:
+            draftmate_id = result["draftmate"]["value"].split("_")[-1]
+            draftmates.append({
+                "id": draftmate_id,
+                "player": result["draftmate"]["value"],
+                "playerName": result["draftmateName"]["value"],
+                "playerPhoto": result.get("draftmatePhoto", {}).get("value", "/app/static/img/player-placeholder.png"),
+                "position": result.get("position", {}).get("value", "Unknown")
+            })
+
+        return JsonResponse({
+            "player": player_uri,
+            "playerName": player_name,
+            "draftYear": draft_year,
+            "draftmates": draftmates,
+            "totalCount": len(draftmates)
+        })
+
+    except Exception as e:
+        print(f"Error getting draft classmates: {str(e)}")
+        return JsonResponse({"error": f"Error: {str(e)}"}, status=500)
 
 
 def coaches_page(request):

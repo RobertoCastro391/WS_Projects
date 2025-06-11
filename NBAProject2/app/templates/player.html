@@ -99,6 +99,65 @@
     border-radius: 8px !important;
     border: 1px dashed #e2e8f0 !important;
 }
+
+/* Draft Stats Styling */
+.teammates-header {
+    color: #17408B !important;
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 2px solid #C9082A !important;
+    font-size: 1.75rem !important;
+    font-weight: 600 !important;
+}
+
+.teammates-subtitle {
+    color: #4a5568 !important;
+    margin-bottom: 1.5rem !important;
+    font-style: italic !important;
+    font-size: 1.1rem !important;
+}
+
+.draft-stats {
+    margin-bottom: 2rem !important;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #17408B, #2563eb) !important;
+    color: white !important;
+    text-align: center !important;
+    padding: 1.5rem !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 0.2s !important;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px) !important;
+}
+
+.stat-number {
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1 !important;
+}
+
+.stat-label {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    opacity: 0.9 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.draft-footer {
+    text-align: center !important;
+    padding: 1rem !important;
+    background-color: rgba(23, 64, 139, 0.05) !important;
+    border-radius: 8px !important;
+    border: 1px dashed #e2e8f0 !important;
+    margin-top: 2rem !important;
+}
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
@@ -232,6 +291,11 @@
           Player Network
         </button>
       </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="draft-classmates-tab" data-bs-toggle="tab" data-bs-target="#draft-classmates" type="button" role="tab" aria-controls="draft-classmates" aria-selected="false">
+          Infer Players Drafted in the Same Year
+        </button>
+      </li>
     </ul>
     
     <div class="tab-content" id="playerTabsContent">
@@ -266,6 +330,26 @@
       
       <div class="tab-pane fade" id="network" role="tabpanel" aria-labelledby="network-tab">
         <div id="network-container" class="mt-3">
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tab-pane fade" id="draft-classmates" role="tabpanel" aria-labelledby="draft-classmates-tab">
+        <div id="draft-classmates-container" class="mt-3">
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="draft-classmates" role="tabpanel" aria-labelledby="draft-classmates-tab">
+        <div id="draft-classmates-container" class="mt-3">
           <div class="d-flex justify-content-center">
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Loading...</span>
@@ -422,6 +506,18 @@
     document.getElementById('network-tab').addEventListener('click', function() {
       if (!document.getElementById('network-graph')) {
         loadNetworkData();
+      }
+    });
+
+    document.getElementById('draft-classmates-tab').addEventListener('click', function() {
+      if (!document.getElementById('draft-classmates-data')) {
+        loadDraftClassmatesData();
+      }
+    });
+
+    document.getElementById('draft-classmates-tab').addEventListener('click', function() {
+      if (!document.getElementById('draft-classmates-data')) {
+        loadDraftClassmatesData();
       }
     });
   });
@@ -827,7 +923,99 @@
         `;
       });
   }
+
+  function loadDraftClassmatesData() {
+    fetch('/jogador/{{ id }}/draft-classmates/')
+      .then(response => response.json())
+      .then(data => {
+        renderDraftClassmatesTab(data);
+      })
+      .catch(error => {
+        console.error('Error fetching draft classmates:', error);
+        document.getElementById('draft-classmates-container').innerHTML = `
+          <div class="alert alert-danger">
+            Failed to load draft classmates data. Please try again later.
+            <br><small>Error details: ${error.message}</small>
+          </div>
+        `;
+      });
+  }
   
+  function renderDraftClassmatesTab(data) {
+    const container = document.getElementById('draft-classmates-container');
+    const draftmates = data.draftmates || [];
+    
+    if (draftmates.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="bi bi-calendar-event" style="font-size: 3rem; color: #dee2e6;"></i>
+          <p class="mt-3">No draft classmates data available for this player.</p>
+          <small class="text-muted">This could mean the player wasn't drafted or draft year information is not available.</small>
+        </div>
+      `;
+      return;
+    }
+
+    let draftClassmatesHTML = `
+      <div id="draft-classmates-data" class="teammates-section">
+        <h4 class="teammates-header">Players drafted in the same year as ${data.playerName}</h4>
+
+        <div class="draft-stats mb-4">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="stat-card">
+                <div class="stat-number">${data.draftYear}</div>
+                <div class="stat-label">Draft Year</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="stat-card">
+                <div class="stat-number">${draftmates.length}</div>
+                <div class="stat-label">Players</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="teammates-grid draft-classmates-grid">
+    `;
+    
+    draftmates.forEach(draftmate => {
+      const playerId = draftmate.id;
+      
+      draftClassmatesHTML += `
+        <a href="/jogador/${playerId}/" 
+          class="teammate-card draft-classmate-card h-card" 
+          typeof="nba:Player" 
+          resource="nba:player/${playerId}" 
+          property="nba:draftedInSameYearAs">
+          <div class="teammate-photo-container">
+            <img src="${draftmate.playerPhoto}" alt="${draftmate.playerName}" class="teammate-photo u-photo"
+                 onerror="this.src='/app/static/img/player-placeholder.png'">
+          </div>
+          <div class="teammate-info">
+            <div class="teammate-name p-name" property="nba:personName">${draftmate.playerName}</div>
+            <div class="teammate-position">${draftmate.position}</div>
+          </div>
+        </a>
+      `;
+    });
+    
+    draftClassmatesHTML += `
+        </div>
+        
+        <div class="draft-footer mt-4">
+          <small class="text-muted">
+            <i class="bi bi-info-circle"></i>
+            This data was inferred using SPARQL SPIN rules based on draft year information.
+          </small>
+        </div>
+      </div>
+    `;
+    
+    container.innerHTML = draftClassmatesHTML;
+  }
+
   function renderNetworkGraph(data) {
     const container = document.getElementById('network-container');
     
