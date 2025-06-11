@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from app import views
+from app import data_complementation
 from django.contrib import admin
 from django.urls import path
 
@@ -40,6 +41,8 @@ urlpatterns = [
     path('jogadores/countries/', views.get_player_countries, name='player_countries'),
     path('jogadores/schools/', views.get_player_schools, name='player_schools'),
     path('jogador/<str:id>/', views.pagina_jogador),  # Página de jogador com participações
+    path("jogador/<str:id>/infer-career-span/", views.infer_player_career_span, name="infer_career_span"),
+    path('jogador/<str:id>/infer-draft-age/', views.infer_draft_age),
 
     path('equipa/<str:id>/', views.pagina_equipa),  # Página de equipa com jogadores por temporada
     path('temporada/<str:ano>/', views.pagina_temporada),  # Página de temporada com equipas e jogadores
@@ -54,6 +57,7 @@ urlpatterns = [
     path('jogador/<str:id>/timeline/', views.timeline_jogador),  # Linha do tempo da carreira do jogador
     path('grafo/jogador/<str:id>/', views.grafo_jogador),  # Grafo: Jogador → Equipas → Temporadas
     path('jogador/<str:id>/companheiros/', views.companheiros_jogador),  # Companheiros na mesma época
+    path('jogador/<str:id>/draft-classmates/', views.jogadores_draft_ano),  # Players drafted in same year
 
     #Funcionalidades Avançadas
     path('comparar/', views.comparar_jogadores),  # Comparação entre dois jogadores
@@ -76,4 +80,16 @@ urlpatterns = [
     path("quiz/save_score/", views.submit_score, name="save_score"),  # Save score to database
     path("quiz/check_answer/", views.check_answer, name="check_answer"),  # Check answer
     path("quiz/check_correct_answer/", views.check_correct_answer, name="check_correct_answer"),  # Check correct answer
+
+    # Data Complementation Endpoints (Wikidata & DBpedia)
+    path('api/complementation/team/coaches/', data_complementation.get_team_coaches, name='team_coaches'),
+    path('api/complementation/coach/<str:coach_entity_id>/', data_complementation.get_coach_info, name='coach_info'),
+    path('api/complementation/player/awards/', data_complementation.get_player_awards, name='player_awards'),
+    path('api/complementation/arena/details/', data_complementation.get_arena_details, name='arena_details'),
+    path('api/complementation/coaches/all/', data_complementation.get_all_coaches, name='all_coaches'),
+    
+    # Coach pages
+    path('coaches/', views.coaches_page, name='coaches_page'),
+    path('coach/<str:coach_id>/', views.pagina_coach, name='coach_page'),
+    path('api/complementation/coach/<str:coach_entity_id>/', data_complementation.get_coach_info, name='coach_info'),
 ]

@@ -4,8 +4,8 @@
 # then the team belongs to that conference
 # =============================================================================
 
-PREFIX nba: <http://example.org/nba>
-CONSTRUCT {
+PREFIX nba: <http://example.org/nba/>
+INSERT {
     ?team nba:conference ?conference .
 }
 WHERE {
@@ -17,11 +17,11 @@ WHERE {
 # =============================================================================
 # RULE 2: Infer Player Last Team from Latest Participation
 # Find the most recent participation record for each player to determine
-# their last known team affiliation 
+# their last known team affiliation
 # =============================================================================
 
-PREFIX nba: <http://example.org/nba>
-CONSTRUCT {
+PREFIX nba: <http://example.org/nba/>
+INSERT {
     ?player nba:lastTeam ?team .
 }
 WHERE {
@@ -43,57 +43,11 @@ WHERE {
 
 
 # =============================================================================
-# RULE 3: Infer Player Career Statistics Context
-# Create career context by linking players to conferences and divisions
-# through their team affiliations
-# =============================================================================
-
-PREFIX nba: <http://example.org/nba>
-CONSTRUCT {
-    ?player nba:playedInConference ?conference .
-    ?player nba:playedInDivision ?division .
-}
-WHERE {
-    ?participation nba:player ?player .
-    ?participation nba:team ?team .
-    ?team nba:conference ?conference .
-    ?team nba:division ?division .
-    FILTER NOT EXISTS { 
-        ?player nba:playedInConference ?conference .
-        ?player nba:playedInDivision ?division .
-    }
-}
-
-
-# =============================================================================
-# RULE 4: Infer Teammate Relationships
-# If two players participated with the same team in the same season,
-# then they were teammates
-# =============================================================================
-
-PREFIX nba: <http://example.org/nba>
-CONSTRUCT {
-    ?player1 nba:wasTeammateOf ?player2 .
-}
-WHERE {
-    ?participation1 nba:player ?player1 .
-    ?participation1 nba:team ?team .
-    ?participation1 nba:season ?season .
-    
-    ?participation2 nba:player ?player2 .
-    ?participation2 nba:team ?team .
-    ?participation2 nba:season ?season .
-    
-    FILTER(?player1 != ?player2)
-    FILTER NOT EXISTS { ?player1 nba:wasTeammateOf ?player2 }
-}
-
-# =============================================================================
-# RULE 5: Infer Player Career Span
+# RULE 3: Infer Player Career Span
 # Calculate the first and last season a player participated in
 # =============================================================================
 
-PREFIX nba: <http://example.org/nba>
+PREFIX nba: <http://example.org/nba/>
 CONSTRUCT {
     ?player nba:careerStart ?firstSeason .
     ?player nba:careerEnd ?lastSeason .
@@ -107,7 +61,7 @@ WHERE {
             ?participation nba:seasonType nba:seasonType_1 .
         } GROUP BY ?player
     }
-    FILTER NOT EXISTS { 
+    FILTER NOT EXISTS {
         ?player nba:careerStart ?firstSeason .
         ?player nba:careerEnd ?lastSeason .
     }
@@ -115,54 +69,36 @@ WHERE {
 
 
 # =============================================================================
-# RULE 6: Infer Player Age at Draft
+# RULE 4: Infer Player Age at Draft
 # Calculate approximate age when drafted based on birth year and draft year
 # =============================================================================
 
-PREFIX nba: <http://example.org/nba>
+PREFIX nba: <http://example.org/nba/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
 CONSTRUCT {
     ?player nba:draftAge ?age .
 }
 WHERE {
     ?player nba:birthdate ?birthdate .
-    ?player nba:draftYear ?draftYear .
-    FILTER(?draftYear != "Undrafted")
-    BIND(xsd:integer(?draftYear) - YEAR(?birthdate) AS ?age)
-    FILTER(?age >= 18 && ?age <= 35)
-    FILTER NOT EXISTS { ?player nba:draftAge ?age }
+    ?player nba:draftYear ?draftYearStr .
+    BIND(xsd:integer(?draftYearStr) AS ?draftYearInt)
+    BIND(?draftYearInt - YEAR(xsd:date(?birthdate)) AS ?age)
 }
 
 
 # =============================================================================
-# RULE 7: Infer Draft Class Relationships
+# RULE 5: Infer Draft Class Relationships
 # Players drafted in the same year are draft classmates
 # =============================================================================
 
-PREFIX nba: <http://example.org/nba>
+PREFIX nba: <http://example.org/nba/>
 CONSTRUCT {
-    ?player1 nba:draftClassmate ?player2 .
+    ?player1 nba:draftedInSameYearAs ?player2 .
 }
 WHERE {
     ?player1 nba:draftYear ?year .
     ?player2 nba:draftYear ?year .
     FILTER(?player1 != ?player2)
-    FILTER NOT EXISTS { ?player1 nba:draftClassmate ?player2 }
-}
-
-
-# =============================================================================
-# RULE 8: Infer School Alumni Relationships
-# Players from the same school are alumni
-# =============================================================================
-
-PREFIX nba: <http://example.org/nba>
-CONSTRUCT {
-    ?player1 nba:schoolmate ?player2 .
-}
-WHERE {
-    ?player1 nba:school ?school .
-    ?player2 nba:school ?school .
-    FILTER(?player1 != ?player2)
-    FILTER(?school != "")
-    FILTER NOT EXISTS { ?player1 nba:schoolmate ?player2 }
+    FILTER NOT EXISTS { ?player1 nba:draftedInSameYearAs ?player2 }
 }

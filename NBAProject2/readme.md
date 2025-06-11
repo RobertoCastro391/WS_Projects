@@ -4,40 +4,36 @@ This project is a semantic web application that represents NBA data using RDF an
 - **Django** for the web interface
 - **GraphDB** for the RDF triplestore
 
-The system automatically creates a GraphDB repository and loads RDF data when first started.
+The system automatically creates a GraphDB repository and loads the facts and the ontology to it when it first starts.
 
 ##  Project Structure
 ```
 NBAProject/
-├── app/                   # Django application code
-├── data/
-|   ├── datasets           # Folder with the original dataset in .csv
-|   ├── scripts            # Folder with Python scripts used to extract data and to transfom it to rdf .n3 format          
-│   ├── nba_triples.n3     # Main RDF triples file (in Turtle/N3 format)
-│   └── nba-config.ttl     # GraphDB repository configuration (Turtle format)
-├── docker/
-│   └── graphdb-init.sh    # Shell script that creats a repository and load rdf .n3 data, when running the application via docker
-├── docker-compose.yml     # Docker Compose configuration
-├── Dockerfile             # Dockerfile for Django container
-├── manage.py              # Django entry point
-├── requirements.txt       # Python dependencies
+├── app/                        # Django application code
+├── data/                  
+|   ├── datasets                # Folder with the original dataset in .csv
+|   ├── scripts                 # Folder with Python scripts used to extract data and to transfom it to rdf .n3 format 
+|   ├── facts.n3                # File with pure facts (triples), without the ontology
+|   ├── nba_ontology_facts.n3   # Integration of facts with ontology. Combined file for validation in Protégé and for testing inferences
+|   ├── nba_spin__rules.ttl     # SPIN rules written in SPARQL, applied to data to infer new relationships and properties
+│   ├── nba_triples.n3          # Main RDF triples file (in Turtle/N3 format)
+│   ├── nba-config.ttl          # GraphDB repository configuration (Turtle format)
+|   └── spin_rules.py           # Python module with SPIN rules implemented in SPARQL (INSERT/WHERE), applicable via SPARQLWrapper
+|
+├── manage.py                   # Django entry point
+├── requirements.txt            # Python dependencies
 ```
 
 ## How to Run the Project
 
-There is currently two ways of running the project:
-1. Running manually
-2. Using docker
-
-### Running Manually
 #### Prerequisites
 - Have the GraphDB program running.
 - Create a Virtual Environment
 
-When running the project manually, you'll need to:
+When running the project, you'll need to:
 
 #### Create a Virtual Environment
-First, create and activate a Python virtual environment (make sure you are on `../NBAProject` folder):
+First, create and activate a Python virtual environment (make sure you are on `../NBAProject2` folder):
 ```bash
 # Create virtual environment
 python3 -m venv venv
@@ -59,35 +55,17 @@ python manage.py runserver
 ```
 
 #### Setup Process
-- When the last command is made the all will be configured in GraphDB.
+- When the last command is made all will be configured in GraphDB.
 - The application uses `app/startup.py` to interact with GraphDB
 - The startup script performs several key functions:
   - Waits for GraphDB to be accessible
   - Checks if the NBA_G4 repository already exists
   - Creates the repository if it doesn't exist using the configuration in `data/nba-config.ttl`
-  - Loads the RDF data from `data/nba_triples.n3` into the repository
+  - Loads the facts and ontology from `data/facts.n3` and `data/nba_ontology.n3` into the repository
   - Provides status updates throughout the process
 
 - The Django `apps.py` file triggers this setup automatically when the application starts in development mode
 - It also creates an admin user if one doesn't exist
-
-### Using Docker
-### Prerequisites
-- Docker and Docker Compose installed on your machine
-
-### Run the full system:
-From the **root of the project** (where `docker-compose.yml` is located), run:
-
-```bash
-docker compose up --build
-```
-
-This will:
-- Build the Django application container
-- Start GraphDB on port 7200
-- Create the GraphDB repository named NBA_G4
-- Load RDF data (nba_triples.n3) into that repository
-- Start the Django app on port 8000
 
 ## Access the Services
 
