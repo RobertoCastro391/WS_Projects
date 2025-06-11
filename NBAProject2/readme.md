@@ -14,9 +14,8 @@ NBAProject/
 |   ├── datasets                # Folder with the original dataset in .csv
 |   ├── scripts                 # Folder with Python scripts used to extract data and to transfom it to rdf .n3 format 
 |   ├── facts.n3                # File with pure facts (triples), without the ontology
+|   ├── nba_ontology.n3         # File containing just the ontology
 |   ├── nba_ontology_facts.n3   # Integration of facts with ontology. Combined file for validation in Protégé and for testing inferences
-|   ├── nba_spin__rules.ttl     # SPIN rules written in SPARQL, applied to data to infer new relationships and properties
-│   ├── nba_triples.n3          # Main RDF triples file (in Turtle/N3 format)
 │   ├── nba-config.ttl          # GraphDB repository configuration (Turtle format)
 |   └── spin_rules.py           # Python module with SPIN rules implemented in SPARQL (INSERT/WHERE), applicable via SPARQLWrapper
 |
