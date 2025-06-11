@@ -27,7 +27,7 @@ NBAProject/
 ## How to Run the Project
 
 #### Prerequisites
-- Have the GraphDB program running.
+- Have the GraphDB program running. 
 - Create a Virtual Environment
 
 When running the project, you'll need to:
