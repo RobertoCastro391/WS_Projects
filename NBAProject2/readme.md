@@ -8,7 +8,7 @@ The system automatically creates a GraphDB repository and loads the facts and th
 
 ##  Project Structure
 ```
-NBAProject/
+NBAProject2/
 ├── app/                        # Django application code
 ├── data/                  
 |   ├── datasets                # Folder with the original dataset in .csv
