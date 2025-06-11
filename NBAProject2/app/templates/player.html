@@ -175,6 +175,24 @@
                 <span class="player-data-value" property="nba:weight">{% if weight %}{{ weight }} lbs{% else %}Unknown{% endif %}</span>
               </div>
             </div>
+            <div class="text-center mt-1 mb-2">
+              <button class="btn btn-outline-primary btn-sm" id="inferAgeDraftedBtn">
+                <i class="bi bi-lightbulb"></i> Infer Age When Drafted
+              </button>
+              <button class="btn btn-outline-primary btn-sm" id="inferCareerSpanBtn">
+                <i class="bi bi-lightbulb"></i> Infer Career Span
+              </button>
+            </div>
+            <div id="careerSpanCard" class="player-stats-card d-none">
+              <h4>Career Span</h4>
+                <div class="player-data-row d-flex justify-content-start gap-1">
+                  <span class="player-data-label">From:</span>
+                  <span class="player-data-value" id="careerStart"></span> &nbsp;
+                  <span class="player-data-label">  To:</span>
+                  <span class="player-data-value" id="careerEnd"></span>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -1253,6 +1271,52 @@ if (updatePlayerBtn && updatePlayerModal) {
     }
   }
 }
+document.addEventListener("DOMContentLoaded", function () {
+  const inferBtn = document.getElementById("inferCareerSpanBtn");
+  const card = document.getElementById("careerSpanCard");
+
+  if (inferBtn && card) {
+    inferBtn.addEventListener("click", () => {
+      const isVisible = !card.classList.contains("d-none");
+
+      if (isVisible) {
+        // Hide card
+        card.classList.add("d-none");
+        inferBtn.innerHTML = `<i class="bi bi-lightbulb"></i> Infer Career Span`;
+        inferBtn.classList.remove("btn-secondary");
+        inferBtn.classList.add("btn-outline-primary");
+      } else {
+        // Start inference
+        inferBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Inferring...`;
+        inferBtn.disabled = true;
+
+        fetch(`/jogador/{{ id }}/infer-career-span/`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              document.getElementById("careerStart").textContent = data.careerStart;
+              document.getElementById("careerEnd").textContent = data.careerEnd;
+              card.classList.remove("d-none");
+
+              inferBtn.innerHTML = `<i class="bi bi-eye-slash"></i> Hide Inference`;
+              inferBtn.classList.remove("btn-outline-primary");
+              inferBtn.classList.add("btn-secondary");
+            } else {
+              alert("Error: " + (data.error || "Could not infer."));
+            }
+          })
+          .catch(err => {
+            alert("Server error.");
+            console.error(err);
+          })
+          .finally(() => {
+            inferBtn.disabled = false;
+          });
+      }
+    });
+  }
+});
+
 
 </script>
 {% endblock %}

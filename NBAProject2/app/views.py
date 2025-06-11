@@ -13,9 +13,9 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
-from SPARQLWrapper import JSON, POST, SPARQLWrapper
+from SPARQLWrapper import JSON, POST, SPARQLWrapper, SPARQLWrapper2
 from app.data_complementation import data_service
-
+from data.spin_rules import rule_3_career_span, rule_5_draft_classmates, rule_4_draft_age
 
 def home_page(request):
     sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -2094,3 +2094,57 @@ def coaches_page(request):
     Coaches listing page
     """
     return render(request, 'coaches.html')
+
+def infer_player_career_span(request, id):
+    try:
+        player_uri = f"http://example.org/nba/player_{id}"
+        rule_3_career_span(settings.SPARQL_ENDPOINT_UPDATE)
+
+        # Verifica se foi inferido
+        sparql = SPARQLWrapper2(settings.SPARQL_ENDPOINT)
+        sparql.setQuery(f"""
+        PREFIX nba: <http://example.org/nba/>
+        SELECT ?careerStart ?careerEnd WHERE {{
+            <{player_uri}> nba:careerStart ?careerStart ;
+                           nba:careerEnd ?careerEnd .
+        }}
+        """)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().bindings
+        if results:
+            res = results[0]
+            return JsonResponse({
+                "success": True,
+                "careerStart": res["careerStart"].value,
+                "careerEnd": res["careerEnd"].value
+            })
+        else:
+            return JsonResponse({"success": False, "error": "No data inferred."})
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)})
+
+def infer_draft_age(request, id):
+    try:
+        # Executa a regra SPIN
+        rule_4_draft_age(settings.SPARQL_ENDPOINT_UPDATE)
+
+        # Executa a consulta para obter a idade inferida
+        sparql = SPARQLWrapper2(settings.SPARQL_ENDPOINT)
+        sparql.setQuery(f"""
+            PREFIX nba: <http://example.org/nba/>
+            SELECT ?age WHERE {{
+                ?player a nba:Player ;
+                        nba:draftAge ?age .
+                FILTER(STR(?player) = "http://example.org/nba/player_{id}")
+            }}
+        """)
+        sparql.setReturnFormat(JSON)
+
+        results = sparql.query().bindings
+        if not results:
+            return JsonResponse({"success": True, "age": "Unknown"})
+
+        age = results[0]["age"].value
+        return JsonResponse({"success": True, "age": age})
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)})
