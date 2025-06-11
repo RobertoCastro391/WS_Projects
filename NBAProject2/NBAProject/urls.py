@@ -41,6 +41,8 @@ urlpatterns = [
     path('jogadores/countries/', views.get_player_countries, name='player_countries'),
     path('jogadores/schools/', views.get_player_schools, name='player_schools'),
     path('jogador/<str:id>/', views.pagina_jogador),  # Página de jogador com participações
+    path("jogador/<str:id>/infer-career-span/", views.infer_player_career_span, name="infer_career_span"),
+    path('jogador/<str:id>/infer-draft-age/', views.infer_draft_age),
 
     path('equipa/<str:id>/', views.pagina_equipa),  # Página de equipa com jogadores por temporada
     path('temporada/<str:ano>/', views.pagina_temporada),  # Página de temporada com equipas e jogadores
@@ -55,6 +57,7 @@ urlpatterns = [
     path('jogador/<str:id>/timeline/', views.timeline_jogador),  # Linha do tempo da carreira do jogador
     path('grafo/jogador/<str:id>/', views.grafo_jogador),  # Grafo: Jogador → Equipas → Temporadas
     path('jogador/<str:id>/companheiros/', views.companheiros_jogador),  # Companheiros na mesma época
+    path('jogador/<str:id>/draft-classmates/', views.jogadores_draft_ano),  # Players drafted in same year
 
     #Funcionalidades Avançadas
     path('comparar/', views.comparar_jogadores),  # Comparação entre dois jogadores
