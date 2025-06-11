@@ -572,3 +572,112 @@
     font-size: 14px;
     color: #4a5568;
   }
+
+  /* Draft Classmates Styles */
+  .draft-classmates-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .draft-classmate-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .draft-classmate-card:hover {
+    border-color: #C9082A;
+    transform: translateY(-6px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .teammate-info {
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .teammate-position {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 0.25rem;
+    font-weight: 500;
+  }
+
+  .draft-stats {
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #17408B, #2563eb);
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+
+  .draft-footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(23, 64, 139, 0.05);
+    border-radius: 8px;
+    border: 1px dashed #e2e8f0;
+  }
+
+  .teammates-subtitle {
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  /* Tabs header layout styles */
+  .tabs-header {
+    border-bottom: 2px solid #17408B;
+    padding-bottom: 1rem;
+  }
+
+  .draft-toggle-container {
+    margin-left: 1rem;
+    flex-shrink: 0;
+  }
+
+  .draft-classmates-section {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid #17408B;
+  }
+
+  /* Responsive adjustments for tabs header */
+  @media (max-width: 768px) {
+    .tabs-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .draft-toggle-container {
+      margin-left: 0;
+      align-self: flex-start;
+    }
+    
+    .nav-tabs {
+      flex-wrap: wrap;
+    }
+  }

@@ -15,6 +15,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from SPARQLWrapper import JSON, POST, SPARQLWrapper
 from app.data_complementation import data_service
+from data.spin_rules import rule_3_career_span, rule_5_draft_classmates
 
 
 def home_page(request):
@@ -2069,6 +2070,68 @@ def pagina_coach(request, coach_id):
             'error': f'Error loading coach information: {str(e)}',
             'coach_id': coach_id
         })
+
+
+def jogadores_draft_ano(request, id):
+    """
+    Get list of players drafted in the same year as the given player
+    """
+    try:
+        rule_5_draft_classmates(settings.SPARQL_ENDPOINT_UPDATE)
+
+        # Query for player info and draft classmates in a single query
+        player_uri = f"http://example.org/nba/player_{id}"
+        sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+
+        sparql.setQuery(f"""
+           PREFIX nba: <http://example.org/nba/>
+
+           SELECT ?playerName ?draftYear ?draftmate ?draftmateName ?draftmatePhoto ?position WHERE {{
+               <{player_uri}> nba:personName ?playerName ;
+                             nba:draftYear ?draftYear ;
+                             nba:draftedInSameYearAs ?draftmate .
+               ?draftmate nba:personName ?draftmateName .
+               OPTIONAL {{ ?draftmate nba:playerPhoto ?draftmatePhoto . }}
+               OPTIONAL {{ 
+                   ?draftmate nba:position ?posObj .
+                   ?posObj nba:positionName ?position .
+               }}
+           }}
+           ORDER BY ?draftmateName
+       """)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()["results"]["bindings"]
+
+        if not results:
+            return JsonResponse({"error": "Player not found or no draft classmates available"}, status=404)
+
+        # Extract player info from first result
+        player_name = results[0]["playerName"]["value"]
+        draft_year = results[0]["draftYear"]["value"]
+
+        # Process all draft classmates
+        draftmates = []
+        for result in results:
+            draftmate_id = result["draftmate"]["value"].split("_")[-1]
+            draftmates.append({
+                "id": draftmate_id,
+                "player": result["draftmate"]["value"],
+                "playerName": result["draftmateName"]["value"],
+                "playerPhoto": result.get("draftmatePhoto", {}).get("value", "/app/static/img/player-placeholder.png"),
+                "position": result.get("position", {}).get("value", "Unknown")
+            })
+
+        return JsonResponse({
+            "player": player_uri,
+            "playerName": player_name,
+            "draftYear": draft_year,
+            "draftmates": draftmates,
+            "totalCount": len(draftmates)
+        })
+
+    except Exception as e:
+        print(f"Error getting draft classmates: {str(e)}")
+        return JsonResponse({"error": f"Error: {str(e)}"}, status=500)
 
 
 def coaches_page(request):

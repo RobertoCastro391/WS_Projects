@@ -480,13 +480,11 @@ nba:team_1610612737
     nba:city "Atlanta" ;
     nba:history """The Atlanta Hawks are an American professional basketball team based in Atlanta. The Hawks compete in the National Basketball Association (NBA) as a member of the league's Eastern Conference Southeast Division. The team plays its home games at State Farm Arena.  The team's origins can be traced to the establishment of the Buffalo Bisons in 1946 in Buffalo, New York, a member of the National Basketball League (NBL) owned by Ben Kerner and Leo Ferris. After 38 days in Buffalo, the team moved to Moline, Illinois, where they were renamed the Tri-Cities Blackhawks. In 1949, they joined the NBA as part of the merger between the NBL and the Basketball Association of America (BAA), and briefly had Red Auerbach as coach. In 1951, Kerner moved the team to Milwaukee, where they changed their name to the Milwaukee Hawks. Kerner and the team moved again in 1955 to St. Louis, where they won their first (and thus far only) NBA Championship in 1958 and qualified to play in the NBA Finals in 1957, 1960 and 1961. The Hawks played the Boston Celtics in all four of their trips to the NBA Finals. The St. Louis Hawks moved to Atlanta on May 3, 1968, when Kerner sold the franchise to Thomas Cousins and former Georgia Governor Carl Sanders.  The Hawks currently own the second-longest drought (behind the Sacramento Kings) of not winning an NBA championship at 64 seasons. The franchise's lone NBA championship, as well as all four NBA Finals appearances, occurred when the team was based in St. Louis. Meanwhile, they went 48 years without advancing past the second round of the playoffs in any format, until finally breaking through in 2015. However, the Hawks are one of only four NBA teams that have qualified to play in the NBA playoffs in 10 consecutive seasons in the 21st century. They achieved this feat between 2008 and 2017.""" ;
     nba:logo "https://cdn.nba.com/logos/nba/1610612737/global/L/logo.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_5 ;
     nba:state nba:state_WI ;
     nba:state nba:state_TX ;
     nba:teamLocatedIn nba:state_WI ;
     nba:teamLocatedIn nba:state_TX ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_5 .
 
 nba:team_1610610024
@@ -495,11 +493,9 @@ nba:team_1610610024
     nba:city "Baltimore" ;
     nba:history """The Baltimore Bullets were a professional basketball team based in Baltimore. The Bullets competed in the American Basketball League (1944–1947), the Basketball Association of America (1947–1949), and (following the BAA's absorption of the National Basketball League) the National Basketball Association (1949–1954). On November 27, 1954, the team folded with a 3–11 record on the season,[1] making the Bullets the last NBA franchise to fold.[2] Out of all defunct NBA teams, the Bullets were members of the association for the longest time and the only defunct team to win a championship.[3]    The Bullets name was revived in 1963, when the former Chicago Zephyrs relocated to Baltimore; even after these Bullets relocated to Washington in 1973, they kept their name for 24 more years until they were renamed to the Wizards.""" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/9/9a/The_logo_of_the_original_Baltimore_Bullets_from_the_postwar_era.gif"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_5 ;
     nba:state nba:state_MD ;
-    nba:teamLocatedIn nba:state_MD ;
-    nba:participatedIn nba:season_0 .
+    nba:teamLocatedIn nba:state_MD .
 
 nba:team_1610612764
     nba:actualName "Washington Wizards" ;
@@ -518,8 +514,6 @@ nba:team_1610612764
     nba:logo "https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/The_logo_of_the_original_Baltimore_Bullets_from_the_postwar_era.gif/180px-The_logo_of_the_original_Baltimore_Bullets_from_the_postwar_era.gif"^^xsd:anyURI ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/thumb/0/02/Washington_Wizards_logo.svg/1200px-Washington_Wizards_logo.svg.png"^^xsd:anyURI ;
     nba:logo "https://loodibee.com/wp-content/uploads/washington-bullets-1987-1997.png"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_5 ;
     nba:division nba:division_2 ;
     nba:division nba:division_1 ;
@@ -529,7 +523,6 @@ nba:team_1610612764
     nba:teamLocatedIn nba:state_MI ;
     nba:teamLocatedIn nba:state_DC ;
     nba:teamLocatedIn nba:state_MD ;
-    nba:participatedIn nba:season_0 ;
     nba:history """The 1973–74 Capital Bullets season was the team's first in Washington, D.C. area, southeast from nearby Baltimore. Prior to the 1973–74 season, the Baltimore Bullets relocated to Landover, Maryland, a suburb east of Washington, and became the Capital Bullets.[1] It was also their only season under the Capital Bullets name.    The Bullets finished with a 47–35 record and won the Central Division. Wes Unseld was limited to 56 games due to injuries. In the playoffs, the Bullets fell to the New York Knicks for the fifth time in six years, eliminated in seven games. Following the season, the team was renamed as the Washington Bullets.    The new Capital Centre opened on December 2, 1973; the Bullets played their earlier home games this season at Cole Field House at the University of Maryland in College Park. They played several home games at Cole during their last seasons in Baltimore.""" ;
     nba:arena nba:arena_30 .
 
@@ -538,11 +531,9 @@ nba:team_1610612738
     nba:acronym "BOS" ;
     nba:city "Boston" ;
     nba:logo "https://cdn.nba.com/logos/nba/1610612738/global/L/logo.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_1 ;
     nba:state nba:state_MA ;
     nba:teamLocatedIn nba:state_MA ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_6 .
 
 nba:team_1610612751
@@ -558,12 +549,10 @@ nba:team_1610612751
     nba:history """The Brooklyn Nets are an American professional basketball team based in the New York City borough of Brooklyn. The Nets compete in the National Basketball Association (NBA) as a member of the Atlantic Division of the Eastern Conference. The team plays its home games at Barclays Center. They are one of two NBA teams located in New York City; the other is the New York Knicks. The club was established in 1967 as a charter franchise of the NBA's rival league, the American Basketball Association (ABA). They played in New Jersey as the New Jersey Americans during their first season, before relocating to Long Island, New York, in 1968 and changing their name to the New York Nets. During this time, the Nets won two ABA championships (in 1974 and 1976). In 1976, the ABA merged with the NBA, and the Nets were absorbed into the NBA along with three other ABA teams (the San Antonio Spurs, Indiana Pacers, and Denver Nuggets), all of whom remain in the league to this day.""" ;
     nba:logo "https://s.yimg.com/cv/apiv2/default/nba/20181129/500x500/nets3_wbg.png"^^xsd:anyURI ;
     nba:logo "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrNJ3vdgcTVmxjW_9ZNBx_nD0FZOYJkYm90ypDd_RnEQ&s"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_4 ;
     nba:division nba:division_1 ;
     nba:state nba:state_NY ;
     nba:teamLocatedIn nba:state_NY ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_17 .
 
 nba:team_1
@@ -572,11 +561,9 @@ nba:team_1
     nba:city "Transilvania" ;
     nba:history "Made by Perpetuo" ;
     nba:logo "https://pa1.aminoapps.com/6418/9b3ecfde90cebd9bc54fedec215f6892b4f2491d_hq.gif"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_4 ;
     nba:state nba:state_OH ;
-    nba:teamLocatedIn nba:state_OH ;
-    nba:participatedIn nba:season_0 .
+    nba:teamLocatedIn nba:state_OH .
 
 nba:team_1610612746
     nba:actualName "LA Clippers" ;
@@ -592,15 +579,12 @@ nba:team_1610612746
     nba:logo "https://upload.wikimedia.org/wikipedia/en/5/59/Buffalo_Braves_logo.svg"^^xsd:anyURI ;
     nba:logo "https://cdn.nba.com/logos/nba/1610612746/global/L/logo.svg"^^xsd:anyURI ;
     nba:logo "https://cdn.ssref.net/req/202308241/tlogo/bbr/SDC-1984.png"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_4 ;
     nba:division nba:division_1 ;
     nba:state nba:state_CA ;
     nba:state nba:state_NY ;
     nba:teamLocatedIn nba:state_CA ;
     nba:teamLocatedIn nba:state_NY ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_12 .
 
 nba:team_1610612766
@@ -611,11 +595,9 @@ nba:team_1610612766
     nba:city "Charlotte" ;
     nba:logo "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVf31CN8MCpmRltT6N-GXW0LsZtNZIAjKbI8UA-1wxgg&s"^^xsd:anyURI ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/c/c4/Charlotte_Hornets_%282014%29.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_5 ;
     nba:state nba:state_NC ;
     nba:teamLocatedIn nba:state_NC ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_32 .
 
 nba:team_1610612741
@@ -623,11 +605,9 @@ nba:team_1610612741
     nba:acronym "CHI" ;
     nba:city "Chicago" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/thumb/6/67/Chicago_Bulls_logo.svg/1200px-Chicago_Bulls_logo.svg.png"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_2 ;
     nba:state nba:state_IL ;
     nba:teamLocatedIn nba:state_IL ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_8 .
 
 nba:team_1610612758
@@ -645,12 +625,10 @@ nba:team_1610612758
     nba:city "Sacramento" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/a/ab/Cincinnati_Royals_logo.svg"^^xsd:anyURI ;
     nba:logo "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDoVzWwtnlchVq1WOh0tgRH7pj1gFu6mSxARDbplXTvA&s"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:state nba:state_OH ;
     nba:state nba:state_KS ;
     nba:teamLocatedIn nba:state_OH ;
     nba:teamLocatedIn nba:state_KS ;
-    nba:participatedIn nba:season_0 ;
     nba:division nba:division_4 ;
     nba:arena nba:arena_24 .
 
@@ -660,11 +638,9 @@ nba:team_1610612739
     nba:city "Cleveland" ;
     nba:history """The Cleveland Cavaliers (often referred to as the Cavs) are an American professional basketball team based in Cleveland. The Cavaliers compete in the National Basketball Association (NBA) as a member of the Central Division of the Eastern Conference. The team began play as an expansion team in 1970, along with the Portland Trail Blazers and Buffalo Braves. Home games were first held at Cleveland Arena from 1970 to 1974, followed by the Richfield Coliseum from 1974 to 1994. Since 1994, the Cavs have played home games at Rocket Mortgage FieldHouse in downtown Cleveland, which is shared with the Cleveland Monsters of the American Hockey League. Dan Gilbert has owned the team since March 2005.    The Cavaliers opened their inaugural season by losing their first 15 games and struggled in their early years, placing no better than sixth in the Eastern Conference during their first five seasons. The team won their first Central Division title in 1976, which also marked the first winning season and playoff appearance in franchise history, where they advanced to the Eastern Conference Finals. The franchise was purchased by Ted Stepien in 1980. Stepien's tenure as owner was marked by six coaching changes, questionable trades and draft decisions, and poor attendance, leading to $15 million in financial losses. The Cavs went 66–180 over the course of those three seasons and endured a 24-game losing streak spanning the 1981–82 and 1982–83 seasons.    George and Gordon Gund purchased the franchise in 1983. During the latter half of the 1980s and through much of the 1990s, the Cavs were a regular playoff contender – led by players such as Mark Price and Brad Daugherty – and advanced to the Eastern Conference Finals in 1992. After the team's playoff appearance in the 1997–98 season, however, the Cavs had six consecutive losing seasons with no playoff action. Cleveland was awarded with the top overall pick in the 2003 draft, and they selected LeBron James. Behind James and Zydrunas Ilgauskas, the Cavaliers again became a regular playoff contender by 2005. They made their first appearance in the NBA Finals in 2007 after winning the first Eastern Conference championship in franchise history. After failing to return to the NBA Finals in the ensuing three seasons, James joined the Miami Heat in 2010. As a result, the Cavaliers finished the 2010–11 season last in the conference, enduring a 26-game losing streak, the second-longest in NBA history. Between 2010 and 2014, however, the team won the top pick in the NBA draft lottery three times – first in 2011 where they selected Kyrie Irving, and again in 2013 and 2014.    After four seasons with the Heat and having won back-to-back titles in the 2011–12 and 2012–13 seasons, James returned to the Cavs in 2014 and led the team to four straight NBA Finals appearances. In 2016, the Cavaliers won their first NBA Championship, marking Cleveland's first major sports title since 1964. The 2016 NBA Finals victory over the Golden State Warriors marked the first time in Finals history a team had come back to win the series after trailing, 3–1. The Cavaliers have 23 playoff appearances and have won seven Central Division titles, five Eastern Conference titles and one NBA title.""" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/commons/4/4b/Cleveland_Cavaliers_logo.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_2 ;
     nba:state nba:state_OH ;
     nba:teamLocatedIn nba:state_OH ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_33 .
 
 nba:team_1610612742
@@ -672,11 +648,9 @@ nba:team_1610612742
     nba:acronym "DAL" ;
     nba:city "Dallas" ;
     nba:logo "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROztQ8rKmG98ie2t1plfgwx1eTiS8a8_m0EOnDl_zzGg&s"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_6 ;
     nba:state nba:state_TX ;
     nba:teamLocatedIn nba:state_TX ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_3 .
 
 nba:team_1610612743
@@ -684,11 +658,9 @@ nba:team_1610612743
     nba:acronym "DEN" ;
     nba:city "Denver" ;
     nba:logo "https://logosmarcas.net/wp-content/uploads/2020/07/Denver-Nuggets-Logo.png"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_3 ;
     nba:state nba:state_CO ;
     nba:teamLocatedIn nba:state_CO ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_10 .
 
 nba:team_1610612765
@@ -700,13 +672,11 @@ nba:team_1610612765
     nba:city "Fort Wayne" ;
     nba:history """The Detroit Pistons are an American professional basketball team based in Detroit. The Pistons compete in the National Basketball Association (NBA) as a member of the Central Division of the Eastern Conference. The team plays its home games at Little Caesars Arena, located in Midtown Detroit. Founded in Fort Wayne, Indiana as a semi-professional company basketball team called the Fort Wayne Zollner Pistons in 1937, they would turn pro in 1941 as a member of the National Basketball League (NBL), where they won two NBL championships: in 1944 and 1945. The Pistons later joined the Basketball Association of America (BAA) in 1948. The NBL and BAA merged to become the NBA in 1949, and the Pistons became part of the merged league.[1][8] In 1957, the franchise moved to Detroit. The Pistons have won three NBA championships: in 1989, 1990 and 2004.""" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/commons/c/c9/Logo_of_the_Detroit_Pistons.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_2 ;
     nba:state nba:state_IN ;
     nba:state nba:state_MI ;
     nba:teamLocatedIn nba:state_IN ;
     nba:teamLocatedIn nba:state_MI ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_31 .
 
 nba:team_1610612744
@@ -721,11 +691,9 @@ nba:team_1610612744
     nba:city "San Francisco" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/0/01/Golden_State_Warriors_logo.svg"^^xsd:anyURI ;
     nba:logo "https://cdn.nba.com/logos/nba/1610612744/global/D/logo.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_4 ;
     nba:state nba:state_CA ;
     nba:teamLocatedIn nba:state_CA ;
-    nba:participatedIn nba:season_0 ;
     nba:history """The Golden State Warriors are an American professional basketball team based in San Francisco. The Warriors compete in the National Basketball Association (NBA) as a member of the Pacific Division of the Western Conference. Founded in 1946 in Philadelphia, the Warriors moved to the San Francisco Bay Area in 1962 and took the city's name, before changing its geographic moniker to Golden State in 1971. The club plays its home games at the Chase Center.    The Warriors won the inaugural Basketball Association of America (BAA) championship in 1947, and won again in 1956, led by Hall of Fame trio Paul Arizin, Tom Gola, and Neil Johnston. After the trade of star Wilt Chamberlain in January 1965, the team finished the 1964–65 season with the NBA's worst record (17–63). Their rebuilding period was brief due in large part to the Warriors' drafting of Rick Barry four months after the trade. In 1975, star players Barry and Jamaal Wilkes powered the Warriors to their third championship, widely considered one of the biggest upsets in NBA history.    The team struggled in the 1980s, then became playoff regulars at the turn of the decade with stars Tim Hardaway, Mitch Richmond, and Chris Mullin, nicknamed "Run TMC". Led by Stephen Curry, Klay Thompson, and Draymond Green, the team returned to championship glory in 2015, with defensive swingman Andre Iguodala being named Finals MVP. In 2016, the Warriors set the record for best regular season record at 73-9 before losing the Finals to the Cleveland Cavaliers (against whom they played a record four straight finals) and becoming the first team to lose a series after leading 3–1 in the Finals. After signing former MVP Kevin Durant, the team won back-to-back championships in 2017 and 2018 (Durant winning both Finals MVPs). They lost the 2019 Finals to the Toronto Raptors, a series which saw Durant and Thompson suffer serious Achilles and ACL injuries, respectively; Durant left that off-season. After missing the playoffs the following two seasons, the Warriors returned to the playoffs with a healthy Thompson and a new supporting cast that included All-Star Andrew Wiggins and key scorer Jordan Poole; they defeated the Boston Celtics in the 2022 Finals, where Curry won his first Finals MVP. The Warriors' dynasty has seen the team win four titles in eight seasons, as well as reach five consecutive Finals from 2015 to 2019 (six Finals in eight years); Curry, Green, Thompson, and Iguodala were on all four 21st century championship teams, Shaun Livingston and Kevon Looney were on three each.    Nicknamed the "Dubs" as a shortening of "W's", the Warriors hold several NBA records: best regular season, most wins in a season (regular season and postseason combined), and best postseason run. Curry and Thompson are generally considered among the greatest backcourts of all time. The Warriors have the third most NBA championships and have the third most Finals appearances; only the Los Angeles Lakers and Boston Celtics have more. Wilt Chamberlain and Stephen Curry have been named the NBA's MVPs while playing for the Warriors, for a total of three MVP awards.""" ;
     nba:arena nba:arena_34 .
 
@@ -739,13 +707,11 @@ nba:team_1610612745
     nba:history """The Houston Rockets are an American professional basketball team based in Houston. The Rockets compete in the National Basketball Association (NBA) as a member of the Southwest Division of the Western Conference. The team plays its home games at the Toyota Center, located in Downtown Houston. Throughout its history, Houston has won two NBA championships and four Western Conference titles. It was established in 1967 as the San Diego Rockets, an expansion team originally based in San Diego. In 1971, the Rockets relocated to Houston.    The Rockets won only 15 games in their debut season as a franchise in 1967. In the 1968 NBA draft, the Rockets were awarded the first overall pick and selected power forward Elvin Hayes, who would lead the team to its first playoff appearance in his rookie season. The Rockets did not finish a season with a winning record for almost a decade until the 1976–77 season, when they traded for All-Star center Moses Malone from the American Basketball Association (ABA). Malone went on to win the NBA Most Valuable Player (MVP) award twice while playing with the Rockets and led Houston to the Eastern Conference Finals in his first year with the team. During the 1980–81 season, the Rockets finished the regular season with a 40–42 record but still made the playoffs. Led by Malone, the Rockets reached their first NBA Finals in 1981, becoming only the second team in NBA history to do so with a losing record. They would lose in six games to the 62–20 Boston Celtics, led by Larry Bird, Robert Parish, and future Rockets head coach Kevin McHale. As of 2023, the 1980–81 Rockets are the last team since the 1958–59 Minneapolis Lakers to make it all the way to the NBA Finals with a losing record.    In the 1984 NBA draft, once again with the first overall pick, the Rockets drafted center Hakeem Olajuwon, who would become the cornerstone of the most successful period in franchise history. Paired with 7-foot-4-inch (2.24 m) Ralph Sampson, they formed one of the tallest front courts in the NBA. Nicknamed the "Twin Towers", they led the team to the 1986 NBA Finals—the second NBA Finals appearance in franchise history—where Houston was again defeated by Larry Bird and the 67-win Boston Celtics. The Rockets continued to reach the playoffs throughout the 1980s, but failed to advance past the first round for several years following a second-round defeat to the Seattle SuperSonics in 1987. Rudy Tomjanovich took over as head coach midway through the 1991–92 season, ushering in the most successful period in franchise history. Led by Olajuwon, the Rockets dominated the 1993–94 season, setting a then-franchise record 58 wins and went to the 1994 NBA Finals—the third NBA Finals appearance in franchise history—and won the franchise's first championship against Patrick Ewing and the New York Knicks. During the following season, reinforced by another All-Star, Clyde Drexler, the Rockets—in their fourth NBA Finals appearance in franchise history—repeated as champions with a four-game sweep of the Orlando Magic, which was led by a young Shaquille O'Neal and Penny Hardaway. Houston, which finished the season with a 47–35 record and was seeded sixth in the Western Conference during the 1995 playoffs, became the lowest-seeded team in NBA history to win the title.    The Rockets acquired all-star power forward Charles Barkley in 1996, but the presence of three of the NBA's 50 greatest players of all-time (Olajuwon, Drexler, and Barkley) was not enough to propel Houston past the Western Conference Finals. Each one of the aging trio had left the team by 2001. The Rockets of the early 2000s, led by superstars Tracy McGrady and Yao Ming, followed the trend of consistent regular season respectability followed by playoff underachievement as both players struggled with injuries. After Yao's early retirement in 2011, the Rockets entered a period of rebuilding, completely dismantling and retooling their roster.    The acquisition of franchise player James Harden in 2012 launched the Rockets back into perennial championship contention throughout the rest of the 2010s, with no losing seasons in Harden's nine-season tenure with the team. Harden broke countless franchise and NBA records while on the team, winning three consecutive scoring titles between 2018 and 2020, and leading the team to two Western Conference Finals appearances (both times losing to the Golden State Warriors). Prior to the 2020–21 season, head coach Mike D'Antoni and general manager Daryl Morey left the organization, prompting Harden to seek a trade. He was traded to the Brooklyn Nets[A] which started a rebuilding period.    Moses Malone, Hakeem Olajuwon, and James Harden have been named the NBA's MVPs while playing for the Rockets, for a total of four MVP awards. The Rockets, when piloted by Morey, were renowned for popularizing the use of advanced statistical analytics (similar to sabermetrics in baseball) in player acquisitions and style of play.""" ;
     nba:logo "https://cdn.ssref.net/req/202308241/tlogo/bbr/SDR-1969.png"^^xsd:anyURI ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/2/28/Houston_Rockets.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_6 ;
     nba:state nba:state_CA ;
     nba:state nba:state_TX ;
     nba:teamLocatedIn nba:state_CA ;
     nba:teamLocatedIn nba:state_TX ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_11 .
 
 nba:team_1610612754
@@ -753,11 +719,9 @@ nba:team_1610612754
     nba:acronym "IND" ;
     nba:city "Indiana" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/thumb/1/1b/Indiana_Pacers.svg/1200px-Indiana_Pacers.svg.png"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_2 ;
     nba:state nba:state_IN ;
     nba:teamLocatedIn nba:state_IN ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_20 .
 
 nba:team_1610610030
@@ -765,8 +729,7 @@ nba:team_1610610030
     nba:acronym "INO" ;
     nba:city "Indianapolis" ;
     nba:state nba:state_IN ;
-    nba:teamLocatedIn nba:state_IN ;
-    nba:participatedIn nba:season_0 .
+    nba:teamLocatedIn nba:state_IN .
 
 nba:team_1610612747
     nba:actualName "Los Angeles Lakers" ;
@@ -777,13 +740,11 @@ nba:team_1610612747
     nba:city "Minnesota" ;
     nba:logo "https://cdn.nba.com/logos/nba/1610612747/global/L/logo.svg"^^xsd:anyURI ;
     nba:logo "https://cdn.ssref.net/req/202308241/tlogo/bbr/MNL-1952.png"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_4 ;
     nba:state nba:state_CA ;
     nba:state nba:state_MN ;
     nba:teamLocatedIn nba:state_CA ;
     nba:teamLocatedIn nba:state_MN ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_13 .
 
 nba:team_1610612763
@@ -797,13 +758,11 @@ nba:team_1610612763
     nba:history """The Memphis Grizzlies (referred to locally as the Grizz) are an American professional basketball team based in Memphis, Tennessee. The Grizzlies compete in the National Basketball Association (NBA) as a member of the Southwest Division of the Western Conference. The Grizzlies play their home games at FedExForum. The Grizzlies are currently the only team in the major professional North American sports leagues based in the city of Memphis, and the only professional basketball team in the state of Tennessee.    The team was originally established as the Vancouver Grizzlies in the city of Vancouver, Canada, an expansion team that joined the NBA for the 1995–96 season. After the 2000–01 season concluded, the Grizzlies left Vancouver and moved to Memphis.""" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/1/1e/Vancouver_Grizzlies_logo.svg"^^xsd:anyURI ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/f/f1/Memphis_Grizzlies.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_6 ;
     nba:state nba:state_TN ;
     nba:state nba:state_VN ;
     nba:teamLocatedIn nba:state_TN ;
     nba:teamLocatedIn nba:state_VN ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_29 .
 
 nba:team_1610612748
@@ -811,11 +770,9 @@ nba:team_1610612748
     nba:acronym "MIA" ;
     nba:city "Miami" ;
     nba:logo "https://cdn.nba.com/logos/nba/1610612748/global/L/logo.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_5 ;
     nba:state nba:state_FL ;
     nba:teamLocatedIn nba:state_FL ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_14 .
 
 nba:team_1610612749
@@ -823,11 +780,9 @@ nba:team_1610612749
     nba:acronym "MIL" ;
     nba:city "Milwaukee" ;
     nba:logo "https://cdn.nba.com/logos/nba/1610612749/global/L/logo.svg"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_2 ;
     nba:state nba:state_WI ;
     nba:teamLocatedIn nba:state_WI ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_15 .
 
 nba:team_1610612750
@@ -835,11 +790,9 @@ nba:team_1610612750
     nba:acronym "MIN" ;
     nba:city "Minnesota" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Minnesota_Timberwolves_logo.svg/1200px-Minnesota_Timberwolves_logo.svg.png"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_3 ;
     nba:state nba:state_MN ;
     nba:teamLocatedIn nba:state_MN ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_16 .
 
 nba:team_1610612740
@@ -851,14 +804,12 @@ nba:team_1610612740
     nba:acronym "NOK" ;
     nba:city "Oklahoma City" ;
     nba:city "New Orleans" ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_5 ;
     nba:division nba:division_6 ;
     nba:state nba:state_LA ;
     nba:state nba:state_OK ;
     nba:teamLocatedIn nba:state_LA ;
     nba:teamLocatedIn nba:state_OK ;
-    nba:participatedIn nba:season_0 ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/0/0d/New_Orleans_Pelicans_logo.svg"^^xsd:anyURI ;
     nba:arena nba:arena_7 .
 
@@ -875,8 +826,6 @@ nba:team_1610612762
     nba:logo "https://content.sportslogos.net/logos/6/255/full/new_orleans_jazz_logo__9217.png"^^xsd:anyURI ;
     nba:state nba:state_LA ;
     nba:teamLocatedIn nba:state_LA ;
-    nba:participatedIn nba:season_0 ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_3 ;
     nba:arena nba:arena_28 .
 
@@ -885,11 +834,9 @@ nba:team_1610612752
     nba:acronym "NYK" ;
     nba:city "New York" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/thumb/2/25/New_York_Knicks_logo.svg/1200px-New_York_Knicks_logo.svg.png"^^xsd:anyURI ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_1 ;
     nba:state nba:state_NY ;
     nba:teamLocatedIn nba:state_NY ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_18 .
 
 nba:team_1610612760
@@ -900,20 +847,16 @@ nba:team_1610612760
     nba:city "Oklahoma City" ;
     nba:city "nan" ;
     nba:logo "https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Oklahoma_City_Thunder.svg/1200px-Oklahoma_City_Thunder.svg.png"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_3 ;
     nba:state nba:state_OK ;
     nba:teamLocatedIn nba:state_OK ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_26 .
 
 nba:team_1610612753
     nba:actualName "Orlando Magic" ;
     nba:acronym "ORL" ;
     nba:city "Orlando" ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_5 ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_4 .
 
 nba:team_1610612755
@@ -924,9 +867,7 @@ nba:team_1610612755
     nba:acronym "PHL" ;
     nba:city "nan" ;
     nba:city "Philadelphia" ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_1 ;
-    nba:participatedIn nba:season_0 ;
     nba:logo "https://upload.wikimedia.org/wikipedia/commons/e/eb/Philadelphia-76ers-Logo-1977-1996.png"^^xsd:anyURI ;
     nba:state nba:state_PA ;
     nba:teamLocatedIn nba:state_PA ;
@@ -937,17 +878,13 @@ nba:team_1610612756
     nba:acronym "PHX" ;
     nba:city "Phoenix" ;
     nba:logo "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDl43tW9pP6Qwit-Ytr5DadO5uulwoHu9jZdQrVwVuQg&s"^^xsd:anyURI ;
-    nba:conference nba:conference_2 ;
-    nba:division nba:division_4 ;
-    nba:participatedIn nba:season_0 .
+    nba:division nba:division_4 .
 
 nba:team_1610612757
     nba:actualName "Portland Trail Blazers" ;
     nba:acronym "POR" ;
     nba:city "Portland" ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_3 ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_23 .
 
 nba:team_1610612759
@@ -957,9 +894,7 @@ nba:team_1610612759
     nba:acronym "SAS" ;
     nba:city "nan" ;
     nba:city "San Antonio" ;
-    nba:conference nba:conference_2 ;
     nba:division nba:division_6 ;
-    nba:participatedIn nba:season_0 ;
     nba:logo "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUxzn6HzXVoOdax-a3459uFIwuvS--r13HqQ&usqp=CAU"^^xsd:anyURI ;
     nba:arena nba:arena_25 .
 
@@ -967,16 +902,14 @@ nba:team_1610612761
     nba:actualName "Toronto Raptors" ;
     nba:acronym "TOR" ;
     nba:city "Toronto" ;
-    nba:conference nba:conference_1 ;
     nba:division nba:division_1 ;
-    nba:participatedIn nba:season_0 ;
     nba:arena nba:arena_27 .
 
 nba:arena_3
     nba:arenaName "American Airlines" ;
     nba:location "Dallas, TX" ;
     nba:opened "2001" ;
-    nba:capacity "19200" ;
+    nba:capacity 19200 ;
     nba:locatedIn nba:state_TX ;
     nba:arenaPhoto "https://upload.wikimedia.org/wikipedia/commons/b/bc/American_Airlines_Center_August_2015.jpg"^^xsd:anyURI ;
     nba:latitude "32.787663516" ;
@@ -987,7 +920,7 @@ nba:arena_4
     nba:arenaName "Amway Center" ;
     nba:location "Orlando, FL" ;
     nba:opened "2010" ;
-    nba:capacity "18846" ;
+    nba:capacity 18846 ;
     nba:locatedIn nba:state_FL ;
     nba:arenaPhoto "https://upload.wikimedia.org/wikipedia/commons/9/9f/Amway_Center.jpg"^^xsd:anyURI ;
     nba:latitude "28.536831186" ;
@@ -997,7 +930,7 @@ nba:arena_4
 nba:arena_5
     nba:arenaName "State Farm Arena" ;
     nba:location "Atlanta, TX" ;
-    nba:capacity "18729" ;
+    nba:capacity 18729 ;
     nba:locatedIn nba:state_TX ;
     nba:arenaPhoto "https://th.bing.com/th/id/OIP.VSJg6EBLRmyM4NjbUMe2NQHaE7?rs=1&pid=ImgDetMain"^^xsd:anyURI ;
     nba:latitude "33.75729" ;
@@ -1007,7 +940,7 @@ nba:arena_5
 nba:arena_6
     nba:arenaName "TD Garden" ;
     nba:location "Boston, MA" ;
-    nba:capacity "18624" ;
+    nba:capacity 18624 ;
     nba:locatedIn nba:state_MA ;
     nba:arenaPhoto "https://th.bing.com/th/id/OIP.VRUftj63yz77kHMSdYVoLwHaDt?rs=1&pid=ImgDetMain"^^xsd:anyURI ;
     nba:latitude "42.366291" ;
@@ -1027,7 +960,7 @@ nba:arena_8
     nba:arenaName "United Center" ;
     nba:location "Chicago, IL" ;
     nba:opened "1994" ;
-    nba:capacity "21711" ;
+    nba:capacity 21711 ;
     nba:locatedIn nba:state_IL ;
     nba:arenaPhoto "https://pbs.twimg.com/media/GA29obSWsAAaCtJ?format=jpg&name=4096x4096"^^xsd:anyURI ;
     nba:latitude "41.880692" ;
@@ -1037,7 +970,7 @@ nba:arena_8
 nba:arena_10
     nba:arenaName "Pepsi Center" ;
     nba:location "Denver, CO" ;
-    nba:capacity "19099" ;
+    nba:capacity 19099 ;
     nba:locatedIn nba:state_CO ;
     nba:arenaPhoto "https://th.bing.com/th/id/OIP.8qtNZv2nBXojKHQUSL4khwHaE8?rs=1&pid=ImgDetMain"^^xsd:anyURI ;
     nba:latitude "39.74249703" ;
@@ -1047,7 +980,7 @@ nba:arena_10
 nba:arena_11
     nba:arenaName "Toyota Center" ;
     nba:location "Houston, TX" ;
-    nba:capacity "18104" ;
+    nba:capacity 18104 ;
     nba:locatedIn nba:state_TX ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.52c31ef3f1f97b72a1a885e3f64ec76d?rik=ov%2fkYtBB5vHuHw&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "29.750496998" ;
@@ -1057,7 +990,7 @@ nba:arena_11
 nba:arena_12
     nba:arenaName "Staples Center" ;
     nba:location "Los Angeles, CA" ;
-    nba:capacity "19060" ;
+    nba:capacity 19060 ;
     nba:locatedIn nba:state_CA ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.de813cb941b1803ef8c59866856266d4?rik=AzEsKP1N5zxEIQ&riu=http%3a%2f%2ffamouswonders.com%2fwp-content%2fuploads%2f2010%2f10%2fStaplesCenter.jpg&ehk=aJRxt8sUkEoUaR5eflXe%2bYUfnoGK%2f0MsHzk1jZGZ2ZE%3d&risl=&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "34.03916651" ;
@@ -1067,7 +1000,7 @@ nba:arena_12
 nba:arena_13
     nba:arenaName "Staples Center" ;
     nba:location "Los Angeles, CA" ;
-    nba:capacity "19060" ;
+    nba:capacity 19060 ;
     nba:locatedIn nba:state_CA ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.de813cb941b1803ef8c59866856266d4?rik=AzEsKP1N5zxEIQ&riu=http%3a%2f%2ffamouswonders.com%2fwp-content%2fuploads%2f2010%2f10%2fStaplesCenter.jpg&ehk=aJRxt8sUkEoUaR5eflXe%2bYUfnoGK%2f0MsHzk1jZGZ2ZE%3d&risl=&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "34.03916651" ;
@@ -1077,7 +1010,7 @@ nba:arena_13
 nba:arena_14
     nba:arenaName "American Airlines Arena" ;
     nba:location "Miami, FL" ;
-    nba:capacity "19600" ;
+    nba:capacity 19600 ;
     nba:locatedIn nba:state_FL ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.c7026d004d91f591f500de3cbcfd225b?rik=NLi%2bX02PZwJHtA&riu=http%3a%2f%2fwww.interbasket.net%2fwp-content%2fuploads%2f2014%2f06%2fAmerican_Airlines_Arena_backside.jpg&ehk=gtL4nxhZ08OLsCDQEcu1s79ILwlK%2bGyVnQTc4k9Yseg%3d&risl=&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "25.775496898" ;
@@ -1087,7 +1020,7 @@ nba:arena_14
 nba:arena_15
     nba:arenaName "Fiserv Forum" ;
     nba:location "Milwaukee, WI" ;
-    nba:capacity "17500" ;
+    nba:capacity 17500 ;
     nba:locatedIn nba:state_WI ;
     nba:arenaPhoto "https://th.bing.com/th/id/OIP.Gothf4N_zVRemWVKyLWdTgHaE8?rs=1&pid=ImgDetMain"^^xsd:anyURI ;
     nba:latitude "43.045231" ;
@@ -1097,7 +1030,7 @@ nba:arena_15
 nba:arena_16
     nba:arenaName "Target Center" ;
     nba:location "Minnesota, MN" ;
-    nba:capacity "19356" ;
+    nba:capacity 19356 ;
     nba:locatedIn nba:state_MN ;
     nba:arenaPhoto "https://th.bing.com/th/id/OIP.SjswQi8yOJ0rBdDGqk7jKAHaE7?rs=1&pid=ImgDetMain"^^xsd:anyURI ;
     nba:latitude "44.979595" ;
@@ -1116,7 +1049,7 @@ nba:arena_17
 nba:arena_18
     nba:arenaName "Madison Square Garden" ;
     nba:location "New York, NY" ;
-    nba:capacity "19763" ;
+    nba:capacity 19763 ;
     nba:locatedIn nba:state_NY ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.0941c94f6bca52ddff457187c665dbad?rik=tcPaSVl84u65wg&riu=http%3a%2f%2fi.huffpost.com%2fgen%2f1131162%2fthumbs%2fo-MADISON-SQUARE-GARDEN-facebook.jpg&ehk=ON25zkgv5dlZ73OSMzmM%2fU8QnIZo5c8bq14AhjeyRT8%3d&risl=&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "40.750298" ;
@@ -1126,7 +1059,7 @@ nba:arena_18
 nba:arena_20
     nba:arenaName "Bankers Life Fieldhouse" ;
     nba:location "Indiana, IN" ;
-    nba:capacity "18345" ;
+    nba:capacity 18345 ;
     nba:locatedIn nba:state_IN ;
     nba:arenaPhoto "https://th.bing.com/th/id/OIP.C58YiafhbTmvBey0SaN46AHaEK?rs=1&pid=ImgDetMain"^^xsd:anyURI ;
     nba:latitude "39.7583303" ;
@@ -1145,7 +1078,7 @@ nba:arena_21
 nba:arena_23
     nba:arenaName "Moda Center" ;
     nba:location "Portland, OR" ;
-    nba:capacity "19980" ;
+    nba:capacity 19980 ;
     nba:locatedIn nba:state_OR ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.60dd5523c70f4e1b9f92de41c084380b?rik=r3LPw%2bwZukr7zg&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "45.525664564" ;
@@ -1155,7 +1088,7 @@ nba:arena_23
 nba:arena_24
     nba:arenaName "Golden 1 Center" ;
     nba:location "Sacramento, CA" ;
-    nba:capacity "17500" ;
+    nba:capacity 17500 ;
     nba:locatedIn nba:state_CA ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.9d8cd4f9f9806123caa10d9b0e6c663f?rik=ZkeRrlRv8MU0OQ&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "38.580641" ;
@@ -1165,7 +1098,7 @@ nba:arena_24
 nba:arena_25
     nba:arenaName "AT&T Center" ;
     nba:location "San Antonio, TX" ;
-    nba:capacity "18694" ;
+    nba:capacity 18694 ;
     nba:locatedIn nba:state_TX ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.06c5fbdfb2f1479268f74bc68404971e?rik=2f0EyXPiSIp2CQ&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "29.422831642" ;
@@ -1175,7 +1108,7 @@ nba:arena_25
 nba:arena_26
     nba:arenaName "Chesapeake Energy Arena" ;
     nba:location "Oklahoma City, OK" ;
-    nba:capacity "19163" ;
+    nba:capacity 19163 ;
     nba:locatedIn nba:state_OK ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.3e4f661d50659a4fcd6e14cd74c5bb02?rik=NfSpumHRkrmAWA&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "35.457998168" ;
@@ -1185,7 +1118,7 @@ nba:arena_26
 nba:arena_27
     nba:arenaName "Scotiabank Arena" ;
     nba:location "Toronto, TO" ;
-    nba:capacity "19800" ;
+    nba:capacity 19800 ;
     nba:locatedIn nba:state_TO ;
     nba:arenaPhoto "https://icehockeytripper.com/wp-content/uploads/Scotiabank_Arena_-_2018_cropped-scaled.jpg"^^xsd:anyURI ;
     nba:latitude "43.643475" ;
@@ -1195,7 +1128,7 @@ nba:arena_27
 nba:arena_28
     nba:arenaName "Vivint Smart Home Arena" ;
     nba:location "Utah, UT" ;
-    nba:capacity "20148" ;
+    nba:capacity 20148 ;
     nba:locatedIn nba:state_UT ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.a5768acf15a103bf902054497354372f?rik=YtkCu6zpdoGrCw&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "40.76836" ;
@@ -1205,7 +1138,7 @@ nba:arena_28
 nba:arena_29
     nba:arenaName "FedExForum" ;
     nba:location "Memphis, TN" ;
-    nba:capacity "18119" ;
+    nba:capacity 18119 ;
     nba:locatedIn nba:state_TN ;
     nba:arenaPhoto "https://th.bing.com/th/id/OIP.Ihjhy4QDW_27BzAggvAq4wHaC0?rs=1&pid=ImgDetMain"^^xsd:anyURI ;
     nba:latitude "35.138351" ;
@@ -1215,7 +1148,7 @@ nba:arena_29
 nba:arena_30
     nba:arenaName "Capital One Arena" ;
     nba:location "Washington, DC" ;
-    nba:capacity "20647" ;
+    nba:capacity 20647 ;
     nba:locatedIn nba:state_DC ;
     nba:arenaPhoto "https://th.bing.com/th/id/OIP.AtmZi3aUblenauZzpqzHoAHaFj?rs=1&pid=ImgDetMain"^^xsd:anyURI ;
     nba:latitude "38.898129" ;
@@ -1225,7 +1158,7 @@ nba:arena_30
 nba:arena_31
     nba:arenaName "Little Caesars Arena" ;
     nba:location "Detroit, MI" ;
-    nba:capacity "21000" ;
+    nba:capacity 21000 ;
     nba:locatedIn nba:state_MI ;
     nba:arenaPhoto "https://www.giffelswebster.com/wp-content/uploads/2018/09/little-caesars.jpg"^^xsd:anyURI ;
     nba:latitude "42.3410478" ;
@@ -1235,7 +1168,7 @@ nba:arena_31
 nba:arena_32
     nba:arenaName "Spectrum Center" ;
     nba:location "Charlotte, NC" ;
-    nba:capacity "19026" ;
+    nba:capacity 19026 ;
     nba:locatedIn nba:state_NC ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.830a1bbb07d736ce716458fdd3fc786a?rik=WGn%2fTPdbzOi1Cw&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "35.225143" ;
@@ -1245,7 +1178,7 @@ nba:arena_32
 nba:arena_33
     nba:arenaName "Quicken Loans Arena" ;
     nba:location "Cleveland, OH" ;
-    nba:capacity "20562" ;
+    nba:capacity 20562 ;
     nba:locatedIn nba:state_OH ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.cc805bc6c14b995630066df9e6b8fe8a?rik=84STEMJbBtIWYg&pid=ImgRaw&r=0"^^xsd:anyURI ;
     nba:latitude "41.491164702" ;
@@ -1255,7 +1188,7 @@ nba:arena_33
 nba:arena_34
     nba:arenaName "Chase Center" ;
     nba:location "Golden State, CA" ;
-    nba:capacity "19596" ;
+    nba:capacity 19596 ;
     nba:locatedIn nba:state_CA ;
     nba:arenaPhoto "https://th.bing.com/th/id/R.5e9f688804edd700b38973bf186d121b?rik=7%2f13RNRBxg3u8Q&pid=ImgRaw&r=0&sres=1&sresct=1"^^xsd:anyURI ;
     nba:latitude "37.768009" ;

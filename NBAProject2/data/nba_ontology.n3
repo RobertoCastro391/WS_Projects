@@ -123,23 +123,11 @@ nba:history rdf:type owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     rdfs:comment "Information about a team and history" .
 
-nba:conference rdf:type owl:ObjectProperty ;
-    rdfs:label "conference" ;
-    rdfs:domain nba:Team ;
-    rdfs:range nba:Conference ;
-    rdfs:comment "The conference that a team belongs to" .
-
 nba:division rdf:type owl:ObjectProperty ;
     rdfs:label "division" ;
     rdfs:domain nba:Team ;
     rdfs:range nba:Division ;
     rdfs:comment "The division that a team belongs to" .
-
-nba:participatedIn rdf:type owl:ObjectProperty ;
-    rdfs:label "participatedIn" ;
-    rdfs:domain nba:Team ;
-    rdfs:range nba:Season ;
-    rdfs:comment "Participation identifier for a team" .
 
 nba:arena rdf:type owl:ObjectProperty ;
     rdfs:label "arena" ;
@@ -189,7 +177,7 @@ nba:opened rdf:type owl:DatatypeProperty ;
 nba:capacity rdf:type owl:DatatypeProperty ;
     rdfs:label "capacity" ;
     rdfs:domain nba:Arena ;
-    rdfs:range xsd:string ;
+    rdfs:range xsd:nonNegativeInteger ;
     rdfs:comment "The seating capacity of an arena" .
 
 nba:locatedIn rdf:type owl:ObjectProperty ;
@@ -308,6 +296,48 @@ nba:seasonTypeName rdf:type owl:DatatypeProperty ;
     rdfs:comment "The name for a season type" .
 
 
+# Cardinality Restrictions - Each participation must have exactly one of each
+
+nba:Participation rdfs:subClassOf [
+    rdf:type owl:Restriction ;
+    owl:onProperty nba:player ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+] .
+
+nba:Participation rdfs:subClassOf [
+    rdf:type owl:Restriction ;
+    owl:onProperty nba:team ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+] .
+
+nba:Participation rdfs:subClassOf [
+    rdf:type owl:Restriction ;
+    owl:onProperty nba:season ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+] .
+
+nba:Participation rdfs:subClassOf [
+    rdf:type owl:Restriction ;
+    owl:onProperty nba:seasonType ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+] .
+
+
+# Inverse PROPERTIES
+
+nba:arena owl:inverseOf nba:homeTeam .
+
+# Functional PROPERTIES
+
+nba:birthdate rdf:type owl:FunctionalProperty .
+nba:personName rdf:type owl:FunctionalProperty .
+nba:height rdf:type owl:FunctionalProperty .
+nba:weight rdf:type owl:FunctionalProperty .
+nba:draftYear rdf:type owl:FunctionalProperty .
+nba:bornIn rdf:type owl:FunctionalProperty .
+nba:actualName rdf:type owl:FunctionalProperty .
+
+# DisjointWith CLASSES
 
 nba:Player owl:disjointWith nba:Participation .
 nba:Team owl:disjointWith nba:Participation .
